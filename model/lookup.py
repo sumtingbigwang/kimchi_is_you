@@ -14,7 +14,7 @@ def getObjectsInCell(levelDict, x,y):
     position = (x,y)
     return {obj for obj, instances in levelDict.items() if position in instances}
 
-def findObj(levelDict, tgtCell,effect): 
+def findObj(levelDict, tgtCell, effect): 
     #of a list of objects in a cell, this returns the object with the effect in question. 
     tgtObjs = getObjectsInCell(levelDict,*tgtCell)
     for obj in tgtObjs:
@@ -49,4 +49,25 @@ def checkstate(app):
         app.noPlayer = True
     else:
         app.noPlayer = False
-    #put win condition here
+    checkWin(app, app.levelDict)
+    
+
+def findWin(levelDict):
+    winCells = []
+    for object, position in levelDict.items():
+        if isinstance(object, obj) and 'WIN' in object.eff:
+            winCells += list(position)
+    return winCells
+
+def checkWin(app, levelDict):
+    #check if any player is a win object. 
+    players = app.players
+    for obj in app.players:
+        if 'WIN' in obj.eff:
+            app.levelWin = True
+    
+    #check if player object is overlapping win object.
+    winCells = findWin(levelDict)
+    for cell in winCells:
+        if findObj(levelDict, cell, 'YOU'):
+            app.levelWin = True

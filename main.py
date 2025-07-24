@@ -51,16 +51,17 @@ def onAppStart(app):
 
 #inputs------------------------------------
 def onKeyPress(app, key):
+    if not app.levelWin:
     #on key tap inputs:
-    if key == 'right':
-        movePlayers(app,app.levelDict,app.players,'right')
-    elif key == 'left':
-        movePlayers(app,app.levelDict,app.players,'left')
-    elif key == 'up':
-        movePlayers(app,app.levelDict,app.players,'up')
-    elif key == 'down':
-        movePlayers(app,app.levelDict,app.players,'down')
-    elif key == 'r': #reset function
+        if key == 'right':
+            movePlayers(app,app.levelDict,app.players,'right')
+        elif key == 'left':
+            movePlayers(app,app.levelDict,app.players,'left')
+        elif key == 'up':
+            movePlayers(app,app.levelDict,app.players,'up')
+        elif key == 'down':
+            movePlayers(app,app.levelDict,app.players,'down')
+    if key == 'r': #reset function
         resetLevel(app)
          
     #check and add/remove rules based on words on the screen. 
@@ -77,6 +78,9 @@ def redrawAll(app):
     drawGame(app,app.levelDict)
     drawBoard(app)
     drawBoardBorder(app)
+    if app.levelWin: #want to draw win screen on top
+        drawWinScreen(app, 'black') #black is a placeholder color. 
+        #Store the level color in the level class, and refer to that later
     
     drawLabel('Debug strings',app.width//2,25,size = 10)
     drawLabel(f'Current rules: {app.level.rules}',app.width//2,40,size = 10)

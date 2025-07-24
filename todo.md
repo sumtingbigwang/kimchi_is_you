@@ -2,8 +2,6 @@
 
 (!!) make objects into subclasses that have images as part of its class information. Have objects be drawn in respect to their sprite images. 
 
-1. Separate drawWords, drawPlayers from drawObj function
-
 2. WIN ** 
     - WIN condition and what it does
     - WIN screen (Congratulations!) 
@@ -22,6 +20,7 @@
     - Have objects be drawn as the sprites.
     - Finish the Kimchi Sprite (and mystery david kosbie / mike taylor sprites)
     - Draw gridlines option
+    - Draw grid numbers option
     - Different background sizes for different levels
     - Decoration items
     ** Create system for movement trails (generate little cloud after player sprite)
