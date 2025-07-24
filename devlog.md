@@ -126,7 +126,7 @@ Jul 22
     (!!) make objects into subclasses that have images as part of its class information. 
 
 Jul 23 
-    -Project uploaded to github. 
+    - Project uploaded to github. Hi Mike!
     - Switching from claude to Cursor code editor for faster implementation of repeated stuff or quick bug fixes adjustments to existing functions 
     
     As of 11:26 pm:
