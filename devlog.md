@@ -126,4 +126,12 @@ Jul 22
     (!!) make objects into subclasses that have images as part of its class information. 
 
 Jul 23 
-    -Per Mike's instructions, will upload the project to gitHub soon. 
+    -Project uploaded to github. 
+    - Switching from claude to Cursor code editor for faster implementation of repeated stuff or quick bug fixes adjustments to existing functions 
+    
+    As of 11:26 pm:
+        - added a readme with proper accreditation of code portions and todo list. 
+        - mainly studying for quiz 5. I LOVE RECURSION AND TREES
+        - (Cursor helped) fix drawing bug in drawObj where player sprites are hidden under objects with no collision. 
+        - implemented a very rudimentary win screen, as well as a check-win function. 
+        - The classes and object/sprite-as-instance system we have right now needs some serious reworking, as individual instances don't store their own direction data. If one instance of ROCK is pushed left, all of them face left. This is okay for static objects but for the "MOVE" effect this is diasterous. I'm working on this as soon as quiz is done, as well as the reset / undo feature. These two features are the two biggest roadblocks right now. 
