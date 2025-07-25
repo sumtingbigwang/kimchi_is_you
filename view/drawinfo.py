@@ -1,3 +1,5 @@
+from cmu_graphics import * 
+from PIL import Image
 #We want ALL OF THE SPRITE DRAW DATA HERE. E.G.
 class drawInfo:
     #replace the following with sprite image links. should be (self, position1, position2, position3)
@@ -6,7 +8,12 @@ class drawInfo:
         self.color = color
         self.labelcolor = labelcolor
 
-
+#crop radius: 24x24
+#barrier: 1 pixel 
+#starts at (1,1)
+#crop: corners, top left and bottom right
+#have a 2D list of images, each row is up/right/left/right animation
+#down
 babaDraw = drawInfo('BABA', 'grey', 'white')
 rockDraw = drawInfo('ROCK', 'saddleBrown', 'white')
 wallDraw = drawInfo('WALL', 'dimGrey', 'white')

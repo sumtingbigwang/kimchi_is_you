@@ -25,9 +25,9 @@ def onAppStart(app):
     # make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
-    refresh(app, app.level)
     app.objects = getObjects(app.level)
     app.players = getPlayer(app.level)
+    refresh(app, app.level)
     
     #define game states
     app.noPlayer = False
@@ -88,12 +88,11 @@ def onKeyPress(app, key):
             undoMove(app)
         elif key == 'r': #reset function
             app.askReset = True
-    
-        #check and add/remove rules based on words on the screen.
+    #check and add/remove rules based on words on the screen.
         refresh(app, app.level)
         app.players = getPlayer(app.level) 
         checkstate(app)
-
+        
 def onStep(app):
     #check for app size changes
     if app.width != app.initWidth or app.height != app.initHeight:

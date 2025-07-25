@@ -52,7 +52,6 @@ def checkstate(app):
         app.noPlayer = False
     checkWin(app, app.levelDict)
     
-
 def findWin(levelDict):
     winCells = []
     for object, position in levelDict.items():

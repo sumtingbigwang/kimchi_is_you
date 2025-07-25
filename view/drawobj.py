@@ -3,11 +3,16 @@ sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/cod
 from cmu_graphics import *
 from model.objects import *
 from view.drawinfo import *
-from model.lookup import getPlayer
+from model.lookup import *
 
 def getCellLeftTop(app, row, col):
-    cellLeft = app.boardLeft + col * app.cellSize
-    cellTop = app.boardTop + row * app.cellSize
+    if isinstance(row, str): #shitty fix. 
+        #getCellLeftTop keeps reading row, col as the move history tuple for some reason.
+        (intendedRow, intendedCol) = col
+    else:
+        intendedRow, intendedCol = row, col
+    cellLeft = app.boardLeft + intendedCol * app.cellSize
+    cellTop = app.boardTop + intendedRow * app.cellSize
     return (cellLeft, cellTop)
 
 def getCellSize(app):
@@ -21,13 +26,21 @@ def drawPlayers(app, levelDict):
                    player.drawInfo.color, player.drawInfo.labelcolor)
 
 def drawNonPlayers(app, levelDict):
-    non_players = [item for item in levelDict if isinstance(item, obj) 
+    nonPlayers = [item for item in levelDict if isinstance(item, obj) 
                    and 'you' not in item.name
                    and item.pos != None]
-    for non_player in non_players:
-        drawObject(app, non_player.pos[1], non_player.pos[0], 
-                   non_player.direction, non_player.drawInfo.name, 
-                   non_player.drawInfo.color, non_player.drawInfo.labelcolor)
+    for nonPlayer in nonPlayers:
+        if isinstance(nonPlayer.pos[1], str):
+            (position, direction) = nonPlayer.pos
+            (x,y) = position
+            drawObject(app, y, x,
+                    nonPlayer.direction, nonPlayer.drawInfo.name, 
+                    nonPlayer.drawInfo.color, nonPlayer.drawInfo.labelcolor)
+        else:
+            x, y = nonPlayer.pos
+            drawObject(app, y, x, 
+                    nonPlayer.direction, nonPlayer.drawInfo.name, 
+                    nonPlayer.drawInfo.color, nonPlayer.drawInfo.labelcolor)
 
 def drawWords(app, levelDict):
     words = [item for item in levelDict if isinstance(item, subj) or isinstance(item, eq) or isinstance(item, effect)]
@@ -46,7 +59,7 @@ def drawGame(app,levelDict):
     drawPlayers(app, levelDict)
     drawWords(app, levelDict)
 
-def drawObject(app, row, col, dir,name,color,labelcolor): 
+def drawObject(app, row, col, dir, name,color,labelcolor):
     cellLeft, cellTop = getCellLeftTop(app,row,col)
     cellWidth, cellHeight = getCellSize(app)
     #swap this out for reading an image

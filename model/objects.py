@@ -149,19 +149,29 @@ class obj:
         self.effectsList += [effect]
     
     def MoveObject(self, direction):
-        self.posHist.append(self.pos)
+        self.posHist.append((self.pos,self.direction))
         x, y = self.pos
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
 
     def undoMove(self):
-        self.pos = self.posHist.pop()
+        oldPos, oldDirection = self.posHist.pop()
+        self.pos = oldPos
+        self.direction = oldDirection
+        
     
     def resetPos(self):
         if self.posHist:
-            self.pos = self.posHist[0]
-            self.posHist = []
+            if isinstance(self.posHist[0][1],str): #means direction data was stored.
+                #need to unpack differently
+                self.pos = self.posHist[0][0]
+                self.direction = self.posHist[0][1]
+                self.posHist = []
+            else:
+                self.pos = self.posHist[0]
+                self.direction = 'right'
+                self.posHist = []
 
 #words-------------------------------------------------  
 class subj:
@@ -188,19 +198,28 @@ class subj:
         self.type = 'subj'
     
     def MoveObject(self, direction):
-        self.posHist.append(self.pos)
+        self.posHist.append((self.pos,self.direction))
         x, y = self.pos
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
 
     def undoMove(self):
-        self.pos = self.posHist.pop()
+        oldPos, oldDirection = self.posHist.pop()
+        self.pos = oldPos
+        self.direction = oldDirection
     
     def resetPos(self):
-        if self.posHist:  
-            self.pos = self.posHist[0]
-            self.posHist = []
+        if self.posHist:
+            if isinstance(self.posHist[0][1],str): #means direction data was stored.
+                #need to unpack differently
+                self.pos = self.posHist[0][0]
+                self.direction = self.posHist[0][1]
+                self.posHist = []
+            else:
+                self.pos = self.posHist[0]
+                self.direction = 'right'
+                self.posHist = []
     
     def __eq__(self,other):
         if isinstance(other, subj):
@@ -238,19 +257,28 @@ class eq: #includes 'IS' and 'HAS'
         self.type = 'eq'
     
     def MoveObject(self, direction):
-        self.posHist.append(self.pos)
+        self.posHist.append((self.pos,self.direction))
         x, y = self.pos
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
 
     def undoMove(self):
-        self.pos = self.posHist.pop()
+        oldPos, oldDirection = self.posHist.pop()
+        self.pos = oldPos
+        self.direction = oldDirection
     
     def resetPos(self):
         if self.posHist:
-            self.pos = self.posHist[0]
-            self.posHist = []
+            if isinstance(self.posHist[0][1],str): #means direction data was stored.
+                #need to unpack differently
+                self.pos = self.posHist[0][0]
+                self.direction = self.posHist[0][1]
+                self.posHist = []
+            else:
+                self.pos = self.posHist[0]
+                self.direction = 'right'
+                self.posHist = []
         
     def makeSubject(self, other):
         self.subj = other
@@ -295,20 +323,28 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         self.type = 'effect'
     
     def MoveObject(self, direction):
-        self.posHist.append(self.pos)
+        self.posHist.append((self.pos,self.direction))
         x, y = self.pos
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
         
     def undoMove(self):
-        self.pos = self.posHist.pop()
+        oldPos, oldDirection = self.posHist.pop()
+        self.pos = oldPos
+        self.direction = oldDirection
     
     def resetPos(self):
         if self.posHist:
-            self.pos = self.posHist[0]
-            self.posHist = []
-            self.direction = 'right'
+            if isinstance(self.posHist[0][1],str): #means direction data was stored.
+                #need to unpack differently
+                self.pos = self.posHist[0][0]
+                self.direction = self.posHist[0][1]
+                self.posHist = []
+            else:
+                self.pos = self.posHist[0]
+                self.direction = 'right'
+                self.posHist = []
         
     def __eq__(self,other):
         if isinstance(other, effect):
@@ -338,19 +374,28 @@ class adj: #includes (NOT, AND)
         self.type = 'adj'
     
     def MoveObject(self, direction):
-        self.posHist.append(self.pos)
+        self.posHist.append((self.pos,self.direction))
         x, y = self.pos
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
 
     def undoMove(self):
-        self.pos = self.posHist.pop()
+        oldPos, oldDirection = self.posHist.pop()
+        self.pos = oldPos
+        self.direction = oldDirection
     
     def resetPos(self):
         if self.posHist:
-            self.pos = self.posHist[0]
-            self.posHist = []
+            if isinstance(self.posHist[0][1],str): #means direction data was stored.
+                #need to unpack differently
+                self.pos = self.posHist[0][0]
+                self.direction = self.posHist[0][1]
+                self.posHist = []
+            else:
+                self.pos = self.posHist[0]
+                self.direction = 'right'
+                self.posHist = []
         
     def __eq__(self,other):
         if isinstance(other, adj):
@@ -362,7 +407,6 @@ class adj: #includes (NOT, AND)
     
     def __repr__(self):
         return f'{self.name}'
-        
 
 #map and level---------------
 class level: 

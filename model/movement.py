@@ -25,11 +25,10 @@ def moveObj(app, levelDict, obj, move, undo=False):
     x, y = obj.pos
     dx, dy = moveDict[move]
     tgtCell = (x + dx, y + dy)
-    print('moving player',x,y,dx,dy,tgtCell)
     
     #legality check
     if not isLegal(levelDict, tgtCell):
-        print('move', tgtCell, 'illegal')
+        print('object', obj, 'targetcell', tgtCell, 'move illegal')
         return None
     
     #get tgt objs
@@ -38,20 +37,31 @@ def moveObj(app, levelDict, obj, move, undo=False):
     #target cell is nonempty
     if tgtObjs:
         #test each object in target cell for collision
-        for tgtObj in tgtObjs:
-            if 'push' in tgtObj.effectsList:
+        for tgtObject in tgtObjs:
+            if (('you' in tgtObject.effectsList and 'stop' in tgtObject.effectsList) or 
+                ('you' in tgtObject.effectsList and 'push' in tgtObject.effectsList)):
+                x, y = obj.pos
+                dx, dy = moveDict[move]
+                targetTargetCell = (x + dx, y + dy)
+                if not isLegal(levelDict, targetTargetCell):
+                    return None
+                
+            elif 'push' in tgtObject.effectsList:
                 #pushable object, begin recursion
-                if pushObj(app, levelDict, tgtObj, move) is None:
+                if pushObj(app, levelDict, tgtObject, move) is None:
                     return None #if object doesn't push, then we just break and don't move
     
     #recursion passed, now move object
+    #(SOMETHING about timing with going with the simple approach of overwriting dict entry.)
+    #(this approach works, idk why the other doesn't, ill figure out sometime)
     if obj in levelDict:
-        del levelDict[obj]
+        del levelDict[obj] #clear the original position before writing 
     app.turnMoves.append((obj, move))
     obj.MoveObject(move)
     levelDict[obj] = obj.pos
     
     return True
+    checkstate(app)
 
 def pushObj(app, levelDict, obj, move):
     #get target cell coords
@@ -72,15 +82,14 @@ def pushObj(app, levelDict, obj, move):
                 if pushObj(app, levelDict, tgtObj, move) is None:
                     return None
     
-    print('pushing object', obj.name, move)
     if obj in levelDict:
         del levelDict[obj]
-    print('appending to history', obj.name, move)
     app.turnMoves.append((obj, move))
     obj.MoveObject(move)
     levelDict[obj] = obj.pos
     
     return True
+    checkstate(app)
         
 #legality checks--------------------------------------
 def inBounds(x,y): 
@@ -120,6 +129,8 @@ def resetLevel(app):
         item.resetPos()
         app.levelDict[item] = item.pos
         item.attribute = item.initialState
+        print(item.name, item.pos,item.posHist)
     app.level.moveHistory = []
     app.turnMoves = []
     refresh(app, app.level)
+    print(app.levelDict)
