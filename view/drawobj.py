@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
 from cmu_graphics import *
 from model.objects import *
+from view.drawinfo import *
 from model.lookup import getPlayer
 
 def getCellLeftTop(app, row, col):
@@ -12,60 +13,38 @@ def getCellLeftTop(app, row, col):
 def getCellSize(app):
     return (app.cellSize, app.cellSize)
 
+def drawPlayers(app, levelDict):
+    players = getPlayer(app.level)
+    for player in players:
+        drawObject(app, player.pos[1], player.pos[0], 
+                   player.direction, player.drawInfo.name, 
+                   player.drawInfo.color, player.drawInfo.labelcolor)
+
+def drawNonPlayers(app, levelDict):
+    non_players = [item for item in levelDict if isinstance(item, obj) 
+                   and 'you' not in item.name
+                   and item.pos != None]
+    for non_player in non_players:
+        drawObject(app, non_player.pos[1], non_player.pos[0], 
+                   non_player.direction, non_player.drawInfo.name, 
+                   non_player.drawInfo.color, non_player.drawInfo.labelcolor)
+
+def drawWords(app, levelDict):
+    words = [item for item in levelDict if isinstance(item, subj) or isinstance(item, eq) or isinstance(item, effect)]
+    for word in words:
+        drawWord(app, word.pos[1], word.pos[0], word.drawInfo.name, word.drawInfo.color, word.powered)
+
 def drawGame(app,levelDict):
 #(!!) Cursor AI: implemented module to draw players above non-player objects
+
     # Get all objects
     all_objects = [item for item in levelDict if isinstance(item, obj)]
     # Get player objects
-    players = getPlayer(levelDict, all_objects)
-    # Separate non-player objects
-    non_players = [item for item in all_objects if item not in players]
-
-    # Draw non-player objects first
-    for item in non_players:
-        name = item.name
-        dir = item.dir
-        color = item.color
-        labelcolor = item.labelcolor
-        if levelDict[item] == None:
-            pass 
-        else:
-            for instance in levelDict[item]:
-                col, row = instance
-                drawObject(app,row, col ,dir,name,color,labelcolor)
-
-    # Draw player objects on top
-    for item in players:
-        name = item.name
-        dir = item.dir
-        color = item.color
-        labelcolor = item.labelcolor
-        if levelDict[item] == None:
-            pass 
-        else:
-            for instance in levelDict[item]:
-                col, row = instance
-                drawObject(app,row, col ,dir,name,color,labelcolor)
-
-    #draw words as before
-    for item in levelDict:
-        if isinstance(item, str) and item == 'size':
-            continue
-        elif isinstance(item, obj):
-            continue  # already drawn above
-        elif isinstance(item, subj) or isinstance(item, eq) or isinstance(item, effect):
-            #draw words
-            if isinstance(item, eq):
-                name = 'IS'
-            elif isinstance(item, effect):
-                name = item.desc
-            else:
-                name = item.obj.name
-            color = item.color
-            powered = item.powered
-            for instance in levelDict[item]:
-                instance = instance[::-1] #convert x-y data to row/col, inefficient, fix later
-                drawWord(app,*instance, name, color, powered)
+    players = getPlayer(app.level)
+    
+    drawNonPlayers(app, levelDict)
+    drawPlayers(app, levelDict)
+    drawWords(app, levelDict)
 
 def drawObject(app, row, col, dir,name,color,labelcolor): 
     cellLeft, cellTop = getCellLeftTop(app,row,col)
@@ -88,16 +67,3 @@ def drawWord(app, row, col, name, color, powered):
     #also swap this out for reading an image
     drawLabel(f'{name}',cellLeft + cellWidth/2, cellTop + cellHeight/2, opacity = opacity,
               fill = color, size = 2*(cellWidth**0.5), bold = True, align = 'center')
-    
-
-def drawWinScreen(app,color): 
-    drawRect(0,0,app.width,app.height,fill=color, opacity = 40)
-    drawLabel(
-        'Congratulations!',
-        app.width/2,
-        app.height/2,
-        fill='white', #white is a placeholder color. 
-        size=2 * app.cellHeight,
-        bold= True,
-        align='center'
-    )

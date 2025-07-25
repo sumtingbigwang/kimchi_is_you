@@ -1,9 +1,11 @@
 from cmu_graphics import *
+from levels import * 
+from view.drawinfo import *
 from model.objects import * 
-from leveldata import *
+from model.lookup import *
 from view.drawgrid import *
 from view.drawobj import *
-from model.lookup import *
+from view.drawscreens import *
 from model.movement import * 
 from model.rules import *
 import copy
@@ -16,21 +18,26 @@ def onAppStart(app):
     app.width = app.initWidth
     
     #define level
-    app.level = level1
+    app.level = level1.level
     app.levelDict = (app.level).dict
     
-    #get all rules from the board and then define player
-    refreshRules(app.level)
+    #initialize level
+    # make move history and turnMove sets, then get all rules from the board and define players
+    app.moveHistory = []
+    app.turnMoves = []
+    refresh(app, app.level)
     app.objects = getObjects(app.level)
-    app.players = getPlayer(app.levelDict,app.objects)
+    app.players = getPlayer(app.level)
     
-    #define "game over" states
+    #define game states
     app.noPlayer = False
     app.levelWin = False
+    app.askReset = False
     
     #load level and define level size ---------
-    app.rows = app.levelDict['size'][1]
-    app.cols = app.levelDict['size'][0]
+    app.rows = app.level.size[1]
+    app.cols = app.level.size[0]
+    
 
     #define empty space width --------
     app.baseHspace = 10
@@ -51,7 +58,23 @@ def onAppStart(app):
 
 #inputs------------------------------------
 def onKeyPress(app, key):
-    if not app.levelWin:
+    
+    if app.askReset:
+        if key == 'y':
+            resetLevel(app)
+            app.askReset = False
+        elif key == 'n':
+            app.askReset = False
+
+    if app.levelWin:
+        if key == 'c':
+            app.levelWin = False
+            app.askReset = False
+            resetLevel(app)
+            app.players = getPlayer(app.level) 
+            checkstate(app)
+
+    if not app.levelWin and not app.askReset:
     #on key tap inputs:
         if key == 'right':
             movePlayers(app,app.levelDict,app.players,'right')
@@ -61,13 +84,15 @@ def onKeyPress(app, key):
             movePlayers(app,app.levelDict,app.players,'up')
         elif key == 'down':
             movePlayers(app,app.levelDict,app.players,'down')
-    if key == 'r': #reset function
-        resetLevel(app)
-         
-    #check and add/remove rules based on words on the screen. 
-    refreshRules(app.level)
-    app.players = getPlayer(app.levelDict, app.objects) 
-    checkstate(app)
+        elif key == 'z':
+            undoMove(app)
+        elif key == 'r': #reset function
+            app.askReset = True
+    
+        #check and add/remove rules based on words on the screen.
+        refresh(app, app.level)
+        app.players = getPlayer(app.level) 
+        checkstate(app)
 
 def onStep(app):
     #check for app size changes
@@ -78,12 +103,20 @@ def redrawAll(app):
     drawGame(app,app.levelDict)
     drawBoard(app)
     drawBoardBorder(app)
+    
+    if app.askReset:
+        drawResetScreen(app, 'black')
+        
     if app.levelWin: #want to draw win screen on top
         drawWinScreen(app, 'black') #black is a placeholder color. 
         #Store the level color in the level class, and refer to that later
     
-    drawLabel('Debug strings',app.width//2,25,size = 10)
-    drawLabel(f'Current rules: {app.level.rules}',app.width//2,40,size = 10)
+    if app.noPlayer:
+        drawNoPlayerScreen(app, 'black')
+
+    if not app.levelWin and not app.askReset and not app.noPlayer:
+        drawLabel('Debug strings',app.width//2,25,size = 10)
+        drawLabel(f'Current rules: {printRules(app.level.rules)}',app.width//2,40,size = 10)
     
 def main():
     runApp()
