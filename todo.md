@@ -1,18 +1,7 @@
 (!!)- highest priority 
 ** - low priority / extra feature
-
-(!!) we need __eq__'s to hash shit properly. 
-
-(!!) Rework the entire object/class system. Make sprites into subclasses that have images as part of its class information. Have objects be drawn in respect to their sprite images. 
-
-3. No player / loss ** 
-    - After 2-3 seconds, pop out "Z to undo / R to reset" on top of screen
-
-4. Reset / Undo function  ** 
-    - Figure out how to revert the level dictionary back to its original state
-    - If reset pressed, confirmation screen pops out
-    - Store ALL object movement data in a big list with tuples (object, move)
-    - Figure out how to reset chain pushes
+----------------------------------------------------------------------------------------
+(!!) Fix players overlapping when 'STOP' or 'PUSH' is an effect
 
 5. Beauty / Good looking graphics / Sound effects for everything
     - Import sprites from BABA IS YOU and link them to objects. 
@@ -28,8 +17,8 @@
     - Proper no player 'loss' animations
     ** Create system for movement trails (generate little cloud after player sprite)
 
-**(2 or 3 levels-- then deem temporarily complete) 
-    ^^We should be here by Tuesday, latest.
+(!) (implement 5 levels (3 tutorial, 3 hard ones) with base features-- then deem temporarily complete) 
+    ^^We should be here by Monday. 
     
 6. Implement and map Space to the takeStep or "wait" function. 
 
@@ -51,8 +40,15 @@
     - LEVEL (purely for putting a BABA on the menu screen)
     - MORE  (** with backtracking / recursive fill similar to the MSPaint example)
 
-9. Adjectives
-    - ON
-    - NOT 
+9. Adjectives and more features
+    - ON (basic overlap feature.)
+    - NOT (heard it's horrid to implement.) 
     - AND (reads powered effects / subjects)
-    - HAS (behaves like Is, is actually in the eq class)
+    - HAS (behaves like Is, also in the eq class-- BABA HAS FLAG drops flag on death)
+    - HIDE (doesn't draw the word, and also cuts collisions, but still makes a valid rule)
+    ** MORE
+    ** FACING (either 1 or all blocks in BABA's direction applicable.)
+    ** FALL (gravity. Player sprites will drop to the highest-y, lowest on-screen block possible in their column.)
+    ** Flashlight level: BLOCK NOT FACING BABA IS HIDE
+
+10. Meta Level Loader and more levels 

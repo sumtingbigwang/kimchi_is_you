@@ -135,3 +135,76 @@ Jul 23
         - (Cursor helped) fix drawing bug in drawObj where player sprites are hidden under objects with no collision. 
         - implemented a very rudimentary win screen, as well as a check-win function. 
         - The classes and object/sprite-as-instance system we have right now needs some serious reworking, as individual instances don't store their own direction data. If one instance of ROCK is pushed left, all of them face left. This is okay for static objects but for the "MOVE" effect this is diasterous. I'm working on this as soon as quiz is done, as well as the reset / undo feature. These two features are the two biggest roadblocks right now. 
+
+Jul 24
+    **Okay. a F--K ton happened between today and yesterday.**
+
+        As of 11:01pm (total ~7 hours worked on this damn thing today)
+
+        I began working this morning shortly after the quiz, and realized that the reset level / undo move features would be incredibly tedous/inefficient/downright impossible to implement without completely reworking how map, sprite, and player data was handled. Also, I needed to be able to apply rules and player-control sprites as a group, but have each individual sprite retain its own direction data. This too was impossible with the object subclass: coordinate points dictionary sytem. Thus, for the sake of implementing more ambitious features, I decided to redo the foundations and rewrite how data was stored entirely. Thankfully, I could re-use some of the object classes.
+
+        Figuring out what class organization and system to use only took about 30 minutes. Figuring out how to have the program recognize objects and draw stuff again took 2 hours. Then restoring movement took 4 more; it was insanely buggy. Stuff didn't want to push, stuff would push but not draw, stuff wouldn't recurse on VERY SPECIFIC occasions and caused the game to break, or BABA would use the force and start hurling blocks off the map when a word was moved. I only (nearly) got back to where I was yesterday under the new datatype at 9:30PM. 
+
+        I'm pretty sure YOU + STOP still doesn't stop players from overlapping, a feature lost from yesterday. I'm putting that on a debug list for tomorrow. Kudos to Cursor for helping me debug. See comments/credits in the code.
+
+        Update list: 
+        - Reworked the entire collision detection, map data storage, sprite/object/word data stoage system.
+        
+        - Particular objects (e.g. KIMCHI, BABA, KEKE, WALL, FLAG) are no longer particular subclasses. All non-word objects on the map are an instance of the obj class, initialized as follows: 
+
+                def __init__(self, name, attribute):
+
+                    #object base information (determines what object e.g. baba, keke, kimchi the object instance is)
+                    self.name = name 
+                    self.attribute = attribute 
+                    self.drawInfo = objDrawDict[self.attribute]
+                    self.initialstate = self.attribute 
+            
+            self.attribute is what gives a particular object its appearance. It's a string containing the name of the object ('keke', 'baba') whose sprite info can be found in objDrawDict, leading to the new drawinfo file where all sprites and animations can be neatly stored. 
+
+            All "XX IS XX" rule searches now also search for attribute instead of a specific class of object. Holy crap, this makes dealing with rule changes SO much easier. Effectively, this makes every sprite a reskin of the same thing, which is great since we can very easily change the appearance of the sprite, along with its ruleset. It's as simple as setting item.attribute = 'attribute'. No more list / set merger BS. 
+
+
+        - Move undo (Z) and level reset (R) functions implemented, as well as reset, win, and 'loss' screens.
+            Arguably the greatest innovation of the day: 
+
+                    #movement info
+                    self.pos = None
+                    self.posHist = []
+                    self.effectsList = []
+                    
+                    #drawing info
+                    self.direction = 'right'
+                    self.type = 'obj'
+
+                def MoveObject(self, direction):
+                    self.posHist.append(self.pos)
+                    x, y = self.pos
+                    dx, dy = moveDict[direction]
+                    self.direction = direction
+                    self.pos = (x + dx, y + dy)
+
+                def undoMove(self):
+                    self.pos = self.posHist.pop()
+                
+                def resetPos(self):
+                    if self.posHist:
+                        self.pos = self.posHist[0]
+                        self.posHist = []
+            
+            This is what makes undos and level resets possible. These move/reset methods are stored in EVERY class-- objects and all types of words. Undoing a move or item change is as simple as calling a method. It's beautiful. 
+
+            Move histories are also stored globally in tuples of (object, move) or (object, oldType, newType) in a move history folder: 
+
+                def refresh(app,level):
+                    #cache all moves made this turn, put it in a stack that can be executed on one button press.
+                    if app.turnMoves: #don't want to store empty stacks
+                        app.level.moveHistory += [app.turnMoves] #'your mom could be a stack' --seunghyeok lee
+                    #now reset turn moves for the next action done. 
+                    app.turnMoves = []
+            
+            You can see that moves are stored in app.turnMoves first-- "stacks", or nested lists, to execute with one button press. Otherwise, a chain push of 6 items would only reset item by item by item on repeated key presses, and we don't want players to get stuck in a half-reset state. 
+
+            Credits to my friend Seunghyeok Lee for that idea. 
+    
+        More to go tomorrow with the implementation of the deletion function that takes sprites off the map. I'll probably also try, if it's convenient, to implement an "add" function that puts sprites ON the map instead. 

@@ -101,29 +101,25 @@ def isLegal(levelDict, tgtCell):
 
 #reset functions--------------------------------------
 def undoMove(app):
-    print('undoing:',app.level.moveHistory)
     if len(app.level.moveHistory) == 0: #no moves to undo
         return None
     moveStack = app.level.moveHistory.pop()
     for move in moveStack:
-        print(move)
         if len(move) == 2: #this means tuple is a move
             (object, direction) = move
-            print('undoing move')
             #could be better implementation for this lmao
             (object, direction) = move
-            print(object.posHist, object.posHist[-1])
             object.undoMove()
             app.levelDict[object] = object.pos
         elif len(move) == 3: #this means tuple is a type change
             (object, oldType, newType) = move
             object.setAttribute(oldType)
-    print('post undo:',app.level.moveHistory)
     
 def resetLevel(app):
     for item in app.levelDict:
         item.resetPos()
         app.levelDict[item] = item.pos
+        item.attribute = item.initialstate
     app.level.moveHistory = []
     app.turnMoves = []
     refresh(app, app.level)
