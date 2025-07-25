@@ -119,7 +119,7 @@ def resetLevel(app):
     for item in app.levelDict:
         item.resetPos()
         app.levelDict[item] = item.pos
-        item.attribute = item.initialstate
+        item.attribute = item.initialState
     app.level.moveHistory = []
     app.turnMoves = []
     refresh(app, app.level)

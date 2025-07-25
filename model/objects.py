@@ -117,7 +117,7 @@ class obj:
         self.name = name #DO NOT MISTAKE FOR ATTRIBUTE! The name is for obj instance modification. 
         self.attribute = attribute #THIS is the name of the actual object (baba, rock, wall, flag, etc.)
         self.drawInfo = objDrawDict[self.attribute]
-        self.initialstate = self.attribute #initial state, for a full reset of the level
+        self.initialState = self.attribute #initial state, for a full reset of the level
         
         #movement info
         self.pos = None
@@ -169,6 +169,7 @@ class subj:
         #word base information (determines what word it is)
         self.name = name
         self.attribute = attribute
+        self.initialState = self.attribute
         
         #draw info
         self.drawInfo = wordDrawDict[attribute]
@@ -217,6 +218,7 @@ class eq: #includes 'IS' and 'HAS'
         #word base information (determines what word it is)
         self.name = name
         self.attribute = attribute
+        self.initialState = self.attribute
         
         #rulemaking info
         self.subj= None
@@ -277,6 +279,7 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         #effect base information
         self.name = name
         self.attribute = attribute
+        self.initialState = self.attribute
         
         #movement info
         self.pos = None

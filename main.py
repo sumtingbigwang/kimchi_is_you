@@ -100,6 +100,7 @@ def onStep(app):
         calculateGridDimensions(app)
 
 def redrawAll(app):
+    drawRect(0,0,app.width,app.height,fill='grey', opacity = 60)
     drawGame(app,app.levelDict)
     drawBoard(app)
     drawBoardBorder(app)
