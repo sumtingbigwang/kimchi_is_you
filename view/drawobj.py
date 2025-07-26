@@ -129,19 +129,22 @@ def drawWall(app, obj, cellLeft, cellTop, cellWidth):
     drawImage(sprite,cellLeft, cellTop, width=cellWidth, height=cellWidth)
 
 #so the spritesheet for walls is organized in a very particular way. 
-#i am too fucking tired to explain this but seunghyeok found some pattern
-#chekc the walllocations.txt file fore more
+#wall segments (e.g. corner connectors, vertical connectors, horizontal ends) are ordered in terms of the origin wall
+#and the number / position of walls next to it.
+#if a wall is alone, it has index 0 (lone wall image comes first)
+#if a wall has a single wall to the right of it, it has index 1, and so on.
+#now, if you have a wall above and to the right of you, you have index 1+8 = 9.
+#this turns out to be the index of the bottom-left connector segment!
 def checkWall(app,obj):
     wallX, wallY = obj.pos
     index = 0
     dirs = [(0,1,8), (1,0,1), (0,-1,2), (-1,0,4)]
-    for dir in dirs:
+    for dir in dirs: #check all 4 directions for walls
         dx, dy, indexAdd = dir
         newX, newY = wallX + dx, wallY + dy
         tgtObjs = getObjectsInCell(app.levelDict, newX, newY)
         for obj in tgtObjs:
-            if obj.attribute == 'wall':
-                print('found wall')
+            if obj.attribute == 'wall': #found a wall, add the index of the wall segment
                 index += indexAdd
     return index
         
