@@ -2,6 +2,8 @@
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
 (!!) Fix players overlapping when 'STOP' or 'PUSH' is an effect
+(!!) Collision is still bugged when making multiple players and resetting.
+(!!) XX IS YOU rules also take one extra round to get registered. 
 
 5. Beauty / Good looking graphics / Sound effects for everything
     - Import sprites from BABA IS YOU and link them to objects. 

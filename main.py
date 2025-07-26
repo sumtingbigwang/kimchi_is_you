@@ -6,20 +6,30 @@ from model.lookup import *
 from view.drawgrid import *
 from view.drawobj import *
 from view.drawscreens import *
+from view.loadimages import *
 from model.movement import * 
 from model.rules import *
 import copy
 
 def onAppStart(app):
+    loadSheets(app)
+    
     #define window size--------
     app.initHeight = 800
     app.initWidth = 800
     app.height = app.initHeight
     app.width = app.initWidth
     
+    #initialize animation metrics 
+    app.animIndex = 0
+    app.stepsPerSecond = 6
+    
     #define level
     app.level = level1.level
     app.levelDict = (app.level).dict
+    
+    #load sprites and anims
+    app.spriteDict = loadSprites(app)
     
     #initialize level
     # make move history and turnMove sets, then get all rules from the board and define players
@@ -28,11 +38,13 @@ def onAppStart(app):
     app.objects = getObjects(app.level)
     app.players = getPlayer(app.level)
     refresh(app, app.level)
+    print(app.level.rules)
     
     #define game states
     app.noPlayer = False
     app.levelWin = False
     app.askReset = False
+    app.drawGrid = True
     
     #load level and define level size ---------
     app.rows = app.level.size[1]
@@ -58,7 +70,6 @@ def onAppStart(app):
 
 #inputs------------------------------------
 def onKeyPress(app, key):
-    
     if app.askReset:
         if key == 'y':
             resetLevel(app)
@@ -88,21 +99,26 @@ def onKeyPress(app, key):
             undoMove(app)
         elif key == 'r': #reset function
             app.askReset = True
+        elif key == 'g':
+            app.drawGrid = not app.drawGrid
     #check and add/remove rules based on words on the screen.
         refresh(app, app.level)
-        app.players = getPlayer(app.level) 
+        app.players = getPlayer(app.level)
         checkstate(app)
         
 def onStep(app):
+    #update animations 
+    app.animIndex = (app.animIndex + 1) % 3
     #check for app size changes
     if app.width != app.initWidth or app.height != app.initHeight:
         calculateGridDimensions(app)
 
 def redrawAll(app):
-    drawRect(0,0,app.width,app.height,fill='grey', opacity = 60)
+    drawRect(0,0,app.width,app.height,fill='black', opacity = 100)
     drawGame(app,app.levelDict)
-    drawBoard(app)
-    drawBoardBorder(app)
+    if app.drawGrid:
+        drawBoard(app)
+        drawBoardBorder(app)
     
     if app.askReset:
         drawResetScreen(app, 'black')
@@ -115,8 +131,8 @@ def redrawAll(app):
         drawNoPlayerScreen(app, 'black')
 
     if not app.levelWin and not app.askReset and not app.noPlayer:
-        drawLabel('Debug strings',app.width//2,25,size = 10)
-        drawLabel(f'Current rules: {printRules(app.level.rules)}',app.width//2,40,size = 10)
+        drawLabel('Debug strings',app.width//2,25,size = 10, fill = 'white')
+        drawLabel(f'Current rules: {printRules(app.level.rules)}',app.width//2,40,size = 10, fill = 'white')
     
 def main():
     runApp()

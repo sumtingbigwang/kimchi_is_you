@@ -208,3 +208,8 @@ Jul 24
             Credits to my friend Seunghyeok Lee for that idea. 
     
         More to go tomorrow with the implementation of the deletion function that takes sprites off the map. I'll probably also try, if it's convenient, to implement an "add" function that puts sprites ON the map instead. 
+
+Jul 25
+    BABA is SPRITE! 
+    - Fleshed out and updated reset function, including a draw bug where winning a level and resetting causes items to be drawn in their pre-reset state. 
+    - Added direction reset functions (resetting a move now makes the object face the way they did before). 

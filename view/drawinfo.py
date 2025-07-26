@@ -3,34 +3,112 @@ from PIL import Image
 #We want ALL OF THE SPRITE DRAW DATA HERE. E.G.
 class drawInfo:
     #replace the following with sprite image links. should be (self, position1, position2, position3)
-    def __init__(self, name, color, labelcolor):
+    def __init__(self, name, type, color, labelcolor, spriteList = None):
         self.name = name
+        self.type = type
         self.color = color
         self.labelcolor = labelcolor
+        self.spriteList = spriteList
 
 #crop radius: 24x24
 #barrier: 1 pixel 
 #starts at (1,1)
 #crop: corners, top left and bottom right
-#have a 2D list of images, each row is up/right/left/right animation
-#down
-babaDraw = drawInfo('BABA', 'grey', 'white')
-rockDraw = drawInfo('ROCK', 'saddleBrown', 'white')
-wallDraw = drawInfo('WALL', 'dimGrey', 'white')
-flagDraw = drawInfo('FLAG', 'gold', 'white')
 
-babaWordDraw = drawInfo('BABA', 'grey', 'white')
-rockWordDraw = drawInfo('ROCK', 'saddleBrown', 'white')
-wallWordDraw = drawInfo('WALL', 'dimGrey', 'white')
-flagWordDraw = drawInfo('FLAG', 'gold', 'white')
+#SPRITES HAVE THE FOLLOWING ANIMATION STRUCTURE:
+# - Sprite: BABA, WALL, ROCK, etc. 
+#      - Direction: right, up, left, down
+#           - State: legs in, standing, legs out 
+#                  -Frame: 0, 1, 2
 
-equalsDraw = drawInfo('IS', 'black', 'white')
-hasDraw = drawInfo('HAS', 'black', 'white')
+#player-related sprites--------------------------------
+babaDict= {
+    'right': [(51+25*i+1,1) for i in range(4)],
+    'up': [(151+25*i+1,1) for i in range(4)],
+    'left': [(251+25*i+1,1) for i in range(4)],
+    'down': [(351+25*i+1,1) for i in range(4)]
+}
+babaDraw = drawInfo('BABA', 'sprite', 'grey', 'white', babaDict)
 
-youDraw = drawInfo('YOU', 'grey', 'white')
-pushDraw = drawInfo('PUSH', 'saddleBrown', 'white')
-stopDraw = drawInfo('STOP', 'dimGrey', 'white')
-winDraw = drawInfo('WIN', 'gold', 'white')
+
+babaWordDict = {
+    'powered': [(26, 1)],
+    'unpowered': [(1, 1)]
+}
+babaWordDraw = drawInfo('BABAWORD', 'spriteWord', 'grey', 'white', babaWordDict)
+
+#object-related sprites--------------------------------
+rockDict = (226,601)
+rockDraw = drawInfo('ROCK', 'object', 'saddleBrown', 'white', rockDict)
+
+rockWordDict = {
+    'powered': [(201,601)],
+    'unpowered': [(176,601)]
+}
+rockWordDraw = drawInfo('ROCKWORD', 'objectWord', 'saddleBrown', 'white',rockWordDict)
+
+
+flagDict = (102,226)
+flagDraw = drawInfo('FLAG', 'object', 'gold', 'white', flagDict)
+
+flagWordDict = {
+    'powered': [(77,226)],
+    'unpowered': [(51,226)]
+}
+flagWordDraw = drawInfo('FLAGWORD', 'objectWord', 'gold', 'white', flagWordDict)
+
+
+#wall-related sprites--------------------------------
+wallDict = {i:(73+25*i+1,1501) for i in range(16)}
+wallDraw = drawInfo('WALL', 'wall', 'dimGrey', 'white', wallDict)
+
+wallWordDict = {
+    'powered': [(48,1501)],
+    'unpowered': [(23,1501)]
+}
+wallWordDraw = drawInfo('WALLWORD', 'wallWord', 'dimGrey', 'white', wallWordDict)
+
+
+#object2(animated, *usually non player objects *)--------------------------------
+
+
+#words--------------------------------
+equalsDict = {
+    'powered': [(226.5,76)],
+    'unpowered': [(251.5,76)]
+}
+equalsDraw = drawInfo('IS', 'word', 'black', 'white', equalsDict)
+
+hasDict = {
+    'powered': [(26.5,151)],
+    'unpowered': [(1.5,151)]
+}
+hasDraw = drawInfo('HAS', 'word', 'black', 'white', hasDict)
+
+youDict = {
+    'powered': [(276.5,226)],
+    'unpowered': [(251.5,226)]
+}
+youDraw = drawInfo('YOU', 'word', 'grey', 'white', youDict)
+
+
+pushDict = {
+    'powered': [(51.5,301)],
+    'unpowered': [(26.5,301)]
+}
+pushDraw = drawInfo('PUSH', 'word', 'saddleBrown', 'white', pushDict)
+
+stopDict = {
+    'powered': [(201.5,301)],
+    'unpowered': [(176.5,301)]
+}
+stopDraw = drawInfo('STOP', 'word', 'dimGrey', 'white', stopDict)
+
+winDict = {
+    'powered': [(276.5,1123)],
+    'unpowered': [(251.5,1123)]
+}
+winDraw = drawInfo('WIN', 'word', 'gold', 'white', winDict)
 
 
 

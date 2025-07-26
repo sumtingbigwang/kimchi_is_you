@@ -28,12 +28,10 @@ def moveObj(app, levelDict, obj, move, undo=False):
     
     #legality check
     if not isLegal(levelDict, tgtCell):
-        print('object', obj, 'targetcell', tgtCell, 'move illegal')
         return None
     
     #get tgt objs
     tgtObjs = getObjectsInCell(levelDict, *tgtCell)
-    
     #target cell is nonempty
     if tgtObjs:
         #test each object in target cell for collision
@@ -59,10 +57,10 @@ def moveObj(app, levelDict, obj, move, undo=False):
     app.turnMoves.append((obj, move))
     obj.MoveObject(move)
     levelDict[obj] = obj.pos
-    
     return True
-    checkstate(app)
+    refresh(app, app.level)
 
+#pushObj--------------------------------------
 def pushObj(app, levelDict, obj, move):
     #get target cell coords
     x, y = obj.pos
@@ -87,9 +85,7 @@ def pushObj(app, levelDict, obj, move):
     app.turnMoves.append((obj, move))
     obj.MoveObject(move)
     levelDict[obj] = obj.pos
-    
     return True
-    checkstate(app)
         
 #legality checks--------------------------------------
 def inBounds(x,y): 
@@ -125,12 +121,12 @@ def undoMove(app):
             object.setAttribute(oldType)
     
 def resetLevel(app):
-    for item in app.levelDict:
+    #create a list of items before iterating to avoid dictionary modification during iteration
+    items = list(app.levelDict.keys())
+    for item in items:
         item.resetPos()
         app.levelDict[item] = item.pos
         item.attribute = item.initialState
-        print(item.name, item.pos,item.posHist)
     app.level.moveHistory = []
     app.turnMoves = []
     refresh(app, app.level)
-    print(app.levelDict)

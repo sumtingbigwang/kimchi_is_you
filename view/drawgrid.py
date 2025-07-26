@@ -38,14 +38,14 @@ def drawBoard(app):
 def drawBoardBorder(app):
     # draw the board outline (with double-thickness):
     drawRect(app.boardLeft, app.boardTop, app.boardWidth, app.boardHeight,
-             fill=None, border='black',
+             fill=None, border='grey',
              borderWidth=2*app.cellBorderWidth)
 
 def drawCell(app, row, col, color):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
     cellWidth, cellHeight = getCellSize(app)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
-             fill=color, border='black',
+             fill=color, border='grey',
              borderWidth=app.cellBorderWidth)
 
 def getCellSize(app):

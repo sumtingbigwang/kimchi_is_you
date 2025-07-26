@@ -1,0 +1,13 @@
+unpowered word, powered word, animation 
+ x + 25, y
+
+OBJECTS
+- flag: 51,227  77, 227  102,77
+- rock: 176,601  201,601  226,601
+
+SPRITES
+
+OBJECT2S
+
+WORDS
+

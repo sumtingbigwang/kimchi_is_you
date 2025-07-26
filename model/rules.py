@@ -21,18 +21,30 @@ def makeRules(app,level):
                     and effectWord.attribute not in object.effectsList): #effect hasn't been appended alr
                             #apply effects to objects
                             object.effectsList.append(effectWord.attribute) 
+                            
         #SUBJ IS SUBJ replaces objects
-        elif isinstance(subjectWord, subj) and isinstance(effectWord, subj):
-            print('begin replacement')
+        if isinstance(subjectWord, subj) and isinstance(effectWord, subj):
             replaceType = effectWord.obj
             for object in level.dict:
                 if (isinstance(object, obj) and object.attribute == appendType):
                     object.setAttribute(replaceType)
                     #record the type change for undo / reset
-                    app.turnMoves.append((object.name, appendType, replaceType))
+                    app.turnMoves.append((object, appendType, replaceType))
+                    
+def ruleUnpacker(list):
+    returnList = set()
+    for tuple in list:
+        equals, (itemWord, effectWord) = tuple
+        returnList.add(equals)
+        returnList.add(itemWord)
+        returnList.add(effectWord)
+    return returnList
+        
                     
 def delRules(level):
     checkList = [itemRuleTuple for (equals, itemRuleTuple) in level.rules]
+    wordCheckList = ruleUnpacker(level.rules)
+
     for item in level.dict:
         if isinstance(item, obj):
             itemRules = item.effectsList
@@ -40,6 +52,15 @@ def delRules(level):
                 check = (item, rule)
                 if check not in checkList:
                     itemRules.remove(rule)
+
+        elif (isinstance(item, effect) 
+              or isinstance(item, subj) 
+              or isinstance(item, eq)):
+            if item in wordCheckList:
+                item.powered = True
+            else:
+                item.powered = False
+            
             
     
 def compileRules(level):

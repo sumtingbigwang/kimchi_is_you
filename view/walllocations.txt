@@ -1,0 +1,11 @@
+Walls: 
+    2
+4  W(0)  1
+    8
+
+depending on where neighboring wall pieces are, 
+we access the sum of the piece position indices in the sprite list. 
+
+i.e. the following combo (left lower corner piece) has index 3
+    W
+    W  W    

@@ -2,6 +2,12 @@ import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view')
 from view.drawinfo import *
 
+#NOT:
+# if NOT object is effect: 
+# for entry in levelDict:
+#     if entry.attribute != object.attribute:
+#         if entry.effectsList += effect.attribute
+
 #these functions "load" data from the level dictionaries into the actual movement dictionary.
 #names are just numbers. objects are not fixed to a certain state. 
 #O1, O2, O3, etc. are objects;
@@ -118,6 +124,7 @@ class obj:
         self.attribute = attribute #THIS is the name of the actual object (baba, rock, wall, flag, etc.)
         self.drawInfo = objDrawDict[self.attribute]
         self.initialState = self.attribute #initial state, for a full reset of the level
+        self.stateCount = 0
         
         #movement info
         self.pos = None
@@ -154,12 +161,13 @@ class obj:
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
+        self.stateCount = (self.stateCount + 1) % 4 #update state count
 
     def undoMove(self):
         oldPos, oldDirection = self.posHist.pop()
         self.pos = oldPos
         self.direction = oldDirection
-        
+        self.stateCount = (self.stateCount - 1) % 4 #update state count
     
     def resetPos(self):
         if self.posHist:
@@ -172,6 +180,9 @@ class obj:
                 self.pos = self.posHist[0]
                 self.direction = 'right'
                 self.posHist = []
+            self.stateCount = 0
+        self.attribute = self.initialState
+        self.drawInfo = objDrawDict[self.attribute]
 
 #words-------------------------------------------------  
 class subj:
@@ -192,7 +203,7 @@ class subj:
         #movement info
         self.pos = None
         self.posHist = []
-        self.effectsList = {'push'}
+        self.effectsList = ['push'] 
         
         #type info
         self.type = 'subj'
@@ -242,7 +253,7 @@ class eq: #includes 'IS' and 'HAS'
         #rulemaking info
         self.subj= None
         self.desc = None
-        self.effectsList = {'push'}
+        self.effectsList = ['push']
         
         #movement info
         self.pos = None
@@ -287,10 +298,6 @@ class eq: #includes 'IS' and 'HAS'
         if isinstance(other, effect):
             self.desc = other.desc
         
-    def makeRule(self):
-        if self.subj != None and self.desc != None:
-            self.subj.addEffect(self.desc)
-        
     def __eq__(self,other):
         if isinstance(other, eq):
             return (self.name == other.name 
@@ -312,7 +319,7 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         #movement info
         self.pos = None
         self.posHist = []
-        self.effectsList = {'push'}
+        self.effectsList = ['push']
         
         self.drawInfo = wordDrawDict[attribute]
         self.powered = False
@@ -369,6 +376,7 @@ class adj: #includes (NOT, AND)
         #movement info
         self.pos = None
         self.posHist = []
+        self.effectsList = ['push']
         
         #type info
         self.type = 'adj'

@@ -65,7 +65,7 @@ def drawNoPlayerScreen(app,color):
         'Press Z to undo',
         app.width*0.25,
         app.height*0.075,
-        fill='black', #white is a placeholder color. 
+        fill='white', #white is a placeholder color. 
         size= app.cellHeight,
         bold= True,
         align='center'
@@ -74,7 +74,7 @@ def drawNoPlayerScreen(app,color):
         'Press R to reset',
         app.width*0.75,
         app.height*0.075,
-        fill='black', #white is a placeholder color. 
+        fill='white', #white is a placeholder color. 
         size= app.cellHeight,
         bold= True,
         align='center'
