@@ -210,6 +210,19 @@ Jul 24
         More to go tomorrow with the implementation of the deletion function that takes sprites off the map. I'll probably also try, if it's convenient, to implement an "add" function that puts sprites ON the map instead. 
 
 Jul 25
-    BABA is SPRITE! 
+    Decided to work on graphics and implementation of sprites first instead of implementing delete / defeat / sink functionalities. 
+    Working menu is probably next, then we'll get some levels, implement sounds, and be in a good spot for Monday. 
+    
     - Fleshed out and updated reset function, including a draw bug where winning a level and resetting causes items to be drawn in their pre-reset state. 
     - Added direction reset functions (resetting a move now makes the object face the way they did before). 
+    - Added new sprite-loading files (loadimages.py, drawinfo.py) and implemented new functions for sprite drawing. Visually, objects are split into these types:
+        - Walls have neighbor checks that affect their appearance. 
+        - Sprites are commonly player-used objects that have more extensive animations. 
+        - Objects are everything else inbetween, less well animated but still important. 
+        - Object2s are more extensively animated objects (belts, robots) that will have functions affecting player movement.
+        - Words have a powered (glowing) and non-powered (dark) state to indicate whether a rule is in play or not. 
+    sprites are taken from 5 central spritesheets, cropped / greenscreened using pillow, and made into a CMU_Graphics compatible package. Most of the day (~2pm to 11pm) was spent figuring out how, where and when to draw things. 
+    Found new bugs in the movement system from the datatype switch on July 24, though, so we'll need to debug those first thing tomorrow. Might take even more time...
+        
+
+    
