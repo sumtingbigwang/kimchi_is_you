@@ -10,10 +10,11 @@ levelDict = {1: level1.level,
              -1: map.level}
 
 def loadLevel(app, levelnum):
-    app.sound.pause()
-    #bgm 
+    app.sound.pause()  #bgm pause
     app.level = levelDict[levelnum]
     app.levelNum = app.level.num
+    app.inMap = app.level.inMap
+    app.inMenu = app.level.inMenu
     app.levelDict = (app.level).dict
     app.inMenu = app.level.inMenu
     app.sound = Sound(app.level.bgm)
@@ -37,7 +38,7 @@ def loadLevel(app, levelnum):
     #make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
-    app.objects = getObjects(app.level)
+    app.objects = getAllObjects(app.level)
     app.players = getPlayer(app.level)
     refresh(app, app.level)
     

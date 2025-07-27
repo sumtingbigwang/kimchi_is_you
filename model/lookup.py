@@ -11,7 +11,7 @@ def getPlayer(level):
                 or (object.attribute == 'cursor')):
                 players += [object]
     return players
-    
+
 def getObjectsInCell(levelDict, x,y):
     position = (x,y)
     return [obj for obj, objpos in levelDict.items() if position == objpos]
@@ -39,12 +39,18 @@ def getEquals(levelDict):
             equals += [item]
     return equals
                 
-def getObjects(level):
+def getAllObjects(level):
     objects = []
     for entry in level.dict:
-        if entry != 'size' and isinstance(entry, obj):
+        if isinstance(entry, obj):
             objects += [entry]
     return objects
+                
+def getFirstObject(app, name):
+    for item in app.levelDict:
+        if item.attribute == name:
+            return item
+    return None
                 
 def checkstate(app):
     if len(app.players) == 0:

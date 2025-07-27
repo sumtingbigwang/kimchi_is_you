@@ -14,10 +14,11 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
+#MAP: PUT THE LEVEL POSITIONS FROM BOTTOM OF SCREEN TO TOP OF SCREEN.
 objDict = {'cursor':[(7,13)],
-           'tile':[(7,11),(8,11),(9,11),
+           'tile':[(7,13),(8,13),(9,13),
                    (7,12),(8,12),(9,12),
-                   (7,13),(8,13),(9,13)]}
+                   (7,11),(8,11),(9,11)]}
 subjDict = {'babaword': [(29,15)],
             'flagword': [(29,17)]}
 eqDict = {'equals': [(30,15),(30,17)]}
@@ -34,4 +35,4 @@ levelDict.update(loadEffects(effectDict))
 loadPositions(levelDict)
 print('level load complete, result: ', levelDict)
 level = level(-1,levelDict,(32,18),None, 
-              None, 10,'sounds/music/map.ogg',False, True) #store the size of the level here.
+              None, 10,'sounds/music/map.ogg', False, True) #store the size of the level here.

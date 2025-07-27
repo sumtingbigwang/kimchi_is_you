@@ -34,9 +34,9 @@ def pauseControls(app, key):
     elif key == 'escape':
         app.paused = not app.paused
     elif key == 'enter':
-        if app.pointerIdx == 0:
+        if app.pointerIdx == 0: #continue
             app.paused = not app.paused
-        elif app.pointerIdx == 1:
+        elif app.pointerIdx == 1: #restart
             app.paused = False
             app.wasPaused = True
             app.askReset = True
@@ -44,20 +44,37 @@ def pauseControls(app, key):
             app.settings = True #settings screen
             app.paused = False
             app.wasPaused = True
-        elif app.pointerIdx == 3:
+        elif app.pointerIdx == 3: #return to map
             loadLevel(app, -1)
-        elif app.pointerIdx == 4:
+        elif app.pointerIdx == 4: #return to menu
             loadLevel(app, 0)
         
     # Handle wrapping
     if app.pointerIdx < 0 or app.pointerIdx > 4:
         app.pointerIdx = app.pointerIdx % 5
 
+
 def mapControls(app, key):
+    mapLevelLoadDict = {
+    (7,13):1,
+    (8,13):2,
+    (9,13):3,
+    (7,12):4,
+    (8,12):5,
+    (9,12):6,
+    (7,11):7,
+    (8,11):8,
+    (9,11):9
+}
+    cursorPosition = getFirstObject(app, 'cursor').pos
     if key == 'enter':
-        loadLevel(app, -1)
+        print(cursorPosition)
+        if cursorPosition in mapLevelLoadDict:
+            loadLevel(app, mapLevelLoadDict[cursorPosition])
+        else:
+            pass
     elif key == 'escape':
-        app.isPaused = not app.isPaused
+        app.paused = not app.paused
     if key == 'right' or key == 'd' or key == 'D':
         movePlayers(app,app.levelDict,app.players,'right')
     elif key == 'left' or key == 'a' or key == 'A':
@@ -74,10 +91,11 @@ def mapControls(app, key):
 def settingsControls(app, key):
     if key == 'escape':
         if app.wasPaused:
+            app.settings = False
             app.paused = True
         elif app.wasMenu:
             app.inMenu = True
-        app.settings = False
+            app.settings = False
     elif key == 'up':
         app.stepsPerSecond += 0.1
     elif key == 'down':
@@ -100,8 +118,8 @@ def menuControls(app, key):
             loadLevel(app, 1) #load the last played puzzle (make a save file?)
         elif app.pointerIdx == 2:
             app.settings = True #load settings screen
-            app.inMenu = False
             app.wasMenu = True
+            app.inMenu = False
         elif app.pointerIdx == 3: #quit game
             sys.exit()
     elif key in ['up', 'down']:
@@ -203,5 +221,5 @@ def gameControls(app, key):
             refresh(app, app.level)  # This already handles state checks
         
     #check and add/remove rules based on words on the screen.
-    if key == 'escape' and not app.wasPaused:
+    if key == 'escape':
         app.paused = not app.paused

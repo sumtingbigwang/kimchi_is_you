@@ -4,21 +4,56 @@ from cmu_graphics import *
 from model.objects import *
 from view.drawinfo import *
 from view.drawobj import *
+from levels import *
 from model.lookup import getPlayer
 
-# draw win / 'lose' / reset level screens --------------------------------------
+#draw map screen --------------------------------------------------------------
+mapLevelNameDict = {
+    (7,13):'KIMCHI IS YOU',
+    (8,13):'HUH?',
+    (9,13):'[LEVELNAME]',
+    (7,12):'[LEVELNAME]',
+    (8,12):'[LEVELNAME]',
+    (9,12):'[LEVELNAME]',
+    (7,11):'[LEVELNAME]',
+    (8,11):'[LEVELNAME]',
+    (9,11):'[LEVELNAME]'
+}
 def drawMapScreen(app,color):
     cellWidth, cellHeight = getCellSize(app)
     width = 11*cellWidth
     height = cellHeight
     drawImage(CMUImage(Image.open(f'view/menusprites/newmap.png')), *getCellLeftTop(app, 0, 0), 
               width=app.cellWidth * app.cols, height=app.cellHeight * app.rows)
-    
+    cursor = getFirstObject(app, 'cursor')
+    cursorPosition = cursor.pos
+    if cursorPosition in mapLevelNameDict:
+        cursor.powered = True
+    else:
+        cursor.powered = False
     #MAP level name label here, convert to fString
-    drawLabel('MAP', *getCellLeftTop(app, -0.7, 1),
+    drawLabel(f'{mapLevelNameDict[cursorPosition] if cursorPosition in mapLevelNameDict else 'MAP'}', 
+              *getCellLeftTop(app, -0.7, 0),
               size = app.cellHeight,
-              fill = 'white', bold = True, font = 'babafont', align = 'center')
+              fill = 'white', bold = True, font = 'babafont',
+              align = 'left')
     
+    #lazy implementation of level numbers
+    drawLevelNumbers(app)
+
+def drawLevelNumbers(app):
+    levelCoordinates = map.objDict['tile']
+    i = 1
+    for coordinate in levelCoordinates:
+        col, row = coordinate
+        x, y = getCellLeftTop(app, row, col)
+        drawLabel(f'{i}', x + app.cellHeight//2, y + app.cellHeight//2,
+                  size = app.cellHeight//2,
+                  fill = 'white', bold = True, font = 'babafont', align = 'center')
+        i += 1
+    
+    
+# draw win / 'lose' / reset level screens --------------------------------------  
 def drawWinScreen(app,color): 
     #temporary. replace all of this
     drawRect(0,0,app.width,app.height,fill=color, opacity = 40)

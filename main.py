@@ -58,7 +58,7 @@ def onAppStart(app):
     #make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
-    app.objects = getObjects(app.level)
+    app.objects = getAllObjects(app.level)
     app.players = getPlayer(app.level)
     refresh(app, app.level)
     
@@ -98,6 +98,10 @@ def onKeyPress(app, key):
         if app.debugMode:
             print('settings')
         settingsControls(app, key)
+    elif app.inMap:
+        if app.debugMode:
+            print('map')
+        mapControls(app, key)
     else:
         if app.debugMode:
             print('game')
@@ -125,6 +129,9 @@ def redrawAll(app):
         drawRect(0,0,app.width,app.height,fill=rgb(21,24,31))
         drawMapScreen(app, app.level.background)
     drawGame(app, app.levelDict)
+    
+    if app.level.inMap:
+        drawLevelNumbers(app)
     if app.settings:
         drawSettingsScreen(app)
         
@@ -141,6 +148,7 @@ def redrawAll(app):
 
         if app.paused:
             drawPauseScreen(app, 'black')
+    
             
     if app.debugMode:
         drawBoard(app)
