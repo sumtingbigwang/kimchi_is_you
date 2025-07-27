@@ -22,7 +22,10 @@ def loadObjects(objDict):
     objectDictReturn = {}
     for objectName, positions in objDict.items():
         if isinstance(positions, tuple):
-            objectDictReturn[obj(f'O{namecount}', objectName)] = positions
+            if objectName == 'cursor':
+                objectDictReturn[obj(f'O{namecount}', objectName, ('you','float'))] = positions
+            else:
+                objectDictReturn[obj(f'O{namecount}', objectName)] = positions
             namecount += 1
         elif isinstance(positions, list):
             for position in positions:
@@ -99,6 +102,7 @@ objDrawDict = {
             'rock': rockDraw, 
             'wall': wallDraw, 
             'flag': flagDraw,
+            'tile': tileDraw,
             
             #words--------------------------------
             'equals': equalsDraw, 
@@ -111,7 +115,8 @@ objDrawDict = {
             'win': winDraw, 
             
             #menu-related items--------------------------------
-            'menu': menuDraw}
+            'menu': menuDraw,
+            'cursor': cursorDraw}
 
 wordDrawDict = {
                 #object words--------------------------------
@@ -119,6 +124,7 @@ wordDrawDict = {
                 'rockword': rockWordDraw, 
                 'babaword': babaWordDraw, 
                 'flagword': flagWordDraw, 
+                'tileword': tileWordDraw,
                 
                 #effect words--------------------------------
                 'you': youDraw,
@@ -140,18 +146,19 @@ wordDrawDict = {
 #start actual class definitions--------------------------------------
 #these labels are mine. I swear. this section isn't cursored. 
 class obj:
-    def __init__(self, name, attribute):
+    def __init__(self, name, attribute, initEffect = None):
         #object base information (determines what object e.g. baba, keke, kimchi the object instance is)
         self.name = name #DO NOT MISTAKE FOR ATTRIBUTE! The name is for obj instance modification. 
         self.attribute = attribute #THIS is the name of the actual object (baba, rock, wall, flag, etc.)
         self.drawInfo = objDrawDict[self.attribute]
         self.initialState = self.attribute #initial state, for a full reset of the level
         self.stateCount = 0
+        self.powered = False
         
         #movement info
         self.pos = None
         self.posHist = []
-        self.effectsList = []
+        self.effectsList = [initEffect] if initEffect else []  #if initEffect is not None, add it to the effectsList
         
         #drawing info
         self.direction = 'right'
@@ -188,10 +195,11 @@ class obj:
         self.stateCount = (self.stateCount + 1) % 4 #update state count
 
     def undoMove(self):
-        oldPos, oldDirection = self.posHist.pop()
-        self.pos = oldPos
-        self.direction = oldDirection
-        self.stateCount = (self.stateCount - 1) % 4 #update state count
+        if self.posHist:
+            oldPos, oldDirection = self.posHist.pop()
+            self.pos = oldPos
+            self.direction = oldDirection
+            self.stateCount = (self.stateCount - 1) % 4 #update state count
     
     def resetPos(self):
         if self.posHist:
@@ -210,7 +218,7 @@ class obj:
 
 #words-------------------------------------------------  
 class subj:
-    def __init__(self, name, attribute, obj):
+    def __init__(self, name, attribute, obj, powered=False):
         #word base information (determines what word it is)
         self.name = name
         self.attribute = attribute
@@ -219,7 +227,7 @@ class subj:
         #draw info
         self.drawInfo = wordDrawDict[attribute]
         self.direction = 'right'
-        self.powered = False
+        self.powered = powered
         
         #rulemaking info
         self.obj = obj
@@ -451,7 +459,8 @@ class adj: #includes (NOT, AND)
 
 #map and level---------------
 class level: 
-    def __init__(self, num, dict, size, background, cellColor, margin=10, inMenu=False):
+    def __init__(self, num, dict, size, background, cellColor, margin=10, 
+                 bgm=None, inMenu=False, inMap=False):
         self.num = num #number for loading
         self.dict = dict #storage of object positions
         self.wd = {} #wd stands for 'word dictionary' (idk too lazy)
@@ -460,6 +469,8 @@ class level:
         self.background = background
         self.cellColor = cellColor
         self.margin = 10
+        self.bgm = bgm
         self.moveHistory = [] #this stores tuples with either (obj.name, move) move data
         #or object change data: (obj.name, oldtype, newtype)
         self.inMenu = inMenu
+        self.inMap = inMap

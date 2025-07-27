@@ -3,4 +3,4 @@
 #instead of having everything on one big shitty list! :)
 
 #be sure to remind slef to update this list when new levels added
-__all__ = ['testlevel','menu','level1']
+__all__ = ['testlevel','menu','map','level1']

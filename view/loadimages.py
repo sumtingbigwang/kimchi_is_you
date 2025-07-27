@@ -1,5 +1,6 @@
 from ast import Index
 from cmu_graphics import *
+from cmu_graphics.shape_logic import t
 from drawinfo import *
 from model.rules import *
 from model.objects import *
@@ -23,11 +24,12 @@ from PIL import Image
 #load spritesheet for cropping
 
 def loadSheets(app):
-    app.spriteSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/spritesheet.png')
-    app.objectSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/objectsheet.png')
-    app.wordSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/wordsheet.png')
-    app.wallSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/wallsheet.png')
-    app.objectSheet2 = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/objectsheet2.png')
+    app.spriteSheet = Image.open('view/spritesheets/spritesheet.png')
+    app.objectSheet = Image.open('view/spritesheets/objectsheet.png')
+    app.wordSheet = Image.open('view/spritesheets/wordsheet.png')
+    app.wallSheet = Image.open('view/spritesheets/wallsheet.png')
+    app.objectSheet2 = Image.open('view/spritesheets/objectsheet2.png')
+    
 
 def loadSprites(app):
     spriteDict = dict()
@@ -50,6 +52,9 @@ def loadSprites(app):
             case 'wall':
                 for index in drawInfo.spriteList:
                     spriteDict[objName][index] = initObjectSprites(app.wallSheet, drawInfo.spriteList[index])
+            case 'cursor':
+                for state in drawInfo.spriteList:
+                    spriteDict[objName][state] = initCursor(app.objectSheet, drawInfo.spriteList[state])
     
     #pre-load all known words from drawinfo
     for wordName, drawInfo in wordDrawDict.items():
@@ -69,7 +74,8 @@ def loadSprites(app):
                     spriteDict[wordName][state] = initWordSprites(app.wordSheet, drawInfo.spriteList[state])
             case _:
                 pass
-    
+    spriteDict['title'] = loadTitle(app)
+    spriteDict.update(loadButtonImages(app))
     return spriteDict
 #okay, confusing as fuck. But it goes:
 # spriteDict = {
@@ -82,6 +88,22 @@ def loadSprites(app):
 #         'left':{}....
 #and so on and so forth. So, when we want to play the animation, we access:
 # spriteDict[obj.name][app.direction][state(updates with repeated key presses)][app.animIndex(updates automatically)] 
+
+def loadTitle(app):
+    titleImages = []
+    for i in range(3):
+        titleImages.append(CMUImage(Image.open(f'/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/menusprites/title{i+1}.png')))
+    return titleImages
+
+def loadButtonImages(app):
+    buttonImages = {'continue':[],
+                    'start':[],
+                    'settings':[],
+                    'exit':[]}
+    for button in buttonImages:
+        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}.png'))]
+        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}P.png'))]
+    return buttonImages
 
 def cropCompile(topx, topy, sheet, stack): #cuz it crops and compiles. get it? fml
     for i in range(3):
@@ -97,6 +119,16 @@ def initSprites(spriteSheet,spriteCoords): #this is players
         cropCompile(topx, topy, spriteSheet, stateImages)
         spriteImages.append(stateImages)   
     return spriteImages
+
+def initCursor(objectSheet, cursorCoords):
+    cursorImages = []
+    for coord in cursorCoords:
+        for i in range(3):
+            topx, topy = coord
+            frame = objectSheet.crop((topx + 33*i, topy, topx+33*(i+1), topy+30))
+            frame = removeBackground(frame)
+            cursorImages.append(CMUImage(frame))
+    return cursorImages
 
 def initWordSprites(spriteSheet, spriteCoords):
     spriteImages = []
@@ -115,20 +147,21 @@ def removeBackground(image):
       for j in range(image.height):
         pixel = image.getpixel((i, j))  
         if ((pixel[0] == 84 and pixel[1] == 165 and pixel[2] == 75)
-            or (pixel[0] == 70 and pixel[1] == 152 and pixel[2] == 59)): #green screen
+            or (pixel[0] == 0 and pixel[1] == 0 and pixel[2] == 0)
+            or (pixel[0] == 70 and pixel[1] == 152 and pixel[2] == 59) #green screen
+            or (pixel[0] == 45 and pixel[1] == 88 and pixel[2] == 148)): #get rid of blue spritesheet border
             image.putpixel((i, j), (0, 0, 0, 0))
         else: 
             r,g,b,a = pixel
             image.putpixel((i, j), (r,g,b, 255))
     return image
 
-
 #this is a RGB check for a draw class.
 #it has this name because it is 12:22 AM in the morning.
 #and life sucks.
 #and I just spent 30 minute strying to figure out what pillow is looking at,
 #because the green it's seeing certainly isn't the one I'm seeing.
-def fuckThisShit(sheet, spriteCoords):
+def pixelPicker(sheet, spriteCoords):
     for coord in spriteCoords:
         for i in range(3):
             topx, topy = coord

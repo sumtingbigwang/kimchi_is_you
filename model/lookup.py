@@ -7,7 +7,8 @@ def getPlayer(level):
     players = []
     for object in level.dict:
         if isinstance(object, obj):
-            if 'you' in object.effectsList and object not in players:
+            if (('you' in object.effectsList and object not in players)
+                or (object.attribute == 'cursor')):
                 players += [object]
     return players
     

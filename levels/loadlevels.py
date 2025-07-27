@@ -5,14 +5,18 @@ from view.drawgrid import *
 from model.lookup import *
 from levels import *
 
-levelDict = {1: level1.level}
+levelDict = {1: level1.level,
+             0: menu.level,
+             -1: map.level}
 
 def loadLevel(app, levelnum):
+    app.sound.pause()
     #bgm 
     app.level = levelDict[levelnum]
+    app.levelNum = app.level.num
     app.levelDict = (app.level).dict
-    app.inMenu = False
-    app.sound = Sound('sounds/Baba Is You OST - Wall Is Stop - Starting off.mp3')
+    app.inMenu = app.level.inMenu
+    app.sound = Sound(app.level.bgm)
     app.sound.play(loop = True)
     
     #initialize animation metrics 
@@ -28,7 +32,6 @@ def loadLevel(app, levelnum):
     app.levelWin = False
     app.askReset = False
     app.paused = False
-    app.debugMode = False
     
     #initialize level
     #make move history and turnMove sets, then get all rules from the board and define players

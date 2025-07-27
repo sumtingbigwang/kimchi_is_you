@@ -1,6 +1,6 @@
 from model.lookup import *
 from cmu_graphics import *
-import sys
+import sys, time
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
 from model.objects import *
 from model.rules import *
@@ -12,6 +12,12 @@ moveDict = {'right': (1,0), 'left':(-1,0), 'up':(0,-1),'down':(0,1)}
 def movePlayers(app, levelDict, players, move):
     for player in players:
         moveObj(app,levelDict,player,move)
+        
+#old key hold move function (funky)
+def moveLoop(app, levelDict, players, move):
+    while app.moveLoop:
+        time.sleep(0.1)
+        movePlayers(app, levelDict, players, move)
     
 #turns out cursor is dogshit at debugging anything that isn't a simple bug! :)
 #had to redo much of this myself later anyway.
@@ -23,18 +29,19 @@ def moveObj(app, levelDict, obj, move):
     tgtCell = (x + dx, y + dy)
     
     #legality check
-    if not isLegal(levelDict, tgtCell):
+    if not isLegal(levelDict, tgtCell, obj):
         if app.debugMode:
             print(obj.name,'move illegal')
             targetObjs = getObjectsInCell(levelDict, *tgtCell)
             for obj in targetObjs:
                 print(obj.effectsList)
+        obj.changeDir(move)
         return None
     
     #get tgt objs
     tgtObjs = getObjectsInCell(levelDict, *tgtCell)
     #target cell is nonempty
-    if tgtObjs:
+    if tgtObjs and 'float' not in obj.effectsList and obj.attribute != 'cursor':
         #test each object in target cell for collision
         for tgtObject in tgtObjs:
             if (('you' in tgtObject.effectsList and 'stop' in tgtObject.effectsList) or 
@@ -42,7 +49,7 @@ def moveObj(app, levelDict, obj, move):
                 #this is another instance of you, which we only need check for movement space. 
                 if pushableObj(app, levelDict, tgtObject, move) is None:
                     if app.debugMode:
-                        (obj.name,'cannot push')
+                       print(obj.name,'cannot push')
                     obj.changeDir(move)
                     return None
             elif 'push' in tgtObject.effectsList:
@@ -106,7 +113,7 @@ def pushableObj(app, levelDict, obj, move):
     tgtCell = (x + dx, y + dy)
     
     #legality check
-    if not isLegal(levelDict, tgtCell):
+    if not isLegal(levelDict, tgtCell, obj):
         return None
     
     #get objects, repeat shi above
@@ -134,15 +141,16 @@ def inBounds(x,y):
     return (x < app.cols and x >= 0 
             and y < app.rows and y >= 0)
     
-def isLegal(levelDict, tgtCell):
+def isLegal(levelDict, tgtCell, obj):
     tgtObjs = getObjectsInCell(levelDict,*tgtCell)
-    if tgtObjs != None:
-        for object in tgtObjs:
-            return ('stop' not in object.effectsList #object is not unpushable
-                    or ('stop' in object.effectsList and 'push' in object.effectsList) 
-                    #object is 'STOP', but PUSH overrides STOP
-                    or ('stop' in object.effectsList and 'you' in object.effectsList))
-                    #object is 'STOP', but you also are moving it
+    if 'float' not in obj.effectsList: #'FLOAT' effect allows clipping
+        if tgtObjs != None:
+            for object in tgtObjs:
+                return ('stop' not in object.effectsList #object is not unpushable
+                        or ('stop' in object.effectsList and 'push' in object.effectsList) 
+                        #object is 'STOP', but PUSH overrides STOP
+                        or ('stop' in object.effectsList and 'you' in object.effectsList))
+                        #object is 'STOP', but you also are moving it
     tgtX, tgtY = tgtCell
     return inBounds(tgtX, tgtY)
 

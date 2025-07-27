@@ -43,7 +43,7 @@ levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
 print('level load complete, result: ', levelDict)
-level = level(1,levelDict,(17,13), rgb(21,24,31), 'black',10) #store the size of the level here.
+level = level(1,levelDict,(17,13), rgb(21,24,31), 'black',10, 'sounds/music/baba.ogg') #store the size of the level here.
 #i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
 #before i figured i could just make a new class attribute.
 

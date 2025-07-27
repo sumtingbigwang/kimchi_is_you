@@ -85,20 +85,21 @@ def delRules(level):
     wordCheckList = ruleUnpacker(level.rules)
 
     for item in level.dict:
-        if isinstance(item, obj):
-            itemRules = item.effectsList
-            for rule in itemRules: 
-                check = (item, rule)
-                if check not in checkList:
-                    itemRules.remove(rule)
+        if item.attribute != 'cursor':
+            if isinstance(item, obj):
+                itemRules = item.effectsList
+                for rule in itemRules: 
+                    check = (item, rule)
+                    if check not in checkList:
+                        itemRules.remove(rule)
 
-        elif (isinstance(item, effect) 
-              or isinstance(item, subj) 
-              or isinstance(item, eq)):
-            if item in wordCheckList:
-                item.powered = True
-            else:
-                item.powered = False
+            elif (isinstance(item, effect) 
+                or isinstance(item, subj) 
+                or isinstance(item, eq)):
+                if item in wordCheckList:
+                    item.powered = True
+                else:
+                    item.powered = False
             
             
     

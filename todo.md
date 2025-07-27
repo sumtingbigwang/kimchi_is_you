@@ -1,26 +1,34 @@
 (!!)- highest priority 
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
-(!!) Fix players overlapping when 'STOP' or 'PUSH' is an effect
-(!!) Collision is still bugged when making multiple players and resetting.
-(!!) XX IS YOU rules also take one extra round to get registered. 
+(!!) Powered (selected) vs unpowered (unselected) options in menus
 
 5. Beauty / Good looking graphics / Sound effects for everything
-    - WIN, HOT, MELT, and DEFEAT effect animations
-    - 'KIMCHI IS YOU' title sprite
     - Pause menu
         - Draw gridlines option
         - Draw grid numbers option
-    - Decoration items
+    - Map screen 
+        - 12 Levels, S-shaped unlock pattern
+        - Levels unlock on a save file
+        - Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
     - Proper win screen animation
+    - Level load transitions
+        - 2 separate screens, balls on and off, both drawn last
     - Proper no player 'loss' animations
+    - Decoration items
+    - WIN, HOT, MELT, and DEFEAT effect animations
     - Finish the Kimchi Sprite (and mystery david kosbie / mike taylor sprites)
     ** Create system for movement trails (generate little cloud after player sprite)
+    ** Start menu buttons highlighting
 
 (!) (implement 5 levels (3 tutorial, 3 hard ones) with base features-- then deem temporarily complete) 
     ^^We should be here by Monday. 
     
-6. Implement and map Space to the takeStep or "wait" function. 
+6. Implement and map Space to the takeStep or "wait" function.
+
+** Walkthrough option for each level.
+    - Preprogammed steps; resets level, then BABA automatically walks through solution until win
+    - Press R at any time to try again 
 
 7. Menu loader 
     - Separate title screen from menu/map page. 
@@ -50,5 +58,3 @@
     ** FACING (either 1 or all blocks in BABA's direction applicable.)
     ** FALL (gravity. Player sprites will drop to the highest-y, lowest on-screen block possible in their column.)
     ** Flashlight level: BLOCK NOT FACING BABA IS HIDE
-
-10. Meta Level Loader and more levels 

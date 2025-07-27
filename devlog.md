@@ -224,5 +224,8 @@ Jul 25
     sprites are taken from 5 central spritesheets, cropped / greenscreened using pillow, and made into a CMU_Graphics compatible package. Most of the day (~2pm to 11pm) was spent figuring out how, where and when to draw things. 
     Found new bugs in the movement system from the datatype switch on July 24, though, so we'll need to debug those first thing tomorrow. Might take even more time...
         
+Jul 26 + 27
+    Final is tomorrow so not spending a lot of time writing logs. 
+        - Implemented map screen, settings screen, menu page, CONTINUE function. 
 
     

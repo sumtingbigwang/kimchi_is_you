@@ -18,7 +18,7 @@ class drawInfo:
 
 
 #ADDING A SPRITE:
-#update objDrawDict/wordDrawDict in objects.py
+#update objDrawDict/wordDrawDict in objects.pypa
 #update this file with crop coordinates, name, and type
 #update loadimages.py (if you need to)
 
@@ -43,6 +43,27 @@ settingsDraw = drawInfo('SETTINGS', 'button', 'white', 'black', settingsDict)
 
 exitDict = {'exit', 'exitP'}
 exitDraw = drawInfo('EXIT', 'button', 'white', 'black', exitDict)
+
+mapDict = {'map', 'mapP'}
+mapDraw = drawInfo('MAP', 'button', 'white', 'black', mapDict)
+
+menuPauseDict = {'pause', 'pauseP'}
+menuPauseDraw = drawInfo('PAUSE', 'button', 'white', 'black', menuPauseDict)
+
+restartDict = {'restart', 'restartP'}
+restartDraw = drawInfo('RESTART', 'button', 'white', 'black', restartDict)
+
+resumeDict = {'resume', 'resumeP'}
+resumeDraw = drawInfo('RESUME', 'button', 'white', 'black', resumeDict)
+
+settingsDict = {'settings', 'settingsP'}
+settingsDraw = drawInfo('SETTINGS', 'button', 'white', 'black', settingsDict)
+
+cursorDict = {
+              'unpowered': [(376,852)],
+              'powered': [(474.5,852)]
+              }
+cursorDraw = drawInfo('CURSOR', 'cursor', 'white', 'black', cursorDict)
 
 #player-related sprites--------------------------------
 babaDict= {
@@ -79,6 +100,16 @@ flagWordDict = {
     'unpowered': [(51,226)]
 }
 flagWordDraw = drawInfo('FLAGWORD', 'objectWord', 'gold', 'white', flagWordDict)
+
+tileDict = (227,751)
+tileDraw = drawInfo('TILE', 'object', 'saddleBrown', 'white', tileDict)
+
+tileWordDict = {
+    'powered': [(202,751)],
+    'unpowered': [(177,751)]
+}
+tileWordDraw = drawInfo('TILEWORD', 'objectWord', 'saddleBrown', 'white', tileWordDict)
+
 
 
 #wall-related sprites--------------------------------

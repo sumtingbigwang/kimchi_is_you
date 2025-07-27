@@ -71,6 +71,8 @@ def drawObject(app, obj):
             drawWall(app, obj, cellLeft, cellTop, cellWidth)
         case 'menu':
             drawMenu(app, obj, cellLeft, cellTop, cellWidth)
+        case 'cursor':
+            drawCursor(app, obj, cellLeft, cellTop, cellWidth)
         case _:
             drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color)
@@ -106,18 +108,10 @@ def drawWord(app, word):
 #menu draw stuff--------------------------------
 
 def drawButton(app, obj, cellLeft, cellTop, cellWidth):
-    cellWidth, cellHeight = getCellSize(app)
-    color = obj.drawInfo.color
-    labelcolor = obj.drawInfo.labelcolor
-    name = obj.drawInfo.name
-    width = 8*cellWidth
-    height = cellHeight 
-    
-    #placeholder for button
-    drawRect(cellLeft, cellTop, width, height, fill= color)
-    drawLabel(f'{name}',cellLeft + width/2, cellTop + height/2,
-            fill = labelcolor, size = 0.8 *cellWidth, bold = True, align = 'center')
-    
+    state = 1 if obj.powered else 0
+    animIndex = app.animIndex
+    sprite = app.spriteDict[obj.attribute][state]
+    drawImage(sprite, cellLeft, cellTop, width=7*cellWidth, height=cellWidth)
     
 def drawMenu(app, obj, cellLeft, cellTop, cellWidth):
     cellWidth, cellHeight = getCellSize(app)
@@ -126,13 +120,14 @@ def drawMenu(app, obj, cellLeft, cellTop, cellWidth):
     name = obj.drawInfo.name
     width = 13*cellWidth
     height = 4*cellHeight
+    drawImage(app.spriteDict['title'][app.animIndex], cellLeft, cellTop, width=width, height=height)
     
-    #placeholder for menu icon
-    drawRect(cellLeft, cellTop, width, height,
-             fill=color)
-    drawLabel('KIMCHI IS YOU',cellLeft + width/2, cellTop + height/2,
-            fill = labelcolor, size = 1.5*cellWidth, bold = True, align = 'center')
-    
+def drawCursor(app, obj, cellLeft, cellTop, cellWidth):
+    state = 'powered' if obj.powered else 'unpowered'
+    animIndex = app.animIndex
+    sprite = app.spriteDict[obj.attribute][state][animIndex]
+    drawImage(sprite, cellLeft, cellTop, width=cellWidth, height=cellWidth)
+
 #we make the spriteWord distinction because it's found on another sprite sheet
 #(i'm lazy)
 def drawSpriteWord(app, word, cellLeft, cellTop, cellWidth): 
