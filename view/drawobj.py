@@ -43,13 +43,12 @@ def drawWords(app, levelDict):
 
 
 def drawGame(app,levelDict):
-#(!!) Cursor AI: implemented module to draw players above non-player objects
-
+    drawRect(0,0,app.width,app.height,fill=app.level.background) 
+    drawRect(app.boardLeft, app.boardTop, app.boardWidth, app.boardHeight, fill = app.level.cellColor)
     # Get all objects
     all_objects = [item for item in levelDict if isinstance(item, obj)]
     # Get player objects
     players = getPlayer(app.level)
-    
     drawNonPlayers(app, levelDict)
     drawPlayers(app, levelDict)
     drawWords(app, levelDict)
@@ -63,20 +62,20 @@ def drawObject(app, obj):
     labelcolor = obj.drawInfo.labelcolor
     spriteList = obj.drawInfo.spriteList
     dir = obj.direction
-    
-    if obj.drawInfo.type == 'sprite':
-        drawSprite(app, obj, cellLeft, cellTop, cellWidth)
-    elif obj.drawInfo.type == 'object':
-        drawObj(app, obj, cellLeft, cellTop, cellWidth)
-    elif obj.drawInfo.type == 'wall':
-        drawWall(app, obj, cellLeft, cellTop, cellWidth)
-    else:
-        drawRect(cellLeft, cellTop, cellWidth, cellHeight,
+    match obj.drawInfo.type:
+        case 'sprite':
+            drawSprite(app, obj, cellLeft, cellTop, cellWidth)
+        case 'object':
+            drawObj(app, obj, cellLeft, cellTop, cellWidth)
+        case 'wall':
+            drawWall(app, obj, cellLeft, cellTop, cellWidth)
+        case 'menu':
+            drawMenu(app, obj, cellLeft, cellTop, cellWidth)
+        case _:
+            drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color)
-        drawLabel(f'{name}',cellLeft + cellWidth/2, cellTop + cellHeight/2, 
-            fill = labelcolor, size = 1.75*(cellWidth**0.5), bold = True, align = 'center')
-        drawLabel(f'{dir}',cellLeft + cellWidth/2, cellTop + cellHeight/2+10, 
-            fill = labelcolor, size = 1.5*(cellWidth**0.5), bold = True, align = 'center')
+            drawLabel(f'{name}',cellLeft + cellWidth/2, cellTop + cellHeight/2, 
+                fill = labelcolor, size = 1.75*(cellWidth**0.5), bold = True, align = 'center')
                 
 def drawWord(app, word):
     col, row = word.pos
@@ -92,6 +91,8 @@ def drawWord(app, word):
         or wordType == 'word' 
         or wordType == 'wallWord'):
         drawSpriteWord(app, word, cellLeft, cellTop, cellWidth)
+    elif wordType == 'button':
+        drawButton(app, word, cellLeft, cellTop, cellWidth)
     else:
         drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=color)
@@ -101,6 +102,36 @@ def drawWord(app, word):
         #also swap this out for reading an image
         drawLabel(f'{name}',cellLeft + cellWidth/2, cellTop + cellHeight/2, opacity = opacity,
                 fill = 'white', size = 2*(cellWidth**0.5), bold = True, align = 'center')
+    
+#menu draw stuff--------------------------------
+
+def drawButton(app, obj, cellLeft, cellTop, cellWidth):
+    cellWidth, cellHeight = getCellSize(app)
+    color = obj.drawInfo.color
+    labelcolor = obj.drawInfo.labelcolor
+    name = obj.drawInfo.name
+    width = 8*cellWidth
+    height = cellHeight 
+    
+    #placeholder for button
+    drawRect(cellLeft, cellTop, width, height, fill= color)
+    drawLabel(f'{name}',cellLeft + width/2, cellTop + height/2,
+            fill = labelcolor, size = 0.8 *cellWidth, bold = True, align = 'center')
+    
+    
+def drawMenu(app, obj, cellLeft, cellTop, cellWidth):
+    cellWidth, cellHeight = getCellSize(app)
+    color = obj.drawInfo.color
+    labelcolor = obj.drawInfo.labelcolor
+    name = obj.drawInfo.name
+    width = 13*cellWidth
+    height = 4*cellHeight
+    
+    #placeholder for menu icon
+    drawRect(cellLeft, cellTop, width, height,
+             fill=color)
+    drawLabel('KIMCHI IS YOU',cellLeft + width/2, cellTop + height/2,
+            fill = labelcolor, size = 1.5*cellWidth, bold = True, align = 'center')
     
 #we make the spriteWord distinction because it's found on another sprite sheet
 #(i'm lazy)
@@ -138,6 +169,15 @@ def drawWall(app, obj, cellLeft, cellTop, cellWidth):
 def checkWall(app,obj):
     wallX, wallY = obj.pos
     index = 0
+    wallIn = False
+    overlapObjs = getObjectsInCell(app.levelDict, wallX, wallY)
+    
+    for obj in overlapObjs: #shitty check for overlap
+        if obj.attribute == 'wall' and wallIn:
+            return 0
+        elif not wallIn and obj.attribute == 'wall':
+            wallIn = True
+            
     dirs = [(0,1,8), (1,0,1), (0,-1,2), (-1,0,4)]
     for dir in dirs: #check all 4 directions for walls
         dx, dy, indexAdd = dir
@@ -146,5 +186,5 @@ def checkWall(app,obj):
         for obj in tgtObjs:
             if obj.attribute == 'wall': #found a wall, add the index of the wall segment
                 index += indexAdd
-    return index
+    return index % 16
         

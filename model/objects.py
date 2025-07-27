@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view')
 from view.drawinfo import *
+import copy 
 
 #NOT:
 # if NOT object is effect: 
@@ -24,8 +25,8 @@ def loadObjects(objDict):
             objectDictReturn[obj(f'O{namecount}', objectName)] = positions
             namecount += 1
         elif isinstance(positions, list):
-            for lIdx in range(len(positions)):
-                objectDictReturn[obj(f'O{namecount}', objectName)] = positions[lIdx]
+            for position in positions:
+                objectDictReturn[obj(f'O{namecount}', objectName)] = position
                 namecount += 1 
     return objectDictReturn
 
@@ -92,27 +93,48 @@ moveDict = {'right': (1,0), 'left':(-1,0), 'up':(0,-1),'down':(0,1)}
 
 #(graphics) drawInfo dictionaries--------------------------------------
 #read drawinfo.py for actual sprite / color / etc. 
-objDrawDict = {'baba': babaDraw, 
+objDrawDict = {
+            #sprites--------------------------------
+            'baba': babaDraw, 
             'rock': rockDraw, 
             'wall': wallDraw, 
             'flag': flagDraw,
+            
+            #words--------------------------------
             'equals': equalsDraw, 
+            
+            #effects--------------------------------
             'has': hasDraw, 
             'you': youDraw, 
             'push': pushDraw,
             'stop': stopDraw, 
-            'win': winDraw}
+            'win': winDraw, 
+            
+            #menu-related items--------------------------------
+            'menu': menuDraw}
 
-wordDrawDict = {'wallword': wallWordDraw, 
+wordDrawDict = {
+                #object words--------------------------------
+                'wallword': wallWordDraw, 
                 'rockword': rockWordDraw, 
                 'babaword': babaWordDraw, 
                 'flagword': flagWordDraw, 
+                
+                #effect words--------------------------------
                 'you': youDraw,
                 'push': pushDraw,
                 'stop': stopDraw,
                 'win': winDraw,
+                
+                #equal words--------------------------------
                 'equals': equalsDraw,
-                'has': hasDraw
+                'has': hasDraw,
+                
+                #button words--------------------------------
+                'start': startDraw,
+                'continue': continueDraw,
+                'settings': settingsDraw,
+                'exit': exitDraw
                 }
 
 #start actual class definitions--------------------------------------
@@ -142,11 +164,10 @@ class obj:
     #equals and hashing function for storage in level dictionary
     def __eq__(self,other):
         if isinstance(other, obj):
-            return (self.name == other.name 
-                    and self.attribute == other.attribute)
+            return (self.name == other.name)
         
     def __hash__(self):
-        return hash(f'{self.name}, {self.attribute}')
+        return hash(f'{self.name}')
     
     def __repr__(self):
         return f'{self.name}'
@@ -154,6 +175,9 @@ class obj:
     #prelim implementation of the is you feature
     def addEffect(self,effect):
         self.effectsList += [effect]
+    
+    def changeDir(self, direction): #for running into walls
+        self.direction = direction
     
     def MoveObject(self, direction):
         self.posHist.append((self.pos,self.direction))
@@ -219,6 +243,9 @@ class subj:
         oldPos, oldDirection = self.posHist.pop()
         self.pos = oldPos
         self.direction = oldDirection
+
+    def changeDir(self, direction): #for running into walls
+        self.direction = direction
     
     def resetPos(self):
         if self.posHist:
@@ -234,11 +261,10 @@ class subj:
     
     def __eq__(self,other):
         if isinstance(other, subj):
-            return (self.name == other.name 
-                    and self.attribute == other.attribute)
+            return (self.name == other.name)
         
     def __hash__(self):
-        return hash(f'{self.name}, {self.attribute}')
+        return hash(f'{self.name}')
     
     def __repr__(self):
         return f'{self.name}'
@@ -266,6 +292,9 @@ class eq: #includes 'IS' and 'HAS'
         
         #comparison info
         self.type = 'eq'
+    
+    def changeDir(self, direction): #for running into walls
+        self.direction = direction
     
     def MoveObject(self, direction):
         self.posHist.append((self.pos,self.direction))
@@ -304,7 +333,7 @@ class eq: #includes 'IS' and 'HAS'
                     and self.attribute == other.attribute)
         
     def __hash__(self):
-        return hash(f'{self.name}, {self.attribute}')
+        return hash(f'{self.name}')
     
     def __repr__(self):
         return f'{self.name}'
@@ -336,6 +365,9 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         self.direction = direction
         self.pos = (x + dx, y + dy)
         
+    def changeDir(self, direction): #for running into walls
+        self.direction = direction
+        
     def undoMove(self):
         oldPos, oldDirection = self.posHist.pop()
         self.pos = oldPos
@@ -355,11 +387,10 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         
     def __eq__(self,other):
         if isinstance(other, effect):
-            return (self.name == other.name 
-                    and self.attribute == other.attribute)
+            return (self.name == other.name)
         
     def __hash__(self):
-        return hash(f'{self.name}, {self.attribute}')
+        return hash(f'{self.name}')
     
     def __repr__(self):
         return f'{self.attribute}'
@@ -387,6 +418,9 @@ class adj: #includes (NOT, AND)
         dx, dy = moveDict[direction]
         self.direction = direction
         self.pos = (x + dx, y + dy)
+    
+    def changeDir(self, direction): #for running into walls
+        self.direction = direction
 
     def undoMove(self):
         oldPos, oldDirection = self.posHist.pop()
@@ -407,22 +441,25 @@ class adj: #includes (NOT, AND)
         
     def __eq__(self,other):
         if isinstance(other, adj):
-            return (self.name == other.name 
-                    and self.attribute == other.attribute)
+            return (self.name == other.name)
     
     def __hash__(self):
-        return hash(f'{self.name}, {self.attribute}')
+        return hash(f'{self.name}')
     
     def __repr__(self):
         return f'{self.name}'
 
 #map and level---------------
 class level: 
-    def __init__(self, num, dict, size):
+    def __init__(self, num, dict, size, background, cellColor, margin=10, inMenu=False):
         self.num = num #number for loading
         self.dict = dict #storage of object positions
         self.wd = {} #wd stands for 'word dictionary' (idk too lazy)
         self.rules = [] 
         self.size = size
+        self.background = background
+        self.cellColor = cellColor
+        self.margin = 10
         self.moveHistory = [] #this stores tuples with either (obj.name, move) move data
         #or object change data: (obj.name, oldtype, newtype)
+        self.inMenu = inMenu

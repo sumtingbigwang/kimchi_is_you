@@ -23,48 +23,54 @@ from PIL import Image
 #load spritesheet for cropping
 
 def loadSheets(app):
-    app.spriteSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheet.png')
-    app.objectSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/objectsheet.png')
-    app.wordSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/wordsheet.png')
-    app.wallSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/wallsheet.png')
-    app.objectSheet2 = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/objectsheet2.png')
+    app.spriteSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/spritesheet.png')
+    app.objectSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/objectsheet.png')
+    app.wordSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/wordsheet.png')
+    app.wallSheet = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/wallsheet.png')
+    app.objectSheet2 = Image.open('/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view/spritesheets/objectsheet2.png')
 
 def loadSprites(app):
     spriteDict = dict()
-    for obj in app.levelDict:
-        spriteDict[obj.attribute] = dict() 
-        if obj.drawInfo.type == 'sprite': #draw the sprites 
-             #get the direction dictionary, whose values are column coordinates in the spritesheet
-             #which initSprites uses to create a list of frames. 
-             #initialize a dictionary for the direction animations. 
-            for direction in obj.drawInfo.spriteList: #go through each direction
-                spriteDict[obj.attribute][direction] = initSprites(app.spriteSheet, obj.drawInfo.spriteList[direction])
-                
-        elif obj.drawInfo.type == 'spriteWord':
-            for state in obj.drawInfo.spriteList:
-                spriteDict[obj.attribute][state] = initWordSprites(app.spriteSheet, obj.drawInfo.spriteList[state])
-        
-        elif obj.drawInfo.type == 'objectWord':
-            for state in obj.drawInfo.spriteList:
-                spriteDict[obj.attribute][state] = initWordSprites(app.objectSheet, obj.drawInfo.spriteList[state])
-        
-        elif obj.drawInfo.type == 'wallWord':
-            for state in obj.drawInfo.spriteList:
-                spriteDict[obj.attribute][state] = initWordSprites(app.wallSheet, obj.drawInfo.spriteList[state])
-        
-        elif obj.drawInfo.type == 'wall':
-            for index in obj.drawInfo.spriteList:
-                spriteDict[obj.attribute][index] = initWallSprites(app.wallSheet, obj.drawInfo.spriteList[index])
-        
-        elif obj.drawInfo.type == 'word':
-            for state in obj.drawInfo.spriteList:
-                spriteDict[obj.attribute][state] = initWordSprites(app.wordSheet, obj.drawInfo.spriteList[state])
-                
-        elif obj.drawInfo.type == 'object':
-            spriteDict[obj.attribute] = initObjectSprites(app.objectSheet, obj.drawInfo.spriteList)
+    
+#if obj.drawInfo.type == 'sprite': #draw the sprites 
+#for direction in obj.drawInfo.spriteList: #go through each direction
+#spriteDict[obj.attribute][direction] = initSprites(app.spriteSheet, obj.drawInfo.spriteList[direction])
+#get the direction dictionary, whose values are column coordinates in the spritesheet
+#which initSprites uses to create a list of frames. 
 
-    return spriteDict #return dictionary
-
+    #pre-load all known objects from drawinfo
+    for objName, drawInfo in objDrawDict.items():
+        spriteDict[objName] = dict()
+        match drawInfo.type:
+            case 'sprite':
+                for direction in drawInfo.spriteList:
+                    spriteDict[objName][direction] = initSprites(app.spriteSheet, drawInfo.spriteList[direction])
+            case 'object':
+                spriteDict[objName] = initObjectSprites(app.objectSheet, drawInfo.spriteList)
+            case 'wall':
+                for index in drawInfo.spriteList:
+                    spriteDict[objName][index] = initObjectSprites(app.wallSheet, drawInfo.spriteList[index])
+    
+    #pre-load all known words from drawinfo
+    for wordName, drawInfo in wordDrawDict.items():
+        spriteDict[wordName] = dict()
+        match drawInfo.type:
+            case 'spriteWord':
+                for state in drawInfo.spriteList:
+                    spriteDict[wordName][state] = initWordSprites(app.spriteSheet, drawInfo.spriteList[state])
+            case 'objectWord':
+                for state in drawInfo.spriteList:
+                    spriteDict[wordName][state] = initWordSprites(app.objectSheet, drawInfo.spriteList[state])
+            case 'wallWord':
+                for state in drawInfo.spriteList:
+                    spriteDict[wordName][state] = initWordSprites(app.wallSheet, drawInfo.spriteList[state])
+            case 'word':
+                for state in drawInfo.spriteList:
+                    spriteDict[wordName][state] = initWordSprites(app.wordSheet, drawInfo.spriteList[state])
+            case _:
+                pass
+    
+    return spriteDict
 #okay, confusing as fuck. But it goes:
 # spriteDict = {
 #     'BABA': {
@@ -73,18 +79,17 @@ def loadSprites(app):
 #             'standing': [frame1, frame2, frame3],
 #             'legs out': [frame1, frame2, frame3]
 #         }
-#         'left:{}....
-#and so on and so forth. So, when we want to play the animation, we do:
-# spriteDict[obj.name][app.direction]
-# [state (updates with repeated key presses)][app.animIndex (updates automatically)] 
+#         'left':{}....
+#and so on and so forth. So, when we want to play the animation, we access:
+# spriteDict[obj.name][app.direction][state(updates with repeated key presses)][app.animIndex(updates automatically)] 
 
-def cropCompile(topx, topy, sheet, stack):
+def cropCompile(topx, topy, sheet, stack): #cuz it crops and compiles. get it? fml
     for i in range(3):
         frame = sheet.crop((topx, topy + 25*i, topx+23, topy+25*(i+1)-1))
         frame = removeBackground(frame)
         stack.append(CMUImage(frame))
 
-def initSprites(spriteSheet,spriteCoords): 
+def initSprites(spriteSheet,spriteCoords): #this is players
     spriteImages = []
     for state in spriteCoords:
         stateImages = []
@@ -101,13 +106,7 @@ def initWordSprites(spriteSheet, spriteCoords):
                 
 def initObjectSprites(objectSheet, objectCoord):
     spriteImages = []
-    x,y = objectCoord
-    cropCompile(x,y, objectSheet, spriteImages)
-    return spriteImages
-
-def initWallSprites(wallSheet, wallCoords):
-    spriteImages = []
-    cropCompile(wallCoords[0], wallCoords[1], wallSheet, spriteImages)
+    cropCompile(*objectCoord, objectSheet, spriteImages)
     return spriteImages
 
 def removeBackground(image):

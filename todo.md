@@ -6,17 +6,15 @@
 (!!) XX IS YOU rules also take one extra round to get registered. 
 
 5. Beauty / Good looking graphics / Sound effects for everything
-    - Import sprites from BABA IS YOU and link them to objects. 
-    - Have objects be drawn as the sprites.
-    - Have level backgrounds.
-    - Finish the Kimchi Sprite (and mystery david kosbie / mike taylor sprites)
+    - WIN, HOT, MELT, and DEFEAT effect animations
+    - 'KIMCHI IS YOU' title sprite
     - Pause menu
         - Draw gridlines option
         - Draw grid numbers option
-    - Different background sizes for different levels
     - Decoration items
     - Proper win screen animation
     - Proper no player 'loss' animations
+    - Finish the Kimchi Sprite (and mystery david kosbie / mike taylor sprites)
     ** Create system for movement trails (generate little cloud after player sprite)
 
 (!) (implement 5 levels (3 tutorial, 3 hard ones) with base features-- then deem temporarily complete) 

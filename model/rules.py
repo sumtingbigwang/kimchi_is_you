@@ -12,24 +12,63 @@ def getRules(level):
     return rules
     
 def makeRules(app,level): 
+    doubleReplaced = False
+    rulePairs = []
     for (word, (subjectWord, effectWord)) in level.rules:
-        appendType = subjectWord.obj
+        rulePairs += [(subjectWord, effectWord)]
+    
+    for pair in rulePairs:
+        subjectWord, effectWord = pair
         if isinstance(subjectWord, subj) and isinstance(effectWord, effect):
-            for object in level.dict:
-                if (isinstance(object, obj) #item is an object 
-                    and object.attribute == appendType #item matches type
-                    and effectWord.attribute not in object.effectsList): #effect hasn't been appended alr
-                            #apply effects to objects
-                            object.effectsList.append(effectWord.attribute) 
-                            
+            addEffects(app, level, subjectWord, effectWord)
         #SUBJ IS SUBJ replaces objects
-        if isinstance(subjectWord, subj) and isinstance(effectWord, subj):
-            replaceType = effectWord.obj
-            for object in level.dict:
-                if (isinstance(object, obj) and object.attribute == appendType):
-                    object.setAttribute(replaceType)
-                    #record the type change for undo / reset
-                    app.turnMoves.append((object, appendType, replaceType))
+        elif isinstance(subjectWord, subj) and isinstance(effectWord, subj):
+            replaceObjs(app, level, subjectWord, effectWord)
+            
+
+def addEffects(app, level, subjectWord, effectWord):
+    appendType = subjectWord.obj
+    for object in level.dict:
+        if (isinstance(object, obj) #item is an object 
+            and object.attribute == appendType #item matches type
+            and effectWord.attribute not in object.effectsList): #effect hasn't been appended alr
+                    #apply effects to objects
+                object.effectsList.append(effectWord.attribute) 
+                
+def replaceObjs(app, level, subjectWord, effectWord):
+    appendType = subjectWord.obj
+    replaceType = effectWord.obj
+    for object in level.dict:
+        if (isinstance(object, obj) and object.attribute == appendType):
+            object.setAttribute(replaceType)
+            object.effectsList = copy.deepcopy(findLookupList(level.dict, replaceType))
+            #record the type change for undo / reset
+            app.turnMoves.append((object, appendType, replaceType))
+        
+def swapObjs(app, level):
+    replaceObjPairs = []
+    objPairs = [(subjectWord, effectWord)
+        for (word, (subjectWord, effectWord)) in level.rules 
+        if word.attribute == 'equals'] 
+    attributePairs = [(subjectWord.attribute, effectWord.attribute)
+                      for (subjectWord, effectWord) in objPairs]
+    
+    for lIdx in range(len(attributePairs)):
+        invertedPair = attributePairs[lIdx][::-1]
+        if invertedPair in attributePairs:
+            replaceObjPairs += [objPairs[lIdx]]
+            attributePairs[lIdx] = ('bogo','bogo')
+            
+    for pair in replaceObjPairs:
+        subjectWord, effectWord = pair
+        replaced = subjectWord.attribute
+        replacement = effectWord.attribute
+        if app.replaceCount % 2 == 0:
+            replaceObjs(app, level, pair[0], pair[1])
+        elif app.replaceCount % 2 == 1:
+            replaceObjs(app, level, pair[1], pair[0])
+        app.replaceCount += 1
+    
                     
 def ruleUnpacker(list):
     returnList = set()
@@ -109,15 +148,23 @@ def compileRules(level):
     return rules
 
 def refresh(app,level):
-    #rule refresh 
-    level.rules = compileRules(level) #first read all rules on screen made by words.
-    getRules(level) #then store all rules in level.rules for printing. 
-    delRules(level) #we cross-check level.rules for rules removed, and delete extra rules from objects.
-    makeRules(app,level) #we THEN check for new rules made and apply them 
+    #rule refresh
+    level.rules = compileRules(level)
+    delRules(level)
+    getRules(level)
+    makeRules(app,level)
+    swapObjs(app, level)
+    
     #move logging
-    #cache all moves made this turn, put it in a stack that can be executed on one button press.
     if app.turnMoves: #don't want to store empty stacks
-        app.level.moveHistory += [app.turnMoves] #'your mom could be a stack' --seunghyeok lee
-    #now reset turn moves for the next action done. 
+        app.moveHistory += [app.turnMoves]
     app.turnMoves = []
+
+    #update game state
+    app.players = getPlayer(app.level)
+    if len(app.players) == 0:
+        app.noPlayer = True
+    else:
+        app.noPlayer = False
+        checkWin(app, app.levelDict)  # Only check for win if we have players
     

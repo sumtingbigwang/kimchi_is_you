@@ -1,3 +1,4 @@
+from tracemalloc import start
 from cmu_graphics import * 
 from PIL import Image
 #We want ALL OF THE SPRITE DRAW DATA HERE. E.G.
@@ -15,11 +16,33 @@ class drawInfo:
 #starts at (1,1)
 #crop: corners, top left and bottom right
 
+
+#ADDING A SPRITE:
+#update objDrawDict/wordDrawDict in objects.py
+#update this file with crop coordinates, name, and type
+#update loadimages.py (if you need to)
+
+
 #SPRITES HAVE THE FOLLOWING ANIMATION STRUCTURE:
 # - Sprite: BABA, WALL, ROCK, etc. 
 #      - Direction: right, up, left, down
 #           - State: legs in, standing, legs out 
 #                  -Frame: 0, 1, 2
+
+#menu-related sprites--------------------------------
+menuDraw = drawInfo('MENU', 'menu', 'white', 'black', None)
+
+startDict = {'start', 'startP'}
+startDraw = drawInfo('START', 'button', 'white', 'black', startDict)
+
+continueDict = {'continue', 'continueP'}
+continueDraw = drawInfo('CONTINUE', 'button', 'white', 'black', continueDict)
+
+settingsDict = {'settings', 'settingsP'}
+settingsDraw = drawInfo('SETTINGS', 'button', 'white', 'black', settingsDict)
+
+exitDict = {'exit', 'exitP'}
+exitDraw = drawInfo('EXIT', 'button', 'white', 'black', exitDict)
 
 #player-related sprites--------------------------------
 babaDict= {

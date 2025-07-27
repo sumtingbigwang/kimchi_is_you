@@ -33,20 +33,18 @@ def calculateGridDimensions(app):
 def drawBoard(app):
     for row in range(app.rows):
         for col in range(app.cols):
-            drawCell(app, row, col, app.board[row][col])
+            drawCell(app, row, col, app.level.cellColor)
 
 def drawBoardBorder(app):
     # draw the board outline (with double-thickness):
     drawRect(app.boardLeft, app.boardTop, app.boardWidth, app.boardHeight,
-             fill=None, border='grey',
-             borderWidth=2*app.cellBorderWidth)
+             fill=None,borderWidth=2*app.cellBorderWidth)
 
 def drawCell(app, row, col, color):
     cellLeft, cellTop = getCellLeftTop(app, row, col)
     cellWidth, cellHeight = getCellSize(app)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
-             fill=color, border='grey',
-             borderWidth=app.cellBorderWidth)
+             fill=None, border = 'grey',borderWidth=app.cellBorderWidth)
 
 def getCellSize(app):
     return (app.cellSize, app.cellSize)

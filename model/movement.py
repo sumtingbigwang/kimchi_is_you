@@ -3,7 +3,7 @@ from cmu_graphics import *
 import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
 from model.objects import *
-from model.rules import refresh
+from model.rules import *
 
 #move dictionary (to save space)
 moveDict = {'right': (1,0), 'left':(-1,0), 'up':(0,-1),'down':(0,1)}
@@ -13,14 +13,10 @@ def movePlayers(app, levelDict, players, move):
     for player in players:
         moveObj(app,levelDict,player,move)
     
-#Cursor AI: debugged moveObj and pushObj function from last commit.
-#object position tuble wasn't being removed from levelDict, so it would glitch
-#everywhere and cause hella issues. 
+#turns out cursor is dogshit at debugging anything that isn't a simple bug! :)
+#had to redo much of this myself later anyway.
 
-def moveObj(app, levelDict, obj, move, undo=False):
-    #im ngl ive been working on this specific function for more than 2 hours bruh.
-    #i asked claude to help debug, it works now, im leaving it the hell alone
-    
+def moveObj(app, levelDict, obj, move):
     #get target cell coords
     x, y = obj.pos
     dx, dy = moveDict[move]
@@ -28,6 +24,11 @@ def moveObj(app, levelDict, obj, move, undo=False):
     
     #legality check
     if not isLegal(levelDict, tgtCell):
+        if app.debugMode:
+            print(obj.name,'move illegal')
+            targetObjs = getObjectsInCell(levelDict, *tgtCell)
+            for obj in targetObjs:
+                print(obj.effectsList)
         return None
     
     #get tgt objs
@@ -38,31 +39,68 @@ def moveObj(app, levelDict, obj, move, undo=False):
         for tgtObject in tgtObjs:
             if (('you' in tgtObject.effectsList and 'stop' in tgtObject.effectsList) or 
                 ('you' in tgtObject.effectsList and 'push' in tgtObject.effectsList)):
-                x, y = obj.pos
-                dx, dy = moveDict[move]
-                targetTargetCell = (x + dx, y + dy)
-                if not isLegal(levelDict, targetTargetCell):
+                #this is another instance of you, which we only need check for movement space. 
+                if pushableObj(app, levelDict, tgtObject, move) is None:
+                    if app.debugMode:
+                        (obj.name,'cannot push')
+                    obj.changeDir(move)
                     return None
-                
             elif 'push' in tgtObject.effectsList:
-                #pushable object, begin recursion
+                #pushable object, begin recursion. 
+                #for this we actually want to move the target object if it passes, not just check for pushability. 
                 if pushObj(app, levelDict, tgtObject, move) is None:
+                    if app.debugMode:
+                        print(obj.name,'cannot push')
+                    obj.changeDir(move)
                     return None #if object doesn't push, then we just break and don't move
+            
+            #if we get here, the pushable object is moved, and we're happy. 
     
-    #recursion passed, now move object
-    #(SOMETHING about timing with going with the simple approach of overwriting dict entry.)
-    #(this approach works, idk why the other doesn't, ill figure out sometime)
+    #recursion passed, now move our original object
     if obj in levelDict:
         del levelDict[obj] #clear the original position before writing 
     app.turnMoves.append((obj, move))
     obj.MoveObject(move)
     levelDict[obj] = obj.pos
+    if app.debugMode:
+        print(obj.name,'moved', obj.pos)
     return True
-    refresh(app, app.level)
 
-#pushObj--------------------------------------
-def pushObj(app, levelDict, obj, move):
-    #get target cell coords
+def pushObj(app, levelDict, object, move):
+    #check if object itself can be pushed
+    if pushableObj(app, levelDict, object, move) is None:
+        if app.debugMode:
+            print(object.name,'pushing move illegal')
+        object.changeDir(move)
+        return None
+        
+    #get the nsext cell's objects and push them first
+    x, y = object.pos
+    dx, dy = moveDict[move]
+    tgtCell = (x + dx, y + dy)
+    tgtObjs = getObjectsInCell(levelDict, *tgtCell)
+    
+    #push objects in the target cell first
+    if tgtObjs:
+        for tgtObj in tgtObjs:
+            if 'push' in tgtObj.effectsList:
+                if pushObj(app, levelDict, tgtObj, move) is None:
+                    if app.debugMode:
+                        print(object.name,'cannot push')
+                    object.changeDir(move)
+                    return None
+                
+    #then move this object
+    if object in levelDict:
+        del levelDict[object]
+    object.MoveObject(move)
+    levelDict[object] = object.pos
+    app.turnMoves.append((object, move))
+    if app.debugMode:
+        print(obj.name,'moved', obj.pos)
+    return True
+
+def pushableObj(app, levelDict, obj, move):
     x, y = obj.pos
     dx, dy = moveDict[move]
     tgtCell = (x + dx, y + dy)
@@ -76,15 +114,19 @@ def pushObj(app, levelDict, obj, move):
     
     if tgtObjs:
         for tgtObj in tgtObjs:
-            if 'push' in tgtObj.effectsList:
-                if pushObj(app, levelDict, tgtObj, move) is None:
+            #if target has stop and no push, and we're not a you+stop object, we can't move
+            if ('stop' in tgtObj.effectsList 
+                  and not ('you' in obj.effectsList and 'stop' in obj.effectsList)):
+                if 'push' not in tgtObj.effectsList:
                     return None
-    
-    if obj in levelDict:
-        del levelDict[obj]
-    app.turnMoves.append((obj, move))
-    obj.MoveObject(move)
-    levelDict[obj] = obj.pos
+            
+            #regular push case - ALL objects in target cell must be pushable
+            #'you' + 'stop' and 'you' + 'push' behave like pushable objects basically.
+            elif ('push' in tgtObj.effectsList 
+            or ('you' in tgtObj.effectsList and 'stop' in tgtObj.effectsList)
+            or ('you' in tgtObj.effectsList and 'push' in tgtObj.effectsList)):
+                if pushableObj(app, levelDict, tgtObj, move) is None:
+                    return None
     return True
         
 #legality checks--------------------------------------
@@ -106,9 +148,9 @@ def isLegal(levelDict, tgtCell):
 
 #reset functions--------------------------------------
 def undoMove(app):
-    if len(app.level.moveHistory) == 0: #no moves to undo
+    if len(app.moveHistory) == 0: #no moves to undo
         return None
-    moveStack = app.level.moveHistory.pop()
+    moveStack = app.moveHistory.pop()
     for move in moveStack:
         if len(move) == 2: #this means tuple is a move
             (object, direction) = move
@@ -129,4 +171,15 @@ def resetLevel(app):
         item.attribute = item.initialState
     app.level.moveHistory = []
     app.turnMoves = []
-    refresh(app, app.level)
+    app.replaceCount = 0
+    
+    # Just update rules without checking win state
+    level = app.level
+    level.rules = compileRules(level)
+    delRules(level)
+    getRules(level)
+    makeRules(app,level)
+    
+    # Update players
+    app.players = getPlayer(app.level)
+    app.noPlayer = len(app.players) == 0

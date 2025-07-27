@@ -82,10 +82,27 @@ def drawNoPlayerScreen(app,color):
 
 def printRules(rulesList):
     ruleString = ''
+    effectString = ''
     for tuple in rulesList:
         if ruleString != '':
             ruleString += ', '
         equalsObject, ruletuple = tuple
         subject, effect = ruletuple
-        ruleString += f'{subject.obj.upper()} IS {effect.attribute.upper()}'
+        if effect.type == 'subj':
+            effectString = effect.obj
+        else:
+            effectString = effect.attribute
+        ruleString += f'{subject.obj.upper()} IS {effectString.upper()}'
     return ruleString
+
+def drawPauseScreen(app,color):
+    drawRect(0,0,app.width,app.height,fill=color, opacity = 40)
+    drawLabel(
+        'Paused',
+        app.width/2,
+        app.height/2,
+        fill='white', #white is a placeholder color. 
+        size=2 * app.cellHeight,
+        bold= True,
+        align='center'
+    )
