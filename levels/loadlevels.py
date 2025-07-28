@@ -20,9 +20,8 @@ def loadLevel(app, levelnum):
     app.sound = Sound(app.level.bgm)
     app.sound.play(loop = True)
     
-    #initialize animation metrics 
+    #initialize animation and pointer metrics 
     app.animIndex = 0
-    app.stepsPerSecond = 5.5
     app.pointerIdx = 0
     
     #load sprites and anims

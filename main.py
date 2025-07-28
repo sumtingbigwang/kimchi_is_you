@@ -11,6 +11,7 @@ from view.drawscreens import *
 from view.loadimages import *
 from model.movement import * 
 from model.rules import *
+from sounds.sounds import *
 import copy, sys
 
 def onAppStart(app):
@@ -37,7 +38,8 @@ def onAppStart(app):
     app.levelDict = (app.level).dict
     app.levelNum = app.level.num
     app.sound = Sound(app.level.bgm)
-    app.sound.play(loop = True)
+    app.deadSound = Sound('sounds/noplayer.mp3')
+    app.sound.play(loop = True, restart = True)
     
     #load sprites and anims
     app.spriteDict = loadSprites(app)

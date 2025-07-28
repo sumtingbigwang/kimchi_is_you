@@ -201,7 +201,7 @@ def drawSettingsScreen(app):
             size = cellHeight, 
             fill = 'white', bold = True, font = 'babafont', align = 'center')
     
-    drawLabel(f'DEBUG MODE: {'ON' if app.debugMode else 'OFF'}', 
+    drawLabel(f'DEBUG MODE (G): {'ON' if app.debugMode else 'OFF'}', 
               app.width//2, 4*cellHeight,
               size = 0.6*cellHeight, 
               fill = 'white', bold = True, font = 'babafont', align = 'center')

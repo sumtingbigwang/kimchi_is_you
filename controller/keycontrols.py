@@ -5,17 +5,12 @@ from model.rules import *
 from model.objects import *
 from levels import *
 from levels.loadlevels import *
-import sys, math, time
+from sounds.sounds import *
+import sys, math, time, random
 #much of this doc is adjusting for the menu controls. 
 #was too lazy to get the pointer going so had claude work it out
-def getPointer(app):
-    for item in app.levelDict:
-        if item.attribute == 'baba':
-            return item
-    return None
-
 def updatePointerPosition(app):
-    pointer = getPointer(app)
+    pointer = getFirstObject(app, 'baba')
     if pointer:
         # Update both the object position and dictionary
         newPos = (4, (6 + 2 * app.pointerIdx))
@@ -71,6 +66,7 @@ def mapControls(app, key):
         print(cursorPosition)
         if cursorPosition in mapLevelLoadDict:
             loadLevel(app, mapLevelLoadDict[cursorPosition])
+            Sound('sounds/levelselect.mp3').play()
         else:
             pass
     elif key == 'escape':
@@ -87,6 +83,7 @@ def mapControls(app, key):
         undoMove(app)
     elif key == 'r': #reset function
         app.askReset = True
+    playRandomMoveSound()
         
 def settingsControls(app, key):
     if key == 'escape':
@@ -104,6 +101,7 @@ def settingsControls(app, key):
         app.width = 800
         app.height = 800
         calculateGridDimensions(app)
+    playRandomMoveSound()
         
 def menuControls(app, key):
     # Initialize pointer index if not exists
@@ -199,17 +197,24 @@ def gameControls(app, key):
     if not app.levelWin and not app.askReset and not app.paused:
         app.currentTime = time.time()
         #on key tap inputs:
-        if key == 'right' or key == 'd' or key == 'D':
-            movePlayers(app,app.levelDict,app.players,'right')
-        elif key == 'left' or key == 'a' or key == 'A':
-            movePlayers(app,app.levelDict,app.players,'left')
-        elif key == 'up' or key == 'w' or key == 'W':
-            movePlayers(app,app.levelDict,app.players,'up')
-        elif key == 'down' or key == 's' or key == 'S':
-            movePlayers(app,app.levelDict,app.players,'down')
-        elif key == 'z':
+        if key in ['right', 'd', 'D', 'left', 'a', 'A', 'up', 'w', 'W', 'down', 's', 'S', 'z', 'r']:
+            playRandomMoveSound()
+            if key == 'right' or key == 'd' or key == 'D':
+                movePlayers(app,app.levelDict,app.players,'right')
+            elif key == 'left' or key == 'a' or key == 'A':
+                movePlayers(app,app.levelDict,app.players,'left')
+            elif key == 'up' or key == 'w' or key == 'W':
+                movePlayers(app,app.levelDict,app.players,'up')
+            elif key == 'down' or key == 's' or key == 'S':
+                movePlayers(app,app.levelDict,app.players,'down')
+        if key == 'z':
+            if app.noPlayer:
+                app.deadSound.pause()
+                app.sound.play(restart = False, loop = True)
             undoMove(app)
-        elif key == 'r': #reset function
+            playRandomUndoSound()
+            
+        if key == 'r': #reset function
             app.askReset = True
 
         if app.debugMode:
@@ -219,6 +224,10 @@ def gameControls(app, key):
             
         if not app.levelWin and not app.askReset and not app.paused:
             refresh(app, app.level)  # This already handles state checks
+        
+        if app.noPlayer:
+            app.sound.pause()
+            app.deadSound.play(loop = True, restart = True)
         
     #check and add/remove rules based on words on the screen.
     if key == 'escape':
