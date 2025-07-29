@@ -21,7 +21,7 @@ As a 15-112 student, I was given ~1 week (really 2) to code a term project that 
 For now, this project runs through the file 'main.py'. cmu_graphics is a requirement, and has been provided with the project. 
 No additional libraries need to be installed provided that 'main.py' is run in the same folder as the accompanied cmu_graphics folder.
 
-###Credits
+### Credits
 cmu_graphics developed by Carnegie Mellon University. 
 Music, art, sprites and level designs by Arvi "Hempuli" Teikari. 
 This project is created for educational purposes only, and is not intended for commercialization or monetization.
