@@ -62,7 +62,7 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('level 4 load complete, result: ', levelDict)
+print('level 4 load complete, result: ', levelDict, '\n\n')
 level = level(4,levelDict,
               #level size
               (22,16), 

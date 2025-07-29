@@ -18,7 +18,10 @@ def loadLevel(app, levelnum):
     app.levelNum = app.level.num
     app.inMap = app.level.inMap
     app.inMenu = app.level.inMenu
-    app.levelDict = copy.deepcopy(app.level.dict)
+    if app.level.num == -1: #lets us write cursor positions to the map level dict
+        app.levelDict = app.level.dict
+    else:
+        app.levelDict = copy.deepcopy(app.level.dict)
     app.inMenu = app.level.inMenu
     app.sound = Sound(app.level.bgm)
     app.sound.play(loop = True)

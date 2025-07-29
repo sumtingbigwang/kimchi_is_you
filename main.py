@@ -21,8 +21,8 @@ def onAppStart(app):
     app.replaceCount = 0
     
     #define window size--------
-    app.initHeight = 800
-    app.initWidth = 800
+    app.initHeight = 975
+    app.initWidth = 1512
     app.height = app.initHeight
     app.width = app.initWidth
     
@@ -34,6 +34,7 @@ def onAppStart(app):
     app.lastMoveTime = 0  # Track when the last move happened
     
     #define level
+    app.lastPlayedLevel = 5 #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
@@ -44,7 +45,7 @@ def onAppStart(app):
     #load sprites and anims
     app.spriteDict = loadSprites(app)
     
-    #define game ers
+    #define game parameters
     app.inMenu = app.level.inMenu
     app.inMap = app.level.inMap
     app.noPlayer = False
@@ -53,9 +54,9 @@ def onAppStart(app):
     app.paused = False
     app.wasPaused = False
     app.wasMenu = False
+    app.wasMap = False
     app.debugMode = False
     app.settings = False
-    
     #initialize level
     #make move history and turnMove sets, then get all rules from the board and define players
     app.levelRules = []

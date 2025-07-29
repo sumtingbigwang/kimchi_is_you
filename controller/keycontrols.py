@@ -8,9 +8,10 @@ from levels.loadlevels import *
 from sounds.sounds import *
 import sys, math, time, random
 #much of this doc is adjusting for the menu controls. 
-#was too lazy to get the pointer going so had claude work it out
+
 def updatePointerPosition(app):
     pointer = getFirstObject(app, 'kimchi')
+    pointer.direction = 'right'
     if pointer:
         # Update both the object position and dictionary
         newPos = (4, (6 + 2 * app.pointerIdx))
@@ -60,17 +61,20 @@ def mapControls(app, key):
     (7,11):7,
     (8,11):8,
     (9,11):9
-}
-    cursorPosition = getFirstObject(app, 'cursor').pos
+}   
+    cursor = getFirstObject(app, 'cursor')
+    cursorPosition = cursor.pos
     if key == 'enter':
-        print(cursorPosition)
         if cursorPosition in mapLevelLoadDict:
+            map.level.dict[cursor] = cursorPosition
             loadLevel(app, mapLevelLoadDict[cursorPosition])
             Sound('sounds/levelselect.mp3').play()
         else:
             pass
     elif key == 'escape':
         app.paused = not app.paused
+        app.inMap = not app.inMap
+        app.wasMap = True
     if key == 'right' or key == 'd' or key == 'D':
         movePlayers(app,app.players,'right')
     elif key == 'left' or key == 'a' or key == 'A':
@@ -85,6 +89,7 @@ def mapControls(app, key):
         app.askReset = True
     playRandomMoveSound()
         
+
 def settingsControls(app, key):
     if key == 'escape':
         if app.wasPaused:
@@ -98,11 +103,12 @@ def settingsControls(app, key):
     elif key == 'down':
         app.stepsPerSecond -= 0.1
     elif key == 'w' or key == 'W':
-        app.width = 800
-        app.height = 800
+        app.width = 1512
+        app.height = 975
         calculateGridDimensions(app)
     playRandomMoveSound()
-        
+
+#claude: reworked pointer mechanics to properly wrap kimchi around. 
 def menuControls(app, key):
     # Initialize pointer index if not exists
     if not hasattr(app, 'pointerIdx'):
@@ -112,8 +118,7 @@ def menuControls(app, key):
         if app.pointerIdx == 0: #start game
             loadLevel(app, -1) #temporary, take this to the map screen
         elif app.pointerIdx == 1:
-            #TEMP LOAD 
-            loadLevel(app, 1) #load the last played puzzle (make a save file?)
+            loadLevel(app, app.lastPlayedLevel) #load the last played puzzle (make a save file?)
         elif app.pointerIdx == 2:
             app.settings = True #load settings screen
             app.wasMenu = True
@@ -131,7 +136,7 @@ def menuControls(app, key):
         if app.pointerIdx < 0 or app.pointerIdx > 3:
             app.pointerIdx = app.pointerIdx % 4
             
-        # Update Baba's position
+        #update kimchi position
         updatePointerPosition(app)
         if app.debugMode:
             print(f"Pointer index: {app.pointerIdx}")
@@ -177,8 +182,9 @@ def gameKeyHold(app, keys):
 def gameControls(app, key):
     if app.askReset:
         if key == 'y':
-            app.deadSound.pause()
-            app.sound.play(restart = False, loop = True)
+            if not app.wasMap:
+                app.deadSound.pause()
+                app.sound.play(restart = False, loop = True)
             Sound('sounds/levelselect.mp3').play()
             resetLevel(app)
             app.askReset = False

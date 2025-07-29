@@ -228,4 +228,29 @@ Jul 26 + 27
     Final is tomorrow so not spending a lot of time writing logs. 
         - Implemented map screen, settings screen, menu page, CONTINUE function. 
 
+Jul 28
+    Final is DONE! 
+
+    Good news: The game is "temp complete" by Mike's standards! We have 5 tutorial levels, a fully working game system, settings, menu, map screen with level selection, and most of the fundamental parts to make the game work. All by the Monday "deadline" as well. 
+
+    Bad news: There's a few more features I want to implement, and we have 3 more days to do this. So, we're going agile. Logs from now on will be much shorter and less explanatory in favor of leaving comments in the code while we develop to save time and dedicate more effort on feature development. Check the updated todo list for intended features. 
+
+    Anyways, new features:
+        - Added sound library, and randomly generated walk, win, defeat, sink, melt, and menu selection sounds. 
+        - Added DEFEAT, SINK, and HOT/MELT functionality. 
+            ** Figuring out the UNDO for these was a pain in the a**. Hopefully the rest of the features get easier! 
+        - Imported 'object2' animated objects. 
+        - Fixed bug where some functions would mutate the level data in the 'levels' folder while others would mutate the app.levelDict folder locally. The 'levels' folder is now the unmutated 'backup' data for levels used to reset, and the app.levelDict is now where everything happens. 
+        - Added Kimchi as the main mascot and a mystery guest found on level 3. Also added and animated 18 new sprites, 18 new corresponding words, and 7 new effects.
+        - Made 3 new tutorial levels. 
+        - Added map and pause menu level title feature. 
+
+
     
+ACCREDITATIONS / DISCLAIMERS (15-112 Requirement):
+- Claude / Cursor fixed (code was previously originally written but didn't work) the following functions:
+    - calculateGridDimensions (implemented feature to adjust grid sizing according to window size changes)
+    - drawGame (added module to draw players on top of objects)
+    - updatePointer for menu/pause menu view
+
+    **moveObj and pushObj were on this list. They were taken off because I had to rewrite much of the entire function while doing the data transfer from hard-coded objects to mutable object classes. Claude was no help at all debugging at that stage! Don't know if that says something about my code or what...

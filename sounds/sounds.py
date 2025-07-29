@@ -22,6 +22,10 @@ def playRandomSinkSound():
 def playRandomDefeatSound():
     randIdx = randint(6,11)
     Sound(f'sounds/defeat/{randIdx}.mp3').play()
+
+def playRandomMeltSound():
+    randIdx = randint(117,119)
+    Sound(f'sounds/melt/{randIdx}.mp3').play()
     
 def checkRuleSound(wordObject):
     if wordObject.powered:

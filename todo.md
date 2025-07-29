@@ -1,51 +1,29 @@
-(!!)- highest priority 
+(!!)- highest priority, usually bug fixes
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
-(!!) Powered (selected) vs unpowered (unselected) options in menus
+(!!) KIMCHI IS DEFEAT + KIMCHI IS YOU bug when kimchi pushes DEFEAT; kimchi clips into effect word
 
-5. Beauty / Good looking graphics / Sound effects for everything
-    - Map screen 
-        - 12 Levels, S-shaped unlock pattern
-        - Levels unlock on a save file
-        - Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
-    - Proper win screen animation
-    - Level load transitions
-        - 2 separate screens, balls on and off, both drawn last
-    - Proper no player 'loss' animations
-    - Decoration items
-    - WIN, HOT, MELT, and DEFEAT effect animations
-    - Finish the Kimchi Sprite (and mystery david kosbie / mike taylor sprites)
-    ** Create system for movement trails (generate little cloud after player sprite)
-    ** Start menu buttons highlighting
+1. Level Design
+- 12 Levels
+    - 5 Tutorial
+    - 3 Forest of Fall
+    - 3 The Lake
+    - 3 The Factory 
+- Levels unlock on a save file
+- Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
+- 12 Levels, S-shaped unlock pattern
+- Levels unlock on a save file
+- Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
 
-(!) (implement 5 levels (3 tutorial, 3 hard ones) with base features-- then deem temporarily complete) 
-    ^^We should be here by Monday. 
-    
-6. Implement and map Space to the takeStep or "wait" function.
-
-** Walkthrough option for each level.
-    - Preprogammed steps; resets level, then BABA automatically walks through solution until win
-    - Press R at any time to try again 
-
-7. Menu loader 
-    - Separate title screen from menu/map page. 
-    - Paused menu which prints the rules currently in play for the level (none for menu)
-    - Map screen is actually a level. Implement the menu screen as a level class
-        - Level design like level1???
-        - final two levels create the 'KIMCHI' and 'FLAG' objects or something
-
-8. More effects 
-    (really, a lot of these are conditional "die" states.)
-    - SINK
+2. More effects 
     - HOT / MELT
-    - DEFEAT
     - MOVE / AUTO
     - WEAK
     - SHIFT 
     - LEVEL (purely for putting a BABA on the menu screen)
     - MORE  (** with backtracking / recursive fill similar to the MSPaint example)
 
-9. Adjectives and more features
+3. Adjectives and more features
     - ON (basic overlap feature.)
     - NOT (heard it's horrid to implement.) 
     - AND (reads powered effects / subjects)
@@ -55,3 +33,15 @@
     ** FACING (either 1 or all blocks in BABA's direction applicable.)
     ** FALL (gravity. Player sprites will drop to the highest-y, lowest on-screen block possible in their column.)
     ** Flashlight level: BLOCK NOT FACING BABA IS HIDE
+
+** Proper win screen animation
+** Level load transitions
+    - 2 separate screens, balls on and off, both drawn last
+** Proper win screen animation
+** Level load transitions
+** Create system for movement trails (generate little cloud after player sprite)
+** WIN, HOT, MELT, and DEFEAT effect animations
+** Start menu buttons highlighting
+** Walkthrough option for each level.
+    - Preprogammed steps; resets level, then BABA automatically walks through solution until win
+    - Press R at any time to try again 

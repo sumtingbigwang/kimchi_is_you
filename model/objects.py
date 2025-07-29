@@ -217,7 +217,7 @@ wordDrawDict = {
 #start actual class definitions--------------------------------------
 #these labels are mine. I swear. this section isn't cursored. 
 class obj:
-    def __init__(self, name, attribute, initEffect = None):
+    def __init__(self, name, attribute, initEffect = None, initDirection = 'down'):
         #object base information (determines what object e.g. baba, keke, kimchi the object instance is)
         self.name = name #DO NOT MISTAKE FOR ATTRIBUTE! The name is for obj instance modification. 
         self.attribute = attribute #THIS is the name of the actual object (baba, rock, wall, flag, etc.)
@@ -233,7 +233,7 @@ class obj:
         self.preSink = None
         
         #drawing info
-        self.direction = 'down'
+        self.direction = initDirection
         self.type = 'obj'
         
     def setAttribute(self, attribute):

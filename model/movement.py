@@ -70,7 +70,7 @@ def moveObj(app, moveObj, move):
                     return None #if object doesn't push, then we just break and don't move
             elif ('sink' in tgtObject.effectsList 
                   or 'defeat' in tgtObject.effectsList
-                  or ('hot' in tgtObject.effectsList and'melt' in moveObj.effectsList)):
+                  or ('hot' in tgtObject.effectsList and 'melt' in moveObj.effectsList)):
                 moveObj.preSink = (x,y)
             
             #if we get here, the pushable object is moved, and we're happy. 

@@ -193,7 +193,7 @@ def drawPauseScreen(app,color):
     drawImage(menuImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
     
     #draw pointer 
-    drawSprite(app, obj('Pointer','kimchi'), *getCellLeftTop(app, 1+app.pointerIdx,buttonRow-0.5), cellWidth)
+    drawSprite(app, obj('Pointer','kimchi',None,'right'), *getCellLeftTop(app, 1+app.pointerIdx,buttonRow-0.5), cellWidth)
 
     #draw rules
     
@@ -231,7 +231,10 @@ def drawSettingsScreen(app):
               app.width//2, 10*cellHeight,
               size = 0.4*cellHeight, 
               fill = 'white', bold = True, font = 'babafont', align = 'center')
-    
+    drawLabel("**FEATURE RECOMMENDED IN WINDOWED MODE ONLY. PLAY THE GAME IN FULLSCREEN FOR BEST EXPERIENCE.", 
+              app.width//2, 10.5*cellHeight,
+              size = 0.2*cellHeight, 
+              fill = 'white', bold = True, font = 'babafont', align = 'center')
     drawLabel('ESC TO RETURN', 
               app.width//2, app.height - 2*cellHeight,
               size = cellHeight, 
