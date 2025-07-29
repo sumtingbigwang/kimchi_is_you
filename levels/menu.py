@@ -15,7 +15,7 @@ levelDict = {} #levelDict starts out by being just a size dictionary.
 
 #then objects are introduced to be loaded. You edit the level here! 
 objDict = {'menu': [(2,1)],
-           'baba': [(4,6)]}
+           'kimchi': [(4,6)]}
 
 subjDict = {'start': [(5,6)],
             'continue': [(5,8)],
@@ -27,8 +27,8 @@ subjDict = {'start': [(5,6)],
 levelDict.update(loadObjects(objDict)) 
 levelDict.update(loadSubjs(subjDict))
 loadPositions(levelDict)
-print('level load complete, result: ', levelDict)
-level = level(0,levelDict,(17,13),'black', 'black', 10,'sounds/music/menu.ogg', True, False) #store the size of the level here.
+print('menu load complete, result: ', levelDict)
+level = level(0,levelDict,(17,13),'black', 'black', 10,'sounds/music/menu.ogg', 'MENU',True, False) #store the size of the level here.
 #i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
 #before i figured i could just make a new class attribute.
 

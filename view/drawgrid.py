@@ -45,6 +45,9 @@ def drawCell(app, row, col, color):
     cellWidth, cellHeight = getCellSize(app)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=None, border = 'grey',borderWidth=app.cellBorderWidth)
+    drawLabel(f'{col},{row}', cellLeft+cellWidth/2, cellTop+cellHeight/2, 
+              size = 0.4*app.cellSize, fill = 'white', 
+              bold = True, align = 'center', opacity = 40)
 
 def getCellSize(app):
     return (app.cellSize, app.cellSize)

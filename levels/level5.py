@@ -14,22 +14,39 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'flag' : (12, 6),
-           'kimchi' : (4,6),
-           'rock' : [(8,5),(8,6),(8,7)],
-           'wall' : [(i,4) for i in range(3,14)] + [(i,8) for i in range(3,14)]}
+objDict = {
+    'skull':(
+        wallHelper(13,3,21,3)
+        +wallHelper(21,4,21,11)
+        +wallHelper(13,11,20,11)
+        +wallHelper(13,4,13,10)
+        +wallHelper(3,9,3,13)
+        +wallHelper(9,9,9,13)
+        +wallHelper(5,7,5,9)
+        +wallHelper(7,7,7,9)
+        +[(4,9),(8,9)]),
+    'kimchi':[(6,12)],
+    'rock': (wallHelper(6,8,6,10)),
+    'flag':[(18,9)]
+}
 
-eqDict = {'equals': [(4,1), (4,10),(12,1),(12,10)]}
+eqDict = {
+    'equals':[(15,6),(1,0),(1,1),(3,5)]
+    }
 
-effectDict = {'push': [(13,1)],
-              'stop': [(13,10)],
-              'win': [(5,10)],
-              'you': [(5,1)]}
+effectDict = {
+    'push':[(4,5)],
+    'win':[(2,0)],
+    'you':[(2,1)],
+    'defeat':[(15,7)]
+              }
 
-subjDict = {'wallword': [(11,10)],
-               'rockword': [(11,1)],
-               'kimchiword': [(3,1)],
-               'flagword': [(3,10)]}
+subjDict = {
+    'kimchiword':[(0,1)],
+    'skullword':[(15,5)],
+    'rockword':[(2,5)],
+    'flagword':[(0,0)],   
+    }
 
 adjDict = {} #no adjectives in this level. 
 
@@ -42,19 +59,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('level 1 load complete, result: ', levelDict)
-level = level(1,levelDict,
-              # level size
-              (17,13), 
+print('level 5 load complete, result: ', levelDict)
+level = level(5,levelDict,
+              #level size
+              (24,14), 
               #background colors
               rgb(21,24,31), 'black',
               #top margin
               10, 
               #bgm
               'sounds/music/baba.ogg',
-              #level name
-              'STARTING OFF')
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              #levelname
+              'STILL OUT OF REACH') 

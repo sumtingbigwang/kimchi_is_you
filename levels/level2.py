@@ -14,22 +14,31 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'flag' : (12, 6),
-           'kimchi' : (4,6),
-           'rock' : [(8,5),(8,6),(8,7)],
-           'wall' : [(i,4) for i in range(3,14)] + [(i,8) for i in range(3,14)]}
+objDict = {'kimchi':[(14,13)],
+           'flag':[(11,8)],
+    'wall':(wallHelper(9,2,16,2)
+                   +wallHelper(9,3,9,6)
+                   +wallHelper(5,6,8,6)
+                   +wallHelper(5,7,5,10)
+                   +wallHelper(6,10,15,10)
+                   +wallHelper(9,11,9,16)
+                   +wallHelper(10,16,15,16)
+                   +wallHelper(16,3,16,16)
+                   )}
 
-eqDict = {'equals': [(4,1), (4,10),(12,1),(12,10)]}
+eqDict = {
+    'equals':[(6,13),(11,13)]
+}
 
-effectDict = {'push': [(13,1)],
-              'stop': [(13,10)],
-              'win': [(5,10)],
-              'you': [(5,1)]}
+effectDict = {
+    'you':[(6,14)],
+    'stop':[(11,14)],
+    'win':[(13,7)]
+}
 
-subjDict = {'wallword': [(11,10)],
-               'rockword': [(11,1)],
-               'kimchiword': [(3,1)],
-               'flagword': [(3,10)]}
+subjDict = {'wallword':[(11,12)],
+            'kimchiword':[(6,12)],
+            'flagword':[(7,8)]}
 
 adjDict = {} #no adjectives in this level. 
 
@@ -42,19 +51,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('level 1 load complete, result: ', levelDict)
-level = level(1,levelDict,
-              # level size
-              (17,13), 
+print('level 2 load complete, result: ', levelDict)
+level = level(2,levelDict,
+              #level size
+              (24,18), 
               #background colors
               rgb(21,24,31), 'black',
               #top margin
               10, 
               #bgm
               'sounds/music/baba.ogg',
-              #level name
-              'STARTING OFF')
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              #levelname
+              'WHERE DO I GO?')

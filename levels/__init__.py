@@ -3,4 +3,12 @@
 #instead of having everything on one big shitty list! :)
 
 #be sure to remind slef to update this list when new levels added
-__all__ = ['testlevel','menu','map','level1']
+__all__ = ['testlevel','menu','map', #experimental levels
+           'level1','level2','level3',
+           'level4','level5'#,'level6',
+           #'level7','level8','level9' #tutorial levels
+           #forest is fall
+           #water is sink
+           #cog is turn
+           #meta 
+           ]

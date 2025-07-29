@@ -196,7 +196,7 @@ Jul 24
 
             Move histories are also stored globally in tuples of (object, move) or (object, oldType, newType) in a move history folder: 
 
-                def refresh(app,level):
+                def (app,level):
                     #cache all moves made this turn, put it in a stack that can be executed on one button press.
                     if app.turnMoves: #don't want to store empty stacks
                         app.level.moveHistory += [app.turnMoves] #'your mom could be a stack' --seunghyeok lee

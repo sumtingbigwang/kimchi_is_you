@@ -1,19 +1,21 @@
-import sys
+import sys, time
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
 from cmu_graphics import *
 from model.objects import *
+from model.lookup import getPlayer, getFirstObject
 from view.drawinfo import *
 from view.drawobj import *
+from view.drawgrid import *
+from view.loadimages import *
 from levels import *
-from model.lookup import getPlayer
 
 #draw map screen --------------------------------------------------------------
 mapLevelNameDict = {
-    (7,13):'KIMCHI IS YOU',
-    (8,13):'HUH?',
-    (9,13):'[LEVELNAME]',
-    (7,12):'[LEVELNAME]',
-    (8,12):'[LEVELNAME]',
+    (7,13):'STARTING OFF',
+    (8,13):'WHERE DO I GO?',
+    (9,13):'WHAT THE HELLY?',
+    (7,12):'OUT OF REACH',
+    (8,12):'STILL OUT OF REACH',
     (9,12):'[LEVELNAME]',
     (7,11):'[LEVELNAME]',
     (8,11):'[LEVELNAME]',
@@ -116,22 +118,24 @@ def drawResetScreen(app,color):
 def drawNoPlayerScreen(app,color): 
     #also temporary. replace all of this
     drawLabel(
-        'Press Z to undo',
+        'Z TO UNDO',
         app.width*0.25,
         app.height*0.075,
         fill='white', #white is a placeholder color. 
         size= app.cellHeight,
         bold= True,
-        align='center'
+        align='center',
+        font= 'babafont'
     )
     drawLabel(
-        'Press R to reset',
+        'R TO RESET',
         app.width*0.75,
         app.height*0.075,
         fill='white', #white is a placeholder color. 
         size= app.cellHeight,
         bold= True,
-        align='center'
+        align='center',
+        font= 'babafont'
     )
 
 def printRules(rulesList):
@@ -157,38 +161,43 @@ def drawPauseScreen(app,color):
     width = 11*height
     buttonRow = (app.cols - width)//2
     drawRect(0,0,app.width,app.height,fill=rgb(21,24,31), opacity = 60)
+    #level title 
+
+    drawLabel(f'{app.level.levelName}', *getCellLeftTop(app, 0.4, app.cols//2),
+              size = app.cellHeight, fill = 'white', font = 'babafont', bold = True, align = 'center')
+    
     #(2, 0): resume
-    resumeCoords = getCellLeftTop(app, 0, buttonRow)
+    resumeCoords = getCellLeftTop(app, 1, buttonRow+0.5)
     resumeImage = CMUImage(Image.open('view/pausesprites/resume.png'))
     drawImage(resumeImage, *resumeCoords, width=width*cellWidth, height=height*cellHeight)
     
     
     #(2, 4): restart
-    restartCoords = getCellLeftTop(app, 1, buttonRow)
+    restartCoords = getCellLeftTop(app, 2, buttonRow+0.5)
     restartImage = CMUImage(Image.open('view/pausesprites/restart.png'))
     drawImage(restartImage, *restartCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 6): settings
-    settingsCoords = getCellLeftTop(app, 2, buttonRow)
+    settingsCoords = getCellLeftTop(app, 3, buttonRow+0.5)
     settingsImage = CMUImage(Image.open('view/pausesprites/settings.png'))
     drawImage(settingsImage, *settingsCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 6): return to map
-    mapCoords = getCellLeftTop(app, 3, buttonRow)
+    mapCoords = getCellLeftTop(app, 4, buttonRow+0.5)
     mapImage = CMUImage(Image.open('view/pausesprites/map.png'))
     drawImage(mapImage, *mapCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 8): return to menu
-    menuCoords = getCellLeftTop(app, 4, buttonRow)
+    menuCoords = getCellLeftTop(app, 5, buttonRow+0.5)
     menuImage = CMUImage(Image.open('view/pausesprites/menu.png'))
     drawImage(menuImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
     
     #draw pointer 
-    drawSprite(app, obj('Pointer','baba'), *getCellLeftTop(app, 0+app.pointerIdx,buttonRow-1), cellWidth)
+    drawSprite(app, obj('Pointer','kimchi'), *getCellLeftTop(app, 1+app.pointerIdx,buttonRow-0.5), cellWidth)
 
     #draw rules
     
-    drawLabel(f'CURRENT RULES: {printRules(app.level.rules)}', 
+    drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}', 
               app.width//2,app.height- 2*app.cellHeight,
               size = 0.4*app.cellHeight, 
               fill = 'white', bold = True, font= 'babafont', align = 'center')
@@ -229,7 +238,10 @@ def drawSettingsScreen(app):
               fill = 'white', bold = True, font = 'babafont', align = 'center')
     
     
-    
+def startup(app):
+    print('\n\n\n\n\n')
+    print('--------------------------------')
+    print('Levels Loaded! Ready to Go!')
     
     # drawLabel(
     #     'Paused',

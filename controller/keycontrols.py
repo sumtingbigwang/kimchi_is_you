@@ -10,7 +10,7 @@ import sys, math, time, random
 #much of this doc is adjusting for the menu controls. 
 #was too lazy to get the pointer going so had claude work it out
 def updatePointerPosition(app):
-    pointer = getFirstObject(app, 'baba')
+    pointer = getFirstObject(app, 'kimchi')
     if pointer:
         # Update both the object position and dictionary
         newPos = (4, (6 + 2 * app.pointerIdx))
@@ -72,13 +72,13 @@ def mapControls(app, key):
     elif key == 'escape':
         app.paused = not app.paused
     if key == 'right' or key == 'd' or key == 'D':
-        movePlayers(app,app.levelDict,app.players,'right')
+        movePlayers(app,app.players,'right')
     elif key == 'left' or key == 'a' or key == 'A':
-        movePlayers(app,app.levelDict,app.players,'left')
+        movePlayers(app,app.players,'left')
     elif key == 'up' or key == 'w' or key == 'W':
-        movePlayers(app,app.levelDict,app.players,'up')
+        movePlayers(app,app.players,'up')
     elif key == 'down' or key == 's' or key == 'S':
-        movePlayers(app,app.levelDict,app.players,'down')
+        movePlayers(app,app.players,'down')
     elif key == 'z':
         undoMove(app)
     elif key == 'r': #reset function
@@ -143,7 +143,7 @@ def select(app, key, sIdx):
         sIdx += 1
     if sIdx < 0 or sIdx > 4:
         sIdx = sIdx % 4
-    app.levelDict[getPointer(app)] = (4,(6+2*sIdx))
+    app.levelDict[getFirstObject(app, 'baba')] = (4,(6+2*sIdx))
     print(app.levelDict)
     print(sIdx)
     return sIdx
@@ -177,6 +177,9 @@ def gameKeyHold(app, keys):
 def gameControls(app, key):
     if app.askReset:
         if key == 'y':
+            app.deadSound.pause()
+            app.sound.play(restart = False, loop = True)
+            Sound('sounds/levelselect.mp3').play()
             resetLevel(app)
             app.askReset = False
             app.wasPaused = False
@@ -189,27 +192,38 @@ def gameControls(app, key):
 
     if app.levelWin:
         if key == 'c':
+            resetLevel(app)
             app.levelWin = False
             app.askReset = False
             loadLevel(app, -1)
-            app.players = getPlayer(app.level)
+            app.players = getPlayer(app)
             
     if not app.levelWin and not app.askReset and not app.paused:
-        app.currentTime = time.time()
         #on key tap inputs:
-        if key in ['right', 'd', 'D', 'left', 'a', 'A', 'up', 'w', 'W', 'down', 's', 'S', 'z', 'r']:
-            playRandomMoveSound()
+        if key in ['right', 'd', 'D', 
+                   'left', 'a', 'A', 
+                   'up', 'w', 'W', 
+                   'down', 's', 'S', 
+                   'z', 'r']:
+            if not app.noPlayer:
+                playRandomMoveSound()
             if key == 'right' or key == 'd' or key == 'D':
-                movePlayers(app,app.levelDict,app.players,'right')
+                movePlayers(app,app.players,'right')
             elif key == 'left' or key == 'a' or key == 'A':
-                movePlayers(app,app.levelDict,app.players,'left')
+                movePlayers(app,app.players,'left')
             elif key == 'up' or key == 'w' or key == 'W':
-                movePlayers(app,app.levelDict,app.players,'up')
+                movePlayers(app,app.players,'up')
             elif key == 'down' or key == 's' or key == 'S':
-                movePlayers(app,app.levelDict,app.players,'down')
+                movePlayers(app,app.players,'down')
+            elif key == 'space':
+                refresh(app)
+        if not app.levelWin and not app.askReset and not app.paused:
+            refresh(app)  # This already handles state checks
         if key == 'z':
             if app.noPlayer:
                 app.deadSound.pause()
+                app.sound.play(restart = False, loop = True)
+            else:
                 app.sound.play(restart = False, loop = True)
             undoMove(app)
             playRandomUndoSound()
@@ -218,16 +232,16 @@ def gameControls(app, key):
             app.askReset = True
 
         if app.debugMode:
-            print('moves made this turn:',app.turnMoves)
+            print('\n\n\n')
+            print('--------------------------------')
             print('state of board:',app.levelDict)
+            print('--------------------------------')
+            print('\n')
             print('history:', app.moveHistory)
-            
-        if not app.levelWin and not app.askReset and not app.paused:
-            refresh(app, app.level)  # This already handles state checks
         
         if app.noPlayer:
             app.sound.pause()
-            app.deadSound.play(loop = True, restart = True)
+            app.deadSound.play(loop = True, restart = False)
         
     #check and add/remove rules based on words on the screen.
     if key == 'escape':

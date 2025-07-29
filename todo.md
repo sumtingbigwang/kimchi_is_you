@@ -4,9 +4,6 @@
 (!!) Powered (selected) vs unpowered (unselected) options in menus
 
 5. Beauty / Good looking graphics / Sound effects for everything
-    - Pause menu
-        - Draw gridlines option
-        - Draw grid numbers option
     - Map screen 
         - 12 Levels, S-shaped unlock pattern
         - Levels unlock on a save file

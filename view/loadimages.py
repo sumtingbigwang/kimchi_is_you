@@ -55,6 +55,9 @@ def loadSprites(app):
             case 'cursor':
                 for state in drawInfo.spriteList:
                     spriteDict[objName][state] = initCursor(app.objectSheet, drawInfo.spriteList[state])
+            case 'object2':
+                for direction in drawInfo.spriteList:
+                    spriteDict[objName][direction] = initSprites(app.objectSheet2, drawInfo.spriteList[direction])
     
     #pre-load all known words from drawinfo
     for wordName, drawInfo in wordDrawDict.items():
@@ -66,6 +69,9 @@ def loadSprites(app):
             case 'objectWord':
                 for state in drawInfo.spriteList:
                     spriteDict[wordName][state] = initWordSprites(app.objectSheet, drawInfo.spriteList[state])
+            case 'object2Word':
+                for state in drawInfo.spriteList:
+                    spriteDict[wordName][state] = initWordSprites(app.objectSheet2, drawInfo.spriteList[state])
             case 'wallWord':
                 for state in drawInfo.spriteList:
                     spriteDict[wordName][state] = initWordSprites(app.wallSheet, drawInfo.spriteList[state])

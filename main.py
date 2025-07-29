@@ -16,7 +16,7 @@ import copy, sys
 
 def onAppStart(app):
     loadSheets(app)
-    
+    startup(app)
     #misc settings
     app.replaceCount = 0
     
@@ -35,7 +35,7 @@ def onAppStart(app):
     
     #define level
     app.level = menu.level
-    app.levelDict = (app.level).dict
+    app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
     app.sound = Sound(app.level.bgm)
     app.deadSound = Sound('sounds/noplayer.mp3')
@@ -44,7 +44,7 @@ def onAppStart(app):
     #load sprites and anims
     app.spriteDict = loadSprites(app)
     
-    #define game states
+    #define game ers
     app.inMenu = app.level.inMenu
     app.inMap = app.level.inMap
     app.noPlayer = False
@@ -58,11 +58,12 @@ def onAppStart(app):
     
     #initialize level
     #make move history and turnMove sets, then get all rules from the board and define players
+    app.levelRules = []
     app.moveHistory = []
     app.turnMoves = []
-    app.objects = getAllObjects(app.level)
-    app.players = getPlayer(app.level)
-    refresh(app, app.level)
+    app.objects = getAllObjects(app)
+    app.players = getPlayer(app)
+    refresh(app)
     
     #load level and define level size ---------
     app.rows = app.level.size[1]
@@ -130,7 +131,7 @@ def redrawAll(app):
     if app.level.inMap:
         drawRect(0,0,app.width,app.height,fill=rgb(21,24,31))
         drawMapScreen(app, app.level.background)
-    drawGame(app, app.levelDict)
+    drawGame(app)
     
     if app.level.inMap:
         drawLevelNumbers(app)
@@ -158,7 +159,7 @@ def redrawAll(app):
         
     if app.debugMode:
         drawLabel('DEBUG MODE ON',app.width//2,25,size = app.cellHeight*0.4, fill = 'white', font = 'babafont', bold = True)
-        drawLabel(f'CURRENT RULES: {printRules(app.level.rules)}',app.width//2,40,
+        drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}',app.width//2,40,
                   size = app.cellHeight*0.2, fill = 'white', bold = True, font = 'babafont')
     
 def main():

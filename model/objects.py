@@ -98,11 +98,42 @@ moveDict = {'right': (1,0), 'left':(-1,0), 'up':(0,-1),'down':(0,1)}
 #read drawinfo.py for actual sprite / color / etc. 
 objDrawDict = {
             #sprites--------------------------------
+            #player sprites--------------------------------
             'baba': babaDraw, 
+            'kimchi': kimchiDraw,
+            'keke': kekeDraw,
+            'jiji': jijiDraw,
+            'kosbie': kosbieDraw,
+            'it': itDraw,
+            'me': meDraw,
+
+            #semi-player sprites--------------------------------
+            'robot': robotDraw,
+            'frog': frogDraw,
+            'eye': eyeDraw,
+            'belt': beltDraw,
+            'skull': skullDraw,
+            'ghost': ghostDraw,
+            'bird': birdDraw,
+            'rocket': rocketDraw,
+            
+            #object sprites--------------------------------
             'rock': rockDraw, 
-            'wall': wallDraw, 
             'flag': flagDraw,
             'tile': tileDraw,
+            'bolt': boltDraw,
+            'arrow': arrowDraw,
+            
+            #wall sprites
+            'wall': wallDraw, 
+            'water': waterDraw,
+            'lava': lavaDraw,
+            'ice': iceDraw,
+            'hedge': hedgeDraw,
+            'grass': grassDraw,
+            'fence': fenceDraw,
+            'brick': brickDraw,
+            'line': lineDraw,
             
             #words--------------------------------
             'equals': equalsDraw, 
@@ -125,16 +156,56 @@ wordDrawDict = {
                 'babaword': babaWordDraw, 
                 'flagword': flagWordDraw, 
                 'tileword': tileWordDraw,
+                'kimchiword': kimchiWordDraw,
+                'kosbieword': kosbieWordDraw,
+                'kekeword': kekeWordDraw,
+                'jijiword': jijiWordDraw,
+                'meword': meWordDraw,
+                'robotword': robotWordDraw,
+                'itword': itWordDraw,
+                'frogword': frogWordDraw,
+                'eyeword': eyeWordDraw,
+                'waterword': waterWordDraw,
+                'lavaword': lavaWordDraw,
+                'iceword': iceWordDraw,
+                'hedgeword': hedgeWordDraw,
+                'grassword': grassWordDraw,
+                'fenceword': fenceWordDraw,
+                'brickword': brickWordDraw,
+                'lineword': lineWordDraw,
+                'allword': allDraw,
+                'skullword': skullWordDraw,
+                'ghostword': ghostWordDraw,
+                'birdword': birdWordDraw,
+                'boltword': boltWordDraw,
+                'arrowword': arrowWordDraw,
+                'rocketword': rocketWordDraw,
                 
                 #effect words--------------------------------
                 'you': youDraw,
                 'push': pushDraw,
                 'stop': stopDraw,
                 'win': winDraw,
+                'sink': sinkDraw,
+                'defeat': defeatDraw,
+                'hot': hotDraw,
+                'melt': meltDraw,
+                'open': openDraw,
+                'shut': shutDraw,
+                'float': floatDraw,
+                'weak': weakDraw,
+                'empty': emptyDraw,
+                'text': textWordDraw,
+                'level': levelWordDraw,
+                'done': doneDraw,
                 
                 #equal words--------------------------------
                 'equals': equalsDraw,
                 'has': hasDraw,
+                'and': andDraw,
+                'on': onDraw,
+                'lonely': lonelyDraw,
+                'eat': eatDraw,
                 
                 #button words--------------------------------
                 'start': startDraw,
@@ -159,9 +230,10 @@ class obj:
         self.pos = None
         self.posHist = []
         self.effectsList = [initEffect] if initEffect else []  #if initEffect is not None, add it to the effectsList
+        self.preSink = None
         
         #drawing info
-        self.direction = 'right'
+        self.direction = 'down'
         self.type = 'obj'
         
     def setAttribute(self, attribute):
@@ -236,6 +308,7 @@ class subj:
         self.pos = None
         self.posHist = []
         self.effectsList = ['push'] 
+        self.preSink = None
         
         #type info
         self.type = 'subj'
@@ -292,6 +365,7 @@ class eq: #includes 'IS' and 'HAS'
         #movement info
         self.pos = None
         self.posHist = []
+        self.preSink = None
         
         #drawing info
         self.powered = False
@@ -300,6 +374,7 @@ class eq: #includes 'IS' and 'HAS'
         
         #comparison info
         self.type = 'eq'
+        
     
     def changeDir(self, direction): #for running into walls
         self.direction = direction
@@ -357,7 +432,7 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         self.pos = None
         self.posHist = []
         self.effectsList = ['push']
-        
+        self.preSink = None
         self.drawInfo = wordDrawDict[attribute]
         self.powered = False
         self.color = self.drawInfo.color ##legacy, remove when sprites implemented
@@ -416,6 +491,7 @@ class adj: #includes (NOT, AND)
         self.pos = None
         self.posHist = []
         self.effectsList = ['push']
+        self.preSink = None
         
         #type info
         self.type = 'adj'
@@ -460,7 +536,7 @@ class adj: #includes (NOT, AND)
 #map and level---------------
 class level: 
     def __init__(self, num, dict, size, background, cellColor, margin=10, 
-                 bgm=None, inMenu=False, inMap=False):
+                 bgm=None, levelName='', inMenu=False, inMap=False):
         self.num = num #number for loading
         self.dict = dict #storage of object positions
         self.wd = {} #wd stands for 'word dictionary' (idk too lazy)
@@ -474,3 +550,4 @@ class level:
         #or object change data: (obj.name, oldtype, newtype)
         self.inMenu = inMenu
         self.inMap = inMap
+        self.levelName = levelName

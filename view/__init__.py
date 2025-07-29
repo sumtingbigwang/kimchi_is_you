@@ -1,2 +1,2 @@
-__all__ = ['drawinfo','drawgrid','drawobj','drawscreens','loadimages',
-           'objectsheet','objectsheet2','spritesheet','wallsheet','wordsheet']
+__all__ = ['drawinfo','drawgrid','drawobj','drawscreens',
+           'loadimages', 'drawgrid', 'drawobj', 'drawscreens']

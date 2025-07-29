@@ -4,18 +4,21 @@ from view.loadimages import *
 from view.drawgrid import *
 from model.lookup import *
 from levels import *
-
-levelDict = {1: level1.level,
+levelDict = {-1: map.level,
              0: menu.level,
-             -1: map.level}
-
+            1: level1.level,
+             2: level2.level,
+             3: level3.level,
+             4: level4.level,
+             5: level5.level}
+    
 def loadLevel(app, levelnum):
     app.sound.pause()  #bgm pause
     app.level = levelDict[levelnum]
     app.levelNum = app.level.num
     app.inMap = app.level.inMap
     app.inMenu = app.level.inMenu
-    app.levelDict = (app.level).dict
+    app.levelDict = copy.deepcopy(app.level.dict)
     app.inMenu = app.level.inMenu
     app.sound = Sound(app.level.bgm)
     app.sound.play(loop = True)
@@ -37,9 +40,9 @@ def loadLevel(app, levelnum):
     #make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
-    app.objects = getAllObjects(app.level)
-    app.players = getPlayer(app.level)
-    refresh(app, app.level)
+    app.objects = getAllObjects(app)
+    app.players = getPlayer(app)
+    refresh(app)
     
     #load level and define level size ---------
     app.rows = app.level.size[1]
@@ -61,3 +64,4 @@ def loadLevel(app, levelnum):
     
     # Initialize board after dimensions are calculated
     app.board = [([None] * app.cols) for row in range(app.rows)]
+    
