@@ -1,12 +1,9 @@
 (!!)- highest priority, usually bug fixes
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
-(!!) When an object is SHUT, it is not pushable
-
 1. Level Design
 - Levels
     - 3 Forest of Fall
-    - 3 The Lake
     - 3 The Factory 
 - Levels unlock on a save file
 - Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
@@ -23,7 +20,6 @@
 3. Adjectives and more features
     - ON (basic overlap feature.)
     - NOT (heard it's horrid to implement.) 
-    - AND (reads powered effects / subjects)
     - HAS (behaves like Is, also in the eq class-- BABA HAS FLAG drops flag on death)
     - HIDE (doesn't draw the word, and also cuts collisions, but still makes a valid rule)
     ** MORE
