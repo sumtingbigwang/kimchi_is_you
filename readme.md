@@ -1,7 +1,7 @@
 ### Introduction
 KIMCHI IS YOU is a python remake of an existing puzzle game, BABA IS YOU. 
 
-The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Michael Taylor's pink pet axolotl, whose name is actually Kimchee. To fit Kimchee's name text within the 6-character game limit, liberties were taken to shorten the name of the protagonist-- who is also a pink axolotl-- to Kimchi. Players move around a pixellated world shaped by words around them, forming ingenious solutions for seemingly impossible puzzles by changing the rules. 
+The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Michael Taylor's pink pet axolotl, whose name is actually Kimchee. To fit Kimchee's name text within the 6-character game limit, liberties were taken to shorten the name of the protagonist-- who is also a pink axolotl-- to Kimchi. Players move around a pixellated world shaped by words around them, forming ingenious solutions for seemingly impossible puzzles by changing the rules of the game.
 
 In case you missed the tutorial levels:
 - W/A/S/D and Arrow keys allow you to move the player. 
@@ -9,7 +9,7 @@ In case you missed the tutorial levels:
 - While in a level (might mean more places than it seems!), press Z to undo a move or R to reset the entire level.
 
 ### Background
-Baba Is You is a puzzle video game created by Arvi 'Hempuli' Teikari, a Finnish independent developer. Inspired by the Japanese puzzle game Sokoban (lit. 'box pusher'), the game centers around the manipulation of "rules"—represented in the play area by movable tiles with words written on them—in order to allow the player character to reach a specified goal. Rules later in the game get increasingly complex, and the game gets mind-numbingly hard-- but also incredibly rewarding -- to push through as more and more rules must be rearranged to reach the solution. If you haven't yet, [I strongly recommend you check out the original game here.](https://store.steampowered.com/app/736260/Baba_Is_You/)
+Baba Is You is a puzzle video game created by Arvi 'Hempuli' Teikari, a Finnish independent developer. Inspired by the Japanese box-pushing puzzle game Sokoban (lit. 'warehouse manager'), the game centers around the manipulation of "rules"—represented in the play area by movable tiles with words written on them—in order to allow the player character to reach a specified goal. Rules later in the game get increasingly complex, and the game gets mind-numbingly hard-- but also incredibly rewarding -- to push through as more and more rules must be rearranged to reach the solution. If you haven't yet, [I strongly recommend you check out the original game here.](https://store.steampowered.com/app/736260/Baba_Is_You/)
 
 As part of a game jam, Hempuli coded the preliminary version of the game with PUSH/STOP/DEFEAT/HOT/MELT and UNDO functionality in 72 hours on multimedia fusion 2. I wanted to challenge myself by seeing if I could do that and possibly a bit more with a week of time and a new knowledge of Python code! 
 
