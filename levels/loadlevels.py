@@ -3,6 +3,7 @@ from model.objects import *
 from view.loadimages import *
 from view.drawgrid import *
 from model.lookup import *
+from model.rules import *
 from levels import *
 levelDict = {-1: map.level,
              0: menu.level,
@@ -10,7 +11,15 @@ levelDict = {-1: map.level,
              2: level2.level,
              3: level3.level,
              4: level4.level,
-             5: level5.level}
+             5: level5.level,
+             6: level6.level,
+             7: level7.level,
+             8: level8.level,
+             9: level9.level,
+             10: level10.level,
+             11: level11.level,
+             12: level12.level,
+             }
     
 def loadLevel(app, levelnum):
     app.sound.pause()  #bgm pause
@@ -43,6 +52,8 @@ def loadLevel(app, levelnum):
     #make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
+    app.levelRules = compileRules(app)
+    app.checkSoundList = []
     app.objects = getAllObjects(app)
     app.players = getPlayer(app)
     refresh(app)

@@ -1,4 +1,4 @@
-from cmu_graphics.cmu_graphics import App
+from cmu_graphics import *
 from model.lookup import *
 from model.movement import *
 from model.rules import * 
@@ -41,13 +41,18 @@ def pauseControls(app, key):
             app.paused = False
             app.wasPaused = True
         elif app.pointerIdx == 3: #return to map
+            if app.noPlayer:
+                app.deadSound.pause()
             loadLevel(app, -1)
         elif app.pointerIdx == 4: #return to menu
+            if app.noPlayer:
+                app.deadSound.pause()
             loadLevel(app, 0)
         
     # Handle wrapping
     if app.pointerIdx < 0 or app.pointerIdx > 4:
         app.pointerIdx = app.pointerIdx % 5
+
 
 
 def mapControls(app, key):
@@ -60,15 +65,18 @@ def mapControls(app, key):
     (9,12):6,
     (7,11):7,
     (8,11):8,
-    (9,11):9
+    (9,11):9,
+    (12,12):10,
+    (13,12):11,
+    (14,12):12,
 }   
     cursor = getFirstObject(app, 'cursor')
     cursorPosition = cursor.pos
     if key == 'enter':
         if cursorPosition in mapLevelLoadDict:
             map.level.dict[cursor] = cursorPosition
-            loadLevel(app, mapLevelLoadDict[cursorPosition])
             Sound('sounds/levelselect.mp3').play()
+            loadLevel(app, mapLevelLoadDict[cursorPosition])
         else:
             pass
     elif key == 'escape':
@@ -161,30 +169,13 @@ def selectMenu(app, key):
     if app.pointerIdx < 0 or app.pointerIdx > 4:
         app.pointerIdx = app.pointerIdx % 4
 
-def gameKeyHold(app, keys):
-    pass #the key hold function just feels weird. cmu_graphics timing is funky af
-    # app.currentTime = time.time()
-    # # Only move if half a second has passed since last move
-    # if app.currentTime - app.lastMoveTime >= 0.18:
-    #     if 'right' in keys:
-    #         movePlayers(app, app.levelDict, app.players, 'right')
-    #         app.lastMoveTime = app.currentTime
-    #     elif 'left' in keys:
-    #         movePlayers(app, app.levelDict, app.players, 'left')
-    #         app.lastMoveTime = app.currentTime
-    #     elif 'up' in keys:
-    #         movePlayers(app, app.levelDict, app.players, 'up')
-    #         app.lastMoveTime = app.currentTime
-    #     elif 'down' in keys:
-    #         movePlayers(app, app.levelDict, app.players, 'down')
-    #         app.lastMoveTime = app.currentTime
-
 def gameControls(app, key):
     if app.askReset:
         if key == 'y':
             if not app.wasMap:
-                app.deadSound.pause()
-                app.sound.play(restart = False, loop = True)
+                if app.noPlayer:
+                    app.deadSound.pause()
+                    app.sound.play(restart = False, loop = True)
             Sound('sounds/levelselect.mp3').play()
             resetLevel(app)
             app.askReset = False
@@ -209,8 +200,7 @@ def gameControls(app, key):
         if key in ['right', 'd', 'D', 
                    'left', 'a', 'A', 
                    'up', 'w', 'W', 
-                   'down', 's', 'S', 
-                   'z', 'r']:
+                   'down', 's', 'S', 'space']:
             if not app.noPlayer:
                 playRandomMoveSound()
             if key == 'right' or key == 'd' or key == 'D':
@@ -222,9 +212,9 @@ def gameControls(app, key):
             elif key == 'down' or key == 's' or key == 'S':
                 movePlayers(app,app.players,'down')
             elif key == 'space':
-                refresh(app)
-        if not app.levelWin and not app.askReset and not app.paused:
-            refresh(app)  # This already handles state checks
+                pass
+            refresh(app)
+            
         if key == 'z':
             if app.noPlayer:
                 app.deadSound.pause()
@@ -233,22 +223,30 @@ def gameControls(app, key):
                 app.sound.play(restart = False, loop = True)
             undoMove(app)
             playRandomUndoSound()
-            
+
         if key == 'r': #reset function
             app.askReset = True
-
+            
         if app.debugMode:
-            print('\n\n\n')
+            print('\n')
             print('--------------------------------')
             print('state of board:',app.levelDict)
             print('--------------------------------')
             print('\n')
             print('history:', app.moveHistory)
-        
-        if app.noPlayer:
-            app.sound.pause()
-            app.deadSound.play(loop = True, restart = False)
-        
+            
+        if app.debugMode:
+            print('soundlist:', app.checkSoundList)
+        #check for rule sound
+        if app.checkSoundList:
+            for word in app.checkSoundList: #check for rule sound
+                checkRuleSound(word)
+            app.checkSoundList = []
+            
+    if app.noPlayer:
+        app.sound.pause()
+        app.deadSound.play(loop = True, restart = False)
+            
     #check and add/remove rules based on words on the screen.
     if key == 'escape':
         app.paused = not app.paused

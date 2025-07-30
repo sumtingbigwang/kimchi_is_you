@@ -4,8 +4,7 @@
 (!!) KIMCHI IS DEFEAT + KIMCHI IS YOU bug when kimchi pushes DEFEAT; kimchi clips into effect word
 
 1. Level Design
-- 12 Levels
-    - 5 Tutorial
+- Levels
     - 3 Forest of Fall
     - 3 The Lake
     - 3 The Factory 
@@ -16,8 +15,6 @@
 - Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
 
 2. More effects 
-    - HOT / MELT
-    - MOVE / AUTO
     - WEAK
     - SHIFT 
     - LEVEL (purely for putting a BABA on the menu screen)

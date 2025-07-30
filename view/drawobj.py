@@ -182,8 +182,9 @@ def checkWall(app,obj):
         dx, dy, indexAdd = dir
         newX, newY = wallX + dx, wallY + dy
         tgtObjs = getObjectsInCell(app, newX, newY)
-        for obj in tgtObjs:
-            if obj.drawInfo.type == 'wall': #found a wall, add the index of the wall segment
+        for targetObject in tgtObjs:
+            if (targetObject.drawInfo.type == 'wall'
+                and targetObject.attribute == obj.attribute): #found a wall, add the index of the wall segment
                 index += indexAdd
     return index % 16
         

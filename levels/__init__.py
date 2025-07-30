@@ -4,11 +4,15 @@
 
 #be sure to remind slef to update this list when new levels added
 __all__ = ['testlevel','menu','map', #experimental levels
+           
+           #tutorial levels
            'level1','level2','level3',
-           'level4','level5'#,'level6',
-           #'level7','level8','level9' #tutorial levels
+           'level4','level5','level6',
+           'level7','level8','level9',
+           #the lakes
+           'level10','level11','level12'
            #forest is fall
-           #water is sink
+           
            #cog is turn
            #meta 
            ]

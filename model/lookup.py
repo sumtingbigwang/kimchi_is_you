@@ -14,7 +14,7 @@ def getPlayer(app):
 
 def getObjectsInCell(app, x,y):
     position = (x,y)
-    return [obj for obj, objpos in app.levelDict.items() if position == objpos]
+    return [item for item, itempos in app.levelDict.items() if position == itempos]
 
 def findObj(app, tgtCell, effect): 
     #of a list of objects in a cell, this returns the object with the effect in question. 
@@ -35,8 +35,11 @@ def findClass(app, tgtCell, classtype):
 def getEquals(app):
     equals = []
     for item in app.levelDict:
-        if item.attribute == 'equals':
-            equals += [item]
+        if item.type == 'eq':
+            if item.attribute == 'equals':
+                equals.insert(0,item)
+            else:
+                equals.append(item)
     return equals
                 
 def getAllObjects(app):

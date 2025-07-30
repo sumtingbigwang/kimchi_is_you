@@ -9,11 +9,11 @@ from view.drawgrid import *
 from view.drawobj import *
 from view.drawscreens import *
 from view.loadimages import *
-from model.movement import * 
 from model.rules import *
+from model.movement import * 
 from sounds.sounds import *
 import copy, sys
-
+         
 def onAppStart(app):
     loadSheets(app)
     startup(app)
@@ -34,7 +34,7 @@ def onAppStart(app):
     app.lastMoveTime = 0  # Track when the last move happened
     
     #define level
-    app.lastPlayedLevel = 5 #temporary, make a save file for this
+    app.lastPlayedLevel = 12 #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
@@ -57,9 +57,12 @@ def onAppStart(app):
     app.wasMap = False
     app.debugMode = False
     app.settings = False
+    
+    
     #initialize level
     #make move history and turnMove sets, then get all rules from the board and define players
     app.levelRules = []
+    app.checkSoundList = []
     app.moveHistory = []
     app.turnMoves = []
     app.objects = getAllObjects(app)
@@ -114,8 +117,9 @@ def onKeyPress(app, key):
         app.debugMode = not app.debugMode
         
 def onKeyHold(app, keys):
-    if not app.inMenu:
-        gameKeyHold(app, keys)
+    pass
+    # if not app.inMenu:
+    #     gameKeyHold(app, keys)
         
 def onStep(app):
     #for extra timing; reset this counter to prevent excess memory consumption
@@ -162,7 +166,7 @@ def redrawAll(app):
         drawLabel('DEBUG MODE ON',app.width//2,25,size = app.cellHeight*0.4, fill = 'white', font = 'babafont', bold = True)
         drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}',app.width//2,40,
                   size = app.cellHeight*0.2, fill = 'white', bold = True, font = 'babafont')
-    
+        
 def main():
     runApp()
 

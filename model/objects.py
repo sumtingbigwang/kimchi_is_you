@@ -123,6 +123,11 @@ objDrawDict = {
             'tile': tileDraw,
             'bolt': boltDraw,
             'arrow': arrowDraw,
+            'jelly': jellyDraw,
+            'algae': algaeDraw,
+            'door': doorDraw,
+            'key': keyDraw,
+            'tree': treeDraw,
             
             #wall sprites
             'wall': wallDraw, 
@@ -180,6 +185,11 @@ wordDrawDict = {
                 'boltword': boltWordDraw,
                 'arrowword': arrowWordDraw,
                 'rocketword': rocketWordDraw,
+                'jellyword': jellyWordDraw,
+                'algaeword': algaeWordDraw,
+                'doorword': doorWordDraw,
+                'keyword': keyWordDraw,
+                'treeword': treeWordDraw,
                 
                 #effect words--------------------------------
                 'you': youDraw,
@@ -198,6 +208,11 @@ wordDrawDict = {
                 'text': textWordDraw,
                 'level': levelWordDraw,
                 'done': doneDraw,
+                'move': moveWordDraw,
+                'more': moreWordDraw,
+                'shift': shiftWordDraw,
+                'open': openWordDraw,
+                'shut': shutWordDraw,
                 
                 #equal words--------------------------------
                 'equals': equalsDraw,
@@ -303,6 +318,8 @@ class subj:
         
         #rulemaking info
         self.obj = obj
+        self.rootSubj = None
+        self.rootEffect = None
         
         #movement info
         self.pos = None
@@ -374,6 +391,7 @@ class eq: #includes 'IS' and 'HAS'
         
         #comparison info
         self.type = 'eq'
+        self.rootSubj = None
         
     
     def changeDir(self, direction): #for running into walls
@@ -440,6 +458,9 @@ class effect: #includes (YOU, STOP, MELT, SINK, WIN)
         
         #type info
         self.type = 'effect'
+        
+        #rule making info
+        self.rootSubj = None
     
     def MoveObject(self, direction):
         self.posHist.append((self.pos,self.direction))

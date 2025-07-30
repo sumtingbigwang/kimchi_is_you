@@ -1,63 +1,107 @@
+import re
 import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
 from model.objects import *
 from model.lookup import *
 from sounds.sounds import *
+from model.movement import *
 
 #rule compiling and execution--------------------------------
+
+def makeCheckCoordinates(coord):
+    coordX, coordY = coord
+    horiSubjCoord = (coordX - 1, coordY)
+    vertiSubjCoord = (coordX, coordY-1)
+    horiEffCoord = (coordX + 1, coordY)
+    vertiEffCoord = (coordX, coordY+1)
+    return [(horiSubjCoord, horiEffCoord), (vertiSubjCoord, vertiEffCoord)]
+
 def compileRules(app):
     #initialize a rules tuple list to store rules in play, AS LISTED BY WORDS ON BOARD.
     rules = []
     
-    #we need to get the list of 'IS' instances first.
+    #get all equators and logical operators
     equalsSet = getEquals(app)
-    equalsNames = [word.name for word in equalsSet]
     for word in equalsSet: 
-        #identify target cells to check. Rules can only be made in the following configs:
-        #          SUBJECT
-        # SUBECT     IS     EFFECT
-        #          EFFECT
-        #So we check the cell above and left of 'IS' for subject, and so on. 
-        coord = app.levelDict[word]
-        #should ever only run once, unless we want linked words for some reason
-        coordX, coordY = coord
-        horiSubjCoord = (coordX - 1, coordY)
-        vertiSubjCoord = (coordX, coordY-1)
-        horiEffCoord = (coordX + 1, coordY)
-        vertiEffCoord = (coordX, coordY+1)
+        if word.attribute == 'equals': #evaluate the 'IS' statements first. 
+            #identify target cells to check. Rules can only be made in the following configs:
+            #          SUBJECT
+            # SUBECT     IS     EFFECT
+            #          EFFECT
+            #So we check the cell above and left of 'IS' for subject, and so on. 
+            checkList = makeCheckCoordinates(app.levelDict[word])
             
-        #make the checklist to check in subject-effect pairs. coords are tuples. 
-        checkList = [(horiSubjCoord,horiEffCoord),(vertiSubjCoord,vertiEffCoord)]
-        
-        #check for each "IS" instance 
-        for pair in checkList:
-            subjCell, effCell = pair 
-        
-            #Check if a subject and effect word is present:
-            #this is SUBJECT IS EFFECT case
-            if (findClass(app, subjCell, 'subj') 
-                and findClass(app, effCell, 'effect')): 
-                #define subject and object for the makeRule function
-                subjectWord = findClass(app, subjCell, 'subj')
-                effectWord = findClass(app, effCell, 'effect')
-                rules += [(word, (subjectWord, effectWord))] 
-            
-            #go into swap object case
-            elif (findClass(app, subjCell, 'subj') 
-                  and findClass(app, effCell, 'subj')): 
-                subjectWord = findClass(app, subjCell, 'subj')
-                effectWord = findClass(app, effCell, 'subj')
-                rules += [(word, (subjectWord, effectWord))]     
-            else: #got nothing
-                pass    
-    return rules
-
-def getRules(app): #simple fetchrules function
-    rules = []
-    for item in app.levelDict:
-        if isinstance(item, obj) and item.effectsList != []:
-            for effect in item.effectsList:  
-                rules += [(item,effect)]
+            #check for each "IS" instance 
+            for pair in checkList:
+                subjCell, effCell = pair 
+                subjWord = findClass(app, subjCell, 'subj')
+                effWord = findClass(app, effCell, 'effect')
+                swapWord = findClass(app, effCell, 'subj')
+                #Check if a subject and effect word is present:
+                #this is SUBJECT IS EFFECT case
+                if subjWord and effWord:
+                    rules.insert(1,(word, (subjWord, effWord)))
+                    effWord.rootSubj = subjWord
+                    subjWord.rootEffect = effWord
+                
+                #go into swap object case
+                elif subjWord and swapWord: 
+                    rules.insert(1,(word, (subjWord, swapWord)))
+                    swapWord.rootSubj = subjWord
+                else: #got nothing
+                    pass    
+                
+        elif word.attribute == 'and': #then we evaluate the AND statements. 
+            #identify target cells to check. AND conjunctions can only be made in the following configs:
+            #          SUBJECT
+            # SUBECT     IS     EFFECT AND SUBJECT / EFFECT
+            #          EFFECT
+            #          AND
+            #     SUBJECT / EFFECT
+            #we need a rootSubject value for each subject and effect in an 'IS' statement.
+            #Then, all 'AND' need does is read whether its subject is powered, 
+            #and act like an 'IS' statement for the root subject of the subject. 
+            checkList = makeCheckCoordinates(app.levelDict[word])
+            for pair in checkList:
+                subjCell, effCell = pair
+                appliedSubjWord = findClass(app, subjCell, 'subj')
+                appliedEffWord = findClass(app, subjCell, 'effect')
+                applyingEffWord = findClass(app, effCell, 'effect')
+                applyingSubjWord = findClass(app, effCell, 'subj')
+                if ((applyingSubjWord and applyingSubjWord.powered)): #inserting the AND statement before an 'IS' statement. 
+                    #e.g. KIMCHI AND BABA IS HOT: breaks down into KIMCHI IS HOT and BABA IS HOT
+                    #e.g. KIMCHI AND BABA IS MELT AND SINK: KIMCHI IS MELT, KIMCHI IS SINK, same thing for BABA
+                    #e.g. 
+                    #takeaway: we apply the applied effect to the ROOT subject. 
+                    if appliedSubjWord:
+                        applyingSubjWord.rootSubj = appliedSubjWord
+                        word.rootSubj = applyingSubjWord
+                        rules.append((word, (appliedSubjWord, applyingSubjWord.rootEffect)))
+                    
+                elif ((appliedSubjWord and appliedSubjWord.rootSubj)
+                    or (appliedEffWord and appliedEffWord.rootSubj)): #inserting the AND statement after an 'IS' statement. 
+                    #e.g. KIMCHI IS BABA AND HOT: breaks down into KIMCHI IS BABA and KIMCHI IS HOT
+                    #e.g. KIMCHI IS BABA AND KEKE: breaks down into KIMCHI IS BABA and KIMCHI IS KEKE
+                    #e.g. KIMCHI IS HOT AND BABA: breaks down into KIMCHI IS HOT and KIMCHI IS BABA
+                    #e.g. KIMCHI IS HOT AND MELT: breaks down into KIMCHI IS HOT and KIMCHI IS MELT
+                    #takeaway: we apply the applied effect to the ROOT subject. 
+                    subject = appliedSubjWord.rootSubj if appliedSubjWord else appliedEffWord.rootSubj  
+                    appliedEffect = applyingSubjWord if applyingSubjWord else applyingEffWord
+                    
+                    #must be applied LAST for the IS statements to properly establsih roots
+                    if appliedEffect:
+                        rules.append((word, (subject, appliedEffect)))
+                        if subject.rootSubj:
+                            rules.append((word, (subject.rootSubj, appliedEffect)))
+                        if applyingEffWord:
+                            applyingEffWord.rootSubj = subject
+                        elif applyingSubjWord:
+                            applyingSubjWord.rootSubj = subject
+                        word.rootSubj = subject
+                else:
+                    pass
+        elif word.attribute == 'not': #finally we work on negation.
+            pass #(to be done later)
     return rules
     
 def makeRules(app): #main function that calls helpers to apply new rules
@@ -82,11 +126,23 @@ def addEffects(app, subjectWord, effectWord): #adds effect to subject
                     #apply effects to objects
                 object.effectsList.append(effectWord.attribute) 
 
+def checkPower(app):
+    wordCheckList = ruleUnpacker(app.levelRules)
+    for item in app.levelDict:
+        if (isinstance(item, effect) 
+                or isinstance(item, subj) 
+                or isinstance(item, eq)):
+                if item in wordCheckList:
+                    if item.attribute == 'and':
+                        if item.rootSubj and not item.rootSubj.powered:
+                            item.powered = False
+                            continue
+                    item.powered = True
+                else:
+                    item.powered = False
                     
 def delRules(app): #main function that deletes old rules no longer in play
     checkList = [itemRuleTuple for (equals, itemRuleTuple) in app.levelRules]
-    wordCheckList = ruleUnpacker(app.levelRules)
-
     for item in app.levelDict:
         if item.attribute != 'cursor':
             if isinstance(item, obj):
@@ -95,14 +151,6 @@ def delRules(app): #main function that deletes old rules no longer in play
                     check = (item, rule)
                     if check not in checkList:
                         itemRules.remove(rule)
-
-            elif (isinstance(item, effect) 
-                or isinstance(item, subj) 
-                or isinstance(item, eq)):
-                if item in wordCheckList:
-                    item.powered = True
-                else:
-                    item.powered = False
                 
 #Replacement-related rules--------------------------------
 def replaceObjs(app, subjectWord, effectWord):
@@ -147,6 +195,25 @@ def swapObjs(app):
         app.replaceCount += 1
         
 #Deletion-related rules--------------------------------
+def deleteBoard(app):
+    sinkList = []
+    defeatList = []
+    meltList = []
+    openList = []
+    for object in app.levelDict:
+        if 'sink' in object.effectsList:
+            sinkList.append((object, object.pos))
+        elif 'defeat' in object.effectsList:
+            defeatList.append((object, object.pos))
+        elif 'melt' in object.effectsList:
+            meltList.append((object, object.pos))
+        elif 'open' in object.effectsList:
+            openList.append((object, object.pos))
+    sinkObjs(app, sinkList)
+    defeatObjs(app, defeatList)
+    meltObjs(app, meltList)
+    openObjs(app, openList)
+            
 def deleteObject(app, object): #call this on sink, defeat, hot/melt, XX IS empty. 
     if object.preSink:
         prevCell = object.preSink
@@ -155,61 +222,128 @@ def deleteObject(app, object): #call this on sink, defeat, hot/melt, XX IS empty
     app.levelDict.pop(object)
     app.turnMoves.append((object, object.type, object.effectsList, object.attribute, prevCell))
         
-def sinkObjs(app): #sink object remove function (kills everything not FLOAT in its cell)
-    sinkCells = [(sinkObject, sinkObject.pos) for sinkObject in app.levelDict if 'sink' in sinkObject.effectsList]
-    for (sinkObject, cell) in sinkCells:
+def sinkObjs(app, sinkList): #sink object remove function (kills everything not FLOAT in its cell)
+    sinkedObject = False
+    for (sinkObject, cell) in sinkList:
         if cell and len(getObjectsInCell(app, *cell)) > 1: 
             #if theres more than one object in the cell, we delete everything in the cell
             for objectToSink in getObjectsInCell(app, *cell):
                 if ('float' not in objectToSink.effectsList
                     or 'float' in sinkObject.effectsList): #FLOAT objects only check each other.
                     deleteObject(app, objectToSink)
-                    playRandomSinkSound() #yes, it'll play multiple times, but it's so fast the sound basically overlaps.
-                    #good anyway since sound effects are kinda quiet in the game. 
+                    sinkedObject = True
+                    app.turnMoves.append((objectToSink, objectToSink.type, objectToSink.effectsList, objectToSink.attribute, cell))
+                    
+    if sinkedObject:
+        playRandomSinkSound()
 
-def defeatObjs(app): #defeat object remove function 
-    defeatCells = [(defeatObject, defeatObject.pos) for defeatObject in app.levelDict if 'defeat' in defeatObject.effectsList]
-    for (defeatObject, cell) in defeatCells:
+def defeatObjs(app, defeatList): #defeat object remove function 
+    defeatedObject = False
+    for (defeatObject, cell) in defeatList:
         playerObject = findObj(app, cell, 'you')
         if playerObject:
             if ('float' not in playerObject.effectsList
                 or 'float' in defeatObject.effectsList): #FLOAT objects only check each other.
-                playRandomDefeatSound()
                 deleteObject(app, playerObject)
+                defeatedObject = True
+                app.turnMoves.append((playerObject, playerObject.type, playerObject.effectsList, playerObject.attribute, cell))
+                
+    if defeatedObject:
+        playRandomDefeatSound()
 
-def meltObjs(app): #melt object remove function (kills everything not FLOAT in its cell)
-    hotCells = [(hotObject, hotObject.pos) for hotObject in app.levelDict if 'hot' in hotObject.effectsList]
-    for (hotObject, cell) in hotCells:
+def meltObjs(app, meltList): #melt object remove function (kills everything not FLOAT in its cell)
+    meltedObject = False
+    for (hotObject, cell) in meltList:
         meltObject = findObj(app, cell, 'melt')
         if meltObject:
             if ('float' not in meltObject.effectsList
                 or 'float' in hotObject.effectsList): #FLOAT objects only check each other.
                 deleteObject(app, meltObject)
-                playRandomMeltSound()
+                meltedObject = True
                 app.turnMoves.append((meltObject, meltObject.type, meltObject.effectsList, meltObject.attribute, cell))
+                
+    if meltedObject:
+        playRandomMeltSound()
 
-#helper functions--------------------------------
-def executeRules(app):
+def openObjs(app, openList): #open object remove function
+    openedObject = False
+    for (shutObject, cell) in openList:
+        if cell and len(getObjectsInCell(app, *cell)) > 1:
+            for keyObject in getObjectsInCell(app, *cell):
+                if 'open' in keyObject.effectsList:
+                    deleteObject(app, keyObject)
+                    deleteObject(app, shutObject)
+                    openedObject = True
+                    app.turnMoves.append((shutObject, shutObject.type, shutObject.effectsList, shutObject.attribute, cell))
+                    break
+                else:
+                    continue
+                    
+    if openedObject:
+        playRandomOpenSound()
+
+#reset functions--------------------------------
+def resetLevel(app):
+    #create a list of items before iterating to avoid dictionary modification during iteration
+    app.levelDict = copy.deepcopy(app.level.dict)
+    items = list(app.levelDict.keys()) #copy the original file
+    for item in items:
+        item.resetPos()
+        app.levelDict[item] = item.pos
+        item.attribute = item.initialState
+    app.moveHistory = []
+    app.turnMoves = []
+    app.replaceCount = 0
+    refreshRules(app)
+    
+    # Just update rules without checking win state
     app.levelRules = compileRules(app)
     delRules(app)
-    getRules(app)
     makeRules(app)
+    
+    # Update players
+    app.players = getPlayer(app)
+    app.noPlayer = len(app.players) == 0
 
+#refresh function here for global access to everything
 def refresh(app):
     #rule refresh   
-    executeRules(app)
+    refreshRules(app)
     swapObjs(app)
-    
-    #this is O(3n) right now. Could we simplify?
-    sinkObjs(app)
-    defeatObjs(app)
-    meltObjs(app)
+    deleteBoard(app)
+    autoMoveObjs(app)
+    refreshRules(app)
     
     #move logging
     if app.turnMoves: #don't want to store empty stacks
         app.moveHistory += [app.turnMoves]
     if app.debugMode: 
+        print('\n')
+        print('-------')
         print('moves made this turn:', app.turnMoves)
+        print('-------')
+    app.turnMoves = []
+
+    #update game state
+    app.players = getPlayer(app)
+    if len(app.players) == 0:
+        app.noPlayer = True
+    else:
+        app.noPlayer = False
+        checkWin(app, app.levelDict)  # Only check for win if we have players
+        
+def undoRefreshHelper(app):
+    #rule refresh   
+    refreshRules(app)
+    swapObjs(app)
+    deleteBoard(app)
+    refreshRules(app)
+    
+    if app.debugMode: 
+        print('\n')
+        print('-------')
+        print('undone moves:', app.turnMoves)
+        print('-------')
     app.turnMoves = []
 
     #update game state
@@ -220,12 +354,57 @@ def refresh(app):
         app.noPlayer = False
         checkWin(app, app.levelDict)  # Only check for win if we have players
     
+
+def refreshRules(app):
+    checkPower(app)
+    app.levelRules = compileRules(app)
+    delRules(app)
+    makeRules(app)
+    app.levelRules = compileRules(app)
 def ruleUnpacker(list):
-    returnList = set()
+    returnList = []
     for tuple in list:
         equals, (itemWord, effectWord) = tuple
-        returnList.add(equals)
-        returnList.add(itemWord)
-        returnList.add(effectWord)
+        if equals.attribute == 'and': #this ensures the 'AND' statement is looked at last
+            #so game can accurately grab powered state of the words around it. 
+            returnList.append(equals)
+        else:
+            returnList.insert(0, equals)
+        returnList.insert(0, itemWord)
+        returnList.insert(0, effectWord)
     return returnList
+
+def undoMove(app):
+    if len(app.moveHistory) == 0: #no moves to undo
+        return None
+    else:
+        moveStack = app.moveHistory.pop()
+        for move in moveStack[::-1]:
+            if len(move) == 2: #this means tuple is a move
+                if app.debugMode:
+                    print('recovering move')
+                (object, direction) = move
+                #could be better implementation for this lmao
+                (object, direction) = move
+                object.undoMove()
+                app.levelDict[object] = object.pos #this is the only place we write to the levelDict
+            elif len(move) == 3: #this means tuple is a type change
+                if app.debugMode:
+                    print('recovering type change')
+                (object, oldType, newType) = move
+                object.setAttribute(oldType)
+            elif len(move) == 5: #this means tuple is a deletion
+                if app.debugMode:
+                    print('recovering deletion')
+                (object, type, effectsList, attribute, cell) = move
+                object.pos = cell
+                app.levelDict[object] = cell
+                object.attribute = attribute
+                object.effectsList = effectsList
+                if 'defeat' in effectsList:
+                    object.effectsList.remove('defeat')
+                elif 'melt' in effectsList and 'hot' in effectsList:
+                    object.effectsList.remove('melt')
+                object.type = type
+    undoRefreshHelper(app)
         

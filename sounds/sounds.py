@@ -28,6 +28,11 @@ def playRandomMeltSound():
     Sound(f'sounds/melt/{randIdx}.mp3').play()
     
 def checkRuleSound(wordObject):
+    if app.debugMode:
+        print('checking rule sound for', wordObject)
     if wordObject.powered:
-        print('rule sound')
         playRandomRuleSound()
+
+def playRandomOpenSound():
+    randIdx = randint(105,110)
+    Sound(f'sounds/open/{randIdx}.mp3').play()

@@ -14,24 +14,36 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-#MAP: PUT THE LEVEL POSITIONS FROM BOTTOM OF SCREEN TO TOP OF SCREEN.
-objDict = {'cursor':[(7,13)],
-           'tile':[#tutorial levels
-                   (7,13),(8,13),(9,13),
-                   (7,12),(8,12),(9,12),
-                   (7,11),(8,11),(9,11),
-                   
-                   #the lake
-                   (12,12),(13,12),(14,12)
-                   ],
-        'line':[(10,12),(11,12)]
-        }
-subjDict = {'kimchiword': [(29,15)],
-            'flagword': [(29,17)]}
-eqDict = {'equals': [(30,15),(30,17)]}
+objDict = {
+    'kimchi':[(3,3)],
+    'wall':(
+        wallHelper(5,0,9,0)
+        +wallHelper(0,6,3,6)
+        +wallHelper(11,6,14,6)
+        +[(3,7),(11,7)]
+    ),
+    'flag':[(7,3)],
+    'algae':[(1,2),(13,0),(14,1),(4,7)]
+}
 
-effectDict = {'you': [(31,15)],
-              'win': [(31,17)]}
+eqDict = {
+    'equals':[(7,1),(13,7),(14,4),(1,7),(7,5)]
+    }
+
+effectDict = {
+'you':[(2,7)],
+'win':[(14,7)],
+'stop':[(14,5)],
+              }
+
+subjDict = {
+    'kimchiword':[(0,7)],
+    'flagword':[(6,5),(12,7)],
+    'rockword':[(6,1),(8,1),(8,5)],
+    'wallword':[(14,3)]
+        }
+
+adjDict = {} #no adjectives in this level. 
 
 #now we load the level into the levelDict. 
 #load function is in objects.py
@@ -39,7 +51,18 @@ levelDict.update(loadObjects(objDict))
 levelDict.update(loadSubjs(subjDict))
 levelDict.update(loadEqs(eqDict))
 levelDict.update(loadEffects(effectDict))
+levelDict.update(loadAdjs(adjDict))
+
 loadPositions(levelDict)
-print('map load complete, result: ', levelDict)
-level = level(-1,levelDict,(32,18),None, 
-              None, 20,'sounds/music/map.ogg', 'MAP',False, True) #store the size of the level here.
+print('level 11 load complete, result: ', levelDict, '\n\n')
+level = level(11,levelDict,
+              #level size
+              (15,8), 
+              #background colors
+              rgb(45,59,123), rgb(16,21,40),
+              #top margin
+              10, 
+              #bgm
+              'sounds/music/ruin.ogg',
+              #levelname
+              'CHANGELESS') 

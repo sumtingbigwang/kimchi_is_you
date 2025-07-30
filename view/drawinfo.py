@@ -234,6 +234,52 @@ tileWordDict = {
 }
 tileWordDraw = drawInfo('TILEWORD', 'objectWord', 'saddleBrown', 'white', tileWordDict)
 
+jellyDict = (851,301)
+jellyDraw = drawInfo('JELLY', 'object', 'saddleBrown', 'white', jellyDict)
+
+jellyWordDict = {
+    'powered': [(826,301)],
+    'unpowered': [(801,301)]
+}
+jellyWordDraw = drawInfo('JELLYWORD', 'objectWord', 'saddleBrown', 'white', jellyWordDict)
+
+algaeDict = (101,1)
+algaeDraw = drawInfo('ALGAE', 'object', 'saddleBrown', 'white', algaeDict)
+
+algaeWordDict = {
+    'powered': [(76,1)],
+    'unpowered': [(51,1)]
+}
+algaeWordDraw = drawInfo('ALGAEWORD', 'objectWord', 'saddleBrown', 'white', algaeWordDict)
+
+doorDict = (226,151)
+doorDraw = drawInfo('DOOR', 'object', 'saddleBrown', 'white', doorDict)
+
+doorWordDict = {
+    'powered': [(201,151)],
+    'unpowered': [(176,151)]
+}
+doorWordDraw = drawInfo('DOORWORD', 'objectWord', 'saddleBrown', 'white', doorWordDict)
+
+keyDict = (101,376)
+keyDraw = drawInfo('KEY', 'object', 'saddleBrown', 'white', keyDict)
+
+keyWordDict = {
+    'powered': [(76,376)],
+    'unpowered': [(51,376)]
+}
+keyWordDraw = drawInfo('KEYWORD', 'objectWord', 'saddleBrown', 'white', keyWordDict)
+
+treeDict = (476,751)
+treeDraw = drawInfo('TREE', 'object', 'saddleBrown', 'white', treeDict)
+
+treeWordDict = {
+    'powered': [(451,751)],
+    'unpowered': [(426,751)]
+}
+treeWordDraw = drawInfo('TREEWORD', 'objectWord', 'saddleBrown', 'white', treeWordDict)
+
+
 
 
 #wall-related sprites--------------------------------
@@ -480,8 +526,8 @@ openDict = {
 openDraw = drawInfo('OPEN', 'word', 'saddleBrown', 'white', openDict)
 
 shutDict = {
-    'powered': [(351.5,655)],
-    'unpowered': [(326.5,655)]
+    'powered': [(351.5,730)],
+    'unpowered': [(326.5,730)]
 }
 shutDraw = drawInfo('SHUT', 'word', 'saddleBrown', 'white', shutDict)
 
@@ -557,6 +603,35 @@ levelWordDraw = {
 }
 levelWordDraw = drawInfo('LEVELWORD', 'word', 'saddleBrown', 'white', levelWordDraw)
 
+moveWordDraw = {
+    'powered': [(276.5,301)],
+    'unpowered': [(251.5,301)]
+}
+moveWordDraw = drawInfo('MOVEWORD', 'word', 'saddleBrown', 'white', moveWordDraw)
+
+moreWordDraw = {
+    'powered': [(251.5,1123)],
+    'unpowered': [(226.5,1123)]
+}
+moreWordDraw = drawInfo('MOREWORD', 'word', 'saddleBrown', 'white', moreWordDraw)
+
+shiftWordDraw = {
+    'powered': [(351.5,301)],
+    'unpowered': [(326.5,301)]
+}
+shiftWordDraw = drawInfo('SHIFTWORD', 'word', 'saddleBrown', 'white', shiftWordDraw)
+
+openWordDraw = {
+    'powered': [(276.5,730)],
+    'unpowered': [(251.5,730)]
+}
+openWordDraw = drawInfo('OPENWORD', 'word', 'saddleBrown', 'white', openWordDraw)
+
+shutWordDraw = {
+    'powered': [(351.5,730)],
+    'unpowered': [(326.5,730)]
+}
+shutWordDraw = drawInfo('SHUTWORD', 'word', 'saddleBrown', 'white', shutWordDraw)
 
 
 

@@ -16,10 +16,13 @@ mapLevelNameDict = {
     (9,13):'WHAT THE HELLY?',
     (7,12):'OUT OF REACH',
     (8,12):'STILL OUT OF REACH',
-    (9,12):'[LEVELNAME]',
-    (7,11):'[LEVELNAME]',
-    (8,11):'[LEVELNAME]',
-    (9,11):'[LEVELNAME]'
+    (9,12):'VOLCANO',
+    (7,11):'OFF LIMITS',
+    (8,11):'GRASS YARD',
+    (9,11):'HIRED HELP',
+    (12,12):'ICY WATERS',
+    (13,12):'CHANGELESS',
+    (14,12):'BURLGARY'
 }
 def drawMapScreen(app,color):
     cellWidth, cellHeight = getCellSize(app)
