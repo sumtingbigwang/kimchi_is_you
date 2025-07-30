@@ -31,7 +31,7 @@ def onAppStart(app):
     app.stepsPerSecond = 5.5
     app.stepCounter = 0
     app.pointerIdx = 0
-    app.lastMoveTime = 0  # Track when the last move happened
+    app.lastMoveTime = 0 # Track when the last move happened
     
     #define level
     app.lastPlayedLevel = 12 #temporary, make a save file for this

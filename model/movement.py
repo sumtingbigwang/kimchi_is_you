@@ -46,13 +46,10 @@ def moveObj(app, moveObj, move):
     if tgtObjs and 'float' not in moveObj.effectsList and moveObj.attribute != 'cursor':
         #test each object in target cell for collision
         for tgtObject in tgtObjs:
-            if 'shut' in tgtObject.effectsList:
-                if 'open' in moveObj.effectsList:
-                    continue
-                else:
-                    return None
-            if (('you' in tgtObject.effectsList and 'stop' in tgtObject.effectsList) or 
-                ('you' in tgtObject.effectsList and 'push' in tgtObject.effectsList)):
+            if app.debugMode:
+                print(tgtObject.effectsList)
+                print(moveObj.effectsList)
+            if 'you' in tgtObject.effectsList:
                 #this is another instance of you, which we only need check for movement space. 
                 if pushableObj(app, tgtObject, move) is None:
                     if app.debugMode:
@@ -70,6 +67,16 @@ def moveObj(app, moveObj, move):
                         print(moveObj.name,'cannot push')
                     moveObj.changeDir(move)
                     return None #if object doesn't push, then we just break and don't move
+            elif 'shut' in tgtObject.effectsList:
+                if 'open' in moveObj.effectsList:
+                    continue
+                else:
+                    return None
+            elif 'open' in tgtObject.effectsList:
+                if 'shut' in moveObj.effectsList:
+                    continue
+                else:
+                    return None
             
     #if we get here, the pushable object is moved, and we're happy. 
     #however, we now need to check whether our player is 'SINK' or 'DEFEAT' or 'MELT' on a HOT object for deletion. 
@@ -110,7 +117,7 @@ def pushObj(app, moveObj, move):
     #push objects in the target cell first
     if tgtObjs:
         for tgtObject in tgtObjs:
-            if 'shut' in tgtObject.effectsList:
+            if 'shut' in tgtObject.effectsList and 'stop' in tgtObject.effectsList:
                 if 'open' in moveObj.effectsList:
                     continue
                 else:
@@ -157,20 +164,19 @@ def pushableObj(app, obj, move):
     
     if tgtObjs:
         for tgtObj in tgtObjs:
-            #if target has stop and no push, and we're not a you+stop object, we can't move
-            if ('stop' in tgtObj.effectsList 
-                  and not ('you' in obj.effectsList and 'stop' in obj.effectsList)
-                  and not ('shut' in tgtObj.effectsList or 'open' in tgtObj.effectsList)
-                  and not ('you' in tgtObj.effectsList)):
-                if 'push' not in tgtObj.effectsList:
-                    return None
-            
             #regular push case - ALL objects in target cell must be pushable
             #'you' + 'stop' and 'you' + 'push' behave like pushable objects basically.
-            elif ('push' in tgtObj.effectsList 
-            or ('you' in tgtObj.effectsList and 'stop' in tgtObj.effectsList)
-            or ('you' in tgtObj.effectsList and 'push' in tgtObj.effectsList)):
-                if pushableObj(app, tgtObj, move) is None:
+            if ('push' in tgtObj.effectsList 
+                or 'you' in tgtObj.effectsList):
+                return pushableObj(app, tgtObj, move)
+            
+            #stop case
+            elif 'stop' in tgtObj.effectsList:
+                if 'open' in tgtObj.effectsList and 'shut' in obj.effectsList:
+                    continue
+                elif 'shut' in tgtObj.effectsList and 'open' in obj.effectsList:
+                    continue
+                else:
                     return None
     return True
         
@@ -187,7 +193,8 @@ def isLegal(app, tgtCell, obj):
                 if ('stop' in object.effectsList 
                     and 'push' not in object.effectsList
                     and 'you' not in object.effectsList
-                    and 'shut' not in object.effectsList):
+                    and 'shut' not in object.effectsList
+                    and 'open' not in object.effectsList):
                     return False
 
     tgtX, tgtY = tgtCell

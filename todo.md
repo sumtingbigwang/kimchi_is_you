@@ -1,7 +1,7 @@
 (!!)- highest priority, usually bug fixes
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
-(!!) KIMCHI IS DEFEAT + KIMCHI IS YOU bug when kimchi pushes DEFEAT; kimchi clips into effect word
+(!!) When an object is SHUT, it is not pushable
 
 1. Level Design
 - Levels

@@ -205,9 +205,9 @@ def deleteBoard(app):
             sinkList.append((object, object.pos))
         elif 'defeat' in object.effectsList:
             defeatList.append((object, object.pos))
-        elif 'melt' in object.effectsList:
+        elif 'hot' in object.effectsList:
             meltList.append((object, object.pos))
-        elif 'open' in object.effectsList:
+        elif 'shut' in object.effectsList:
             openList.append((object, object.pos))
     sinkObjs(app, sinkList)
     defeatObjs(app, defeatList)
@@ -219,7 +219,7 @@ def deleteObject(app, object): #call this on sink, defeat, hot/melt, XX IS empty
         prevCell = object.preSink
     else:
         prevCell = object.pos
-    app.levelDict.pop(object)
+    app.levelDict.pop(object, None)
     app.turnMoves.append((object, object.type, object.effectsList, object.attribute, prevCell))
         
 def sinkObjs(app, sinkList): #sink object remove function (kills everything not FLOAT in its cell)
@@ -271,14 +271,11 @@ def openObjs(app, openList): #open object remove function
         if cell and len(getObjectsInCell(app, *cell)) > 1:
             for keyObject in getObjectsInCell(app, *cell):
                 if 'open' in keyObject.effectsList:
-                    deleteObject(app, keyObject)
                     deleteObject(app, shutObject)
-                    openedObject = True
+                    deleteObject(app, keyObject)
                     app.turnMoves.append((shutObject, shutObject.type, shutObject.effectsList, shutObject.attribute, cell))
+                    openedObject = True
                     break
-                else:
-                    continue
-                    
     if openedObject:
         playRandomOpenSound()
 
