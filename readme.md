@@ -5,7 +5,7 @@ The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Mic
 
 ## The Game
 In case you missed the tutorial levels:
-- W/A/S/D and Arrow keys allow you to move the player. 
+- W/A/S/D and Arrow keys allow you to move the player-- If there is one! 
 - This is a mouse free game. To confirm an option, press ENTER; to go back or pause, press ESCAPE.
 - While in a level (might mean more places than it seems!), press Z to undo a move or R to reset the entire level.
 
