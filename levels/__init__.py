@@ -3,7 +3,7 @@
 #instead of having everything on one big shitty list! :)
 
 #be sure to remind slef to update this list when new levels added
-__all__ = ['testlevel','menu','map', #experimental levels
+__all__ = ['testlevel','menu','map', 'mapforreset', #experimental levels
            
            #tutorial levels
            'level1','level2','level3',

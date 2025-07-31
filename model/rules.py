@@ -25,6 +25,7 @@ def checkEquals(app, word, rules):
                 subjWord = findClass(app, subjCell, 'subj')
                 effWord = findClass(app, effCell, 'effect')
                 swapWord = findClass(app, effCell, 'subj')
+                notWord = findClass(app, effCell, 'not')
                 #Check if a subject and effect word is present:
                 #this is SUBJECT IS EFFECT case
                 if subjWord:
@@ -45,8 +46,11 @@ def checkEquals(app, word, rules):
                         rules.insert(0,(word, (subjWord, swapWord)))
                         swapWord.rootSubj = subjWord
                         word.rootEffect = swapWord
+                    elif notWord:
+                        if notWord.rootEffect:
+                            word.rootEffect = notWord
                     else: #got nothing
-                        pass    
+                        word.rootEffect = None
                 
 def checkAnd(app, word, rules):
     #identify target cells to check. AND conjunctions can only be made in the following configs:
@@ -60,7 +64,7 @@ def checkAnd(app, word, rules):
             #and act like an 'IS' statement for the root subject of the subject. 
             checkList = makeCheckCoordinates(app.levelDict[word], 'and/not')
             for pair in checkList:
-                subjCell, effCell, eoCell = pair
+                subjCell, effCell, eoCell, soCell = pair
                 appliedSubjWord = findClass(app, subjCell, 'subj')
                 applyingSubjWord = findClass(app, effCell, 'subj')
                 appliedEffWord = findClass(app, subjCell, 'effect')
@@ -113,12 +117,16 @@ def checkNot(app, word, rules):
     # KIMCHI AND NOT BABA IS HOT (negate AND operator)
     checkList = makeCheckCoordinates(app.levelDict[word], 'and/not')
     for tuple in checkList:
-        subjCell, effCell, eoCell = tuple
+        subjCell, effCell, eoCell, soCell = tuple
         frontSubject = findClass(app, subjCell, 'subj')
         frontOperator = findClass(app, subjCell, 'eq')
         negatedSubject = findClass(app, effCell, 'subj')
         negatedSubjectOperator = findClass(app, eoCell, 'eq')
         negatedEffect = findClass(app, effCell, 'effect')
+        doubleNegation = (findClass(app, soCell, 'eq') 
+                          if findClass(app, soCell, 'eq') 
+                          and findClass(app, soCell, 'eq').attribute == 'not' 
+                          else None)
         negatedOperator = (findClass(app, effCell, 'eq') 
                            if findClass(app, effCell, 'eq')
                            and findClass(app, effCell, 'eq').attribute == 'on'
@@ -133,7 +141,8 @@ def checkNot(app, word, rules):
                 
             elif (negatedSubject.powered 
                   and negatedSubjectOperator
-                  and negatedSubjectOperator.powered): #NOT KIMCHI IS HOT
+                  and negatedSubjectOperator.powered
+                  and negatedSubjectOperator.rootEffect): #NOT KIMCHI IS HOT
                 if negatedSubjectOperator.attribute == 'equals':
                     word.rootSubj = negatedSubject
                     rules.append((word, (negatedSubject, negatedSubjectOperator.rootEffect)))
@@ -145,12 +154,15 @@ def checkNot(app, word, rules):
                     
         elif negatedEffect: # KIMCHI IS NOT HOT (negate effect)
             if frontOperator and frontOperator.rootSubj:
-                for subjectWord in app.levelDict:
-                    if (isinstance(subjectWord, subj) 
-                        and subjectWord != negatedEffect):
-                        rules.append((word, (frontOperator.rootSubj, negatedEffect)))
-                        #makeRules will read this and pop the rule if it's applied.
-                        operatorNegated = True
+                if doubleNegation:
+                    rules.append(('power', (word, doubleNegation)))
+                else:
+                    for subjectWord in app.levelDict:
+                        if (isinstance(subjectWord, subj) 
+                            and subjectWord != negatedEffect):
+                            rules.append((word, (frontOperator.rootSubj, negatedEffect)))
+                            #makeRules will read this and pop the rule if it's applied.
+                            operatorNegated = True
                 
         
                         
@@ -178,9 +190,12 @@ def makeCheckCoordinates(coord, type):
         vertiSubjCoord = (coordX, coordY-1)
         horiEffCoord = (coordX + 1, coordY)
         horiEOCoord = (coordX + 2, coordY) #EO for Effect Operator
+        horiSOCoord = (coordX-3, coordY) #SO for subject operator (this is js for a NOT bug fix)
         vertiEffCoord = (coordX, coordY+1)
         vertiEOCoord = (coordX, coordY+2)
-        return [(horiSubjCoord, horiEffCoord, horiEOCoord), (vertiSubjCoord, vertiEffCoord, vertiEOCoord)]
+        vertiSOCoord = (coordX, coordY-3)
+        return [(horiSubjCoord, horiEffCoord, horiEOCoord, horiSOCoord), (vertiSubjCoord, vertiEffCoord, vertiEOCoord, vertiSOCoord)]
+
 def compileRules(app):
     #initialize a rules tuple list to store rules in play, AS LISTED BY WORDS ON BOARD.
     rules = []
@@ -232,23 +247,20 @@ def addEffects(app, subjectWord, effectWord): #adds effect to subject
                     
     if subjectWord.attribute == 'level':
         if effectWord.attribute == 'win':
-            Sound('sounds/win.mp3').play()
             app.deadSound.pause()
             app.noPlayer = False
             app.levelWin = True
         elif effectWord.attribute == 'weak':
-            playRandomDefeatSound()
             app.levelGone = True
             if getFirstObject(app, 'you'):
                 deleteObject(app, getFirstObject(app, 'you'))
         elif effectWord.attribute == 'hot':
-            playRandomMeltSound()
+            app.levelHot = True
             app.appendList = [item for item in app.levelDict if 'melt' in item.effectsList]
             app.levelDict = {item:item.pos for item in app.levelDict if 'melt' not in item.effectsList}
             for item in app.appendList:
                 app.turnMoves.append((item, item.type, item.effectsList, item.attribute, item.pos))
         elif effectWord.attribute == 'defeat':
-            playRandomDefeatSound()
             app.appendList = [item for item in app.levelDict if 'you' in item.effectsList]
             app.levelDict = {item:item.pos for item in app.levelDict if 'you' not in item.effectsList}
             for item in app.appendList:
@@ -423,7 +435,7 @@ def defeatObjs(app, defeatList): #defeat object remove function
     if defeatedObject:
         playRandomDefeatSound()
 
-def meltObjs(app, meltList): #melt object remove function (kills everything not FLOAT in its cell)
+def meltObjs(app, meltList): #melt object remove function (kills everything not FLOAT in its cell)z
     meltedObject = False
     for (hotObject, cell) in meltList:
         print(hotObject.attribute)

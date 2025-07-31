@@ -1,5 +1,3 @@
-from asyncio import FastChildWatcher
-from re import S
 from controller.keycontrols import *
 from cmu_graphics import *
 from levels import * 
@@ -13,7 +11,7 @@ from view.loadimages import *
 from model.rules import *
 from model.movement import * 
 from sounds.sounds import *
-import copy, sys, time
+import copy, time
          
 def onAppStart(app):
     loadSheets(app)
@@ -24,6 +22,8 @@ def onAppStart(app):
     app.metaMap = False
     app.gameWin = False
     app.wasDead = False
+    app.levelDefeat = False
+    app.levelHot = False
     
     #define key hold move timing
     app.t0 = 0 
@@ -125,6 +125,10 @@ def onKeyPress(app, key):
     if key == 'g':
         app.debugMode = not app.debugMode
     app.t0 = time.time()
+    if app.levelDefeat or app.levelGone:
+        playRandomDefeatSound()
+    if app.levelHot:
+        playRandomMeltSound()
     
 def onKeyHold(app, keys):
     if not app.inMenu and not app.paused and not app.settings and not app.inMap:
@@ -198,11 +202,25 @@ def redrawAll(app):
         drawBoardBorder(app)
         
     #drawing tutorial labels
+    if not app.levelWin and not app.paused:
+        if app.levelNum == 1:
+            drawLabel('ARROW/WASD KEYS TO MOVE',*getCellLeftTop(app, 2,8.5), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+            drawLabel('CHANGE STEPS PER SECOND IN SETTINGS!',*getCellLeftTop(app, 3,8.5), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+        elif app.levelNum == 2:
+            drawLabel('(ESC) TO PAUSE',*getCellLeftTop(app, 2,2), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+        elif app.levelNum == 9:
+            drawLabel('(SPACE) TO WAIT',*getCellLeftTop(app, 1,16), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+    
     if app.debugMode:
         drawLabel('DEBUG MODE ON',app.width//2,25,size = app.cellHeight*0.4, fill = 'white', font = 'babafont', bold = True)
         drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}',app.width//2,40,
                   size = app.cellHeight*0.2, fill = 'white', bold = True, font = 'babafont')
-        
+    
+    
 def main():
     runApp()
 

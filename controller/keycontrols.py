@@ -29,6 +29,9 @@ def pauseControls(app, key):
             app.pointerIdx += 1
     elif key == 'escape':
         app.paused = not app.paused
+        if app.wasMap:
+            app.inMap = True
+            app.wasMap = False
     elif key == 'enter':
         if app.pointerIdx == 0: #continue
             app.paused = not app.paused
@@ -48,10 +51,12 @@ def pauseControls(app, key):
             if app.noPlayer:
                 app.deadSound.pause()
             loadLevel(app, 0)
+        elif app.pointerIdx == 5: #hint
+            app.giveHint = not app.giveHint
         
     # Handle wrapping
-    if app.pointerIdx < 0 or app.pointerIdx > 4:
-        app.pointerIdx = app.pointerIdx % 5
+    if app.pointerIdx < 0 or app.pointerIdx > 5:
+        app.pointerIdx = app.pointerIdx % 6
 
 
 
@@ -107,10 +112,8 @@ def mapControls(app, key):
         app.askReset = True
     if app.askReset:
         if key == 'y':
-            if getFirstObject(app, 'kimchi') in map.level.dict:
-                map.level.dict[getFirstObject(app, 'kimchi')] = (12,2)
-            if getFirstObject(app, 'flag') in map.level.dict:
-                map.level.dict[getFirstObject(app, 'flag')] = (16,8)
+            map.level.dict = copy.deepcopy(mapforreset.level.dict)
+            loadLevel(app,-1)
             app.askReset = False
             app.wasPaused = False
         elif key == 'n':

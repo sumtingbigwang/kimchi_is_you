@@ -10,6 +10,32 @@ from view.loadimages import *
 from levels import *
 
 #draw map screen --------------------------------------------------------------
+
+hintDict = {
+    -1: "IF YOU CAN'T GET TO LEVEL 22, TRY MAKING LEVEL 21 INTO SOMETHING!",
+    1: 'IF KIMCHI IS YOU AND FLAG IS WIN, WHAT DO YOU NEED TO WIN?',
+    2: "IS WALL STILL 'STOP' IF YOU DON'T MAKE IT SO?",
+    3: "WHAT IF WHATEVER IS 'YOU' IS ALSO 'WIN'?",
+    4: "THERE'S NOT ENOUGH ROCKS TO FILL THE LAKE. BUT WHO SAYS YOU HAVE TO FILL THE LAKE?",
+    5: "MAYBE ITEMS CAN INTERACT WITH WORDS?",
+    6: "WHAT IF SOMETHING'S 'HOT' AND 'MELT' AT THE SAME TIME?",
+    7: "WHAT OTHER OBJECT CAN BE 'YOU'?",
+    8: "IS 'WALL IS STOP' IN THE RULES?",
+    9: "COULD KEKE FETCH THE FLAG FOR YOU SOMEHOW?",
+    10: "WHAT HAPPENS IF SOMETHING AND SOMETHING ARE 'YOU'?",
+    11: "'ROCK IS ROCK' OVERRIDES 'ROCK IS FLAG'!",
+    12: "DOES THE KEY HAVE TO BE 'OPEN'?",
+    13: "CLEAR A PATH BY MAKING THINGS 'WEAK'!",
+    14: "'IS NOT' STATEMENTS OVERRIDE 'IS' ONES!",
+    15: "MAYBE YOU DON'T HAVE TO BE BABA? OR BABA DOESN'T HAVE TO TOUCH THE FLAG?",
+    16: "WE CAN MAKE TWO MOVING OBJECTS, AND THOSE PIPE GAPS LOOK LIKE THEY COULD FIT SOME WORDS IN THEM...",
+    17: "CAN THE BOLT HELP YOU BREAK OUT OF THE 'DEFEAT' CLAUSE?",
+    18: "MAKE AN OPENING ON THE LEFT USING TWO PLAYERS. PERHAPS THE 'AND' WORD CAN HELP YOU REACH THE 'WIN' BLOCK IN THE MIDDLE...",
+    19: "WHAT HAPPENS IF WE DOUBLE NEGATE A SENTENCE? LIKE NOT KEKE IS NOT HOT, NOT KIMCHI IS NOT DEFEAT... OR?",
+    20: "IF KEKE ISN'T YOU, HE CAN PASS THROUGH THE ALGAE SAFELY. MAYBE SOMETHING COULD PUSH HIM OVER AND MAKE HIM 'YOU' ON THE OTHER SIDE...",
+    21: "WHAT HAPPENS IF 'LEVEL' IS 'HOT', AND SOMETHING IS MELT? (THIS LEVEL IS HARD! SEARCH FOR 'FRAGILE EXISTENCE SOLUTION' IF YOU CAN'T FIND IT)",
+    22: "DO WE NEED A PLAYER SPRITE TO 'WIN'?",
+}
 mapLevelNameDict = {
     (7,13):'STARTING OFF',
     (8,13):'WHERE DO I GO?',
@@ -179,12 +205,13 @@ def drawLevelExplosionScreen(app,color):
 def printRules(rulesList):
     ruleString = ''
     effectString = ''
+    addedRule = False
     for tuple in rulesList:
         operator, ruletuple = tuple
         if operator == 'power':
             continue
         else:
-            if ruleString != '':
+            if ruleString != '' and addedRule:
                 ruleString += ', '
             subject, effect = ruletuple
             if subject and effect:
@@ -192,9 +219,13 @@ def printRules(rulesList):
                     effectString = effect.obj
                 else:
                     effectString = effect.attribute
-                if len(ruleString) > 4: 
-                    ruleString += '\n'
-                ruleString += f'{subject.obj.upper()} IS {effectString.upper()}'
+                ruleToAdd = f'{subject.obj.upper()} IS {effectString.upper()}'
+                if ruleToAdd not in ruleString:
+                    ruleString += ruleToAdd
+                    addedRule = True
+                    continue
+                addedRule = False
+                
     return ruleString
 
 def drawPauseScreen(app,color):
@@ -208,31 +239,36 @@ def drawPauseScreen(app,color):
     drawLabel(f'{app.level.levelName}', *getCellLeftTop(app, 0.4, app.cols//2),
               size = app.cellHeight, fill = 'white', font = 'babafont', bold = True, align = 'center')
     
-    #(2, 0): resume
+    #(2, 1): resume
     resumeCoords = getCellLeftTop(app, 1, buttonRow+0.5)
     resumeImage = CMUImage(Image.open('view/pausesprites/resume.png'))
     drawImage(resumeImage, *resumeCoords, width=width*cellWidth, height=height*cellHeight)
     
     
-    #(2, 4): restart
+    #(2, 2): restart
     restartCoords = getCellLeftTop(app, 2, buttonRow+0.5)
     restartImage = CMUImage(Image.open('view/pausesprites/restart.png'))
     drawImage(restartImage, *restartCoords, width=width*cellWidth, height=height*cellHeight)
     
-    #(2, 6): settings
+    #(2, 3): settings
     settingsCoords = getCellLeftTop(app, 3, buttonRow+0.5)
     settingsImage = CMUImage(Image.open('view/pausesprites/settings.png'))
     drawImage(settingsImage, *settingsCoords, width=width*cellWidth, height=height*cellHeight)
     
-    #(2, 6): return to map
+    #(2, 4): return to map
     mapCoords = getCellLeftTop(app, 4, buttonRow+0.5)
     mapImage = CMUImage(Image.open('view/pausesprites/map.png'))
     drawImage(mapImage, *mapCoords, width=width*cellWidth, height=height*cellHeight)
     
-    #(2, 8): return to menu
+    #(2, 5): return to menu
     menuCoords = getCellLeftTop(app, 5, buttonRow+0.5)
     menuImage = CMUImage(Image.open('view/pausesprites/menu.png'))
     drawImage(menuImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
+    
+    #(2,6): hint
+    menuCoords = getCellLeftTop(app, 6, buttonRow+0.5)
+    hintImage = CMUImage(Image.open('view/pausesprites/hintP.png'))
+    drawImage(hintImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
     
     #draw pointer 
     drawSprite(app, obj('Pointer','kimchi',None,'right'), *getCellLeftTop(app, 1+app.pointerIdx,buttonRow-0.5), cellWidth)
@@ -240,9 +276,15 @@ def drawPauseScreen(app,color):
     #draw rules
     
     drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}', 
-              app.width//2,app.height- 2*app.cellHeight,
+              app.width//2, app.height- 1*app.cellHeight,
               size = 0.4*app.cellHeight, 
               fill = 'white', bold = True, font= 'babafont', align = 'center')
+    if app.giveHint: 
+        drawLabel(f'{hintDict[app.levelNum]}', 
+              app.width//2, app.height- 0.5*app.cellHeight,
+              size = 0.4*app.cellHeight, 
+              fill = 'white', bold = True, font= 'babafont', align = 'center')
+       
     
 def drawSettingsScreen(app):
     cellWidth, cellHeight = getCellSize(app)

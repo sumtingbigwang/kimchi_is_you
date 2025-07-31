@@ -74,6 +74,12 @@ def loadLevel(app, levelnum):
     app.levelWin = False
     app.askReset = False
     app.paused = False
+    app.giveHint = False
+    app.gameWin = False
+    app.wasDead = False
+    app.levelDefeat = False
+    app.levelHot = False
+    
     
     #initialize level
     #make move history and turnMove sets, then get all rules from the board and define players

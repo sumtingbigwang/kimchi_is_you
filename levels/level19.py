@@ -16,7 +16,7 @@ levelDict = {} #levelDict starts out by being just a size dictionary.
 #then objects are introduced to be loaded. You edit the level here! 
 objDict = {
     'hedge':(
-        [(18,7),(14,14),(13,15),(19,13)]
+        [(18,7),(14,14),(13,15),(19,13),(12,9)]
         +wallHelper(3,0,3,3)
         +wallHelper(0,1,2,1)
         +wallHelper(0,3,2,3)
