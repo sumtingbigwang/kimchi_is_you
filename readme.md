@@ -1,3 +1,7 @@
+# IMPORTANT!
+
+In the game code, there are several sys.path.insert import commands that are key to making sure functions can access functions in other directories. Before you run the game, please change these commands to the respective file paths on YOUR computer so that the game can load properly. Thank you!
+
 ### Introduction
 KIMCHI IS YOU is a python remake of an existing puzzle game, BABA IS YOU. 
 
