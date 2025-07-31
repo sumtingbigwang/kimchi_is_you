@@ -1,35 +1,23 @@
+from math import atan
 import re
 import sys
 sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
+from cmu_graphics.shape_logic import checkNonNegative
 from model.objects import *
 from model.lookup import *
 from sounds.sounds import *
+from levels import *
 from model.movement import *
 
 #rule compiling and execution--------------------------------
 
-def makeCheckCoordinates(coord):
-    coordX, coordY = coord
-    horiSubjCoord = (coordX - 1, coordY)
-    vertiSubjCoord = (coordX, coordY-1)
-    horiEffCoord = (coordX + 1, coordY)
-    vertiEffCoord = (coordX, coordY+1)
-    return [(horiSubjCoord, horiEffCoord), (vertiSubjCoord, vertiEffCoord)]
-
-def compileRules(app):
-    #initialize a rules tuple list to store rules in play, AS LISTED BY WORDS ON BOARD.
-    rules = []
-    
-    #get all equators and logical operators
-    equalsSet = getEquals(app)
-    for word in equalsSet: 
-        if word.attribute == 'equals': #evaluate the 'IS' statements first. 
-            #identify target cells to check. Rules can only be made in the following configs:
+def checkEquals(app, word, rules):
+                #identify target cells to check. Rules can only be made in the following configs:
             #          SUBJECT
             # SUBECT     IS     EFFECT
             #          EFFECT
             #So we check the cell above and left of 'IS' for subject, and so on. 
-            checkList = makeCheckCoordinates(app.levelDict[word])
+            checkList = makeCheckCoordinates(app.levelDict[word], 'is')
             
             #check for each "IS" instance 
             for pair in checkList:
@@ -39,20 +27,26 @@ def compileRules(app):
                 swapWord = findClass(app, effCell, 'subj')
                 #Check if a subject and effect word is present:
                 #this is SUBJECT IS EFFECT case
-                if subjWord and effWord:
-                    rules.insert(1,(word, (subjWord, effWord)))
-                    effWord.rootSubj = subjWord
-                    subjWord.rootEffect = effWord
+                if subjWord:
+                    word.rootSubj = subjWord
+                    subjWord.rootOperator = word
+                    if effWord:
+                        rules.insert(0,(word, (subjWord, effWord)))
+                        effWord.rootSubj = subjWord
+                        subjWord.rootEffect = effWord
+                        subjWord.rootOperator = word
+                        word.rootEffect = effWord
                 
                 #go into swap object case
-                elif subjWord and swapWord: 
-                    rules.insert(1,(word, (subjWord, swapWord)))
-                    swapWord.rootSubj = subjWord
-                else: #got nothing
-                    pass    
+                    elif swapWord: 
+                        rules.insert(0,(word, (subjWord, swapWord)))
+                        swapWord.rootSubj = subjWord
+                        word.rootEffect = swapWord
+                    else: #got nothing
+                        pass    
                 
-        elif word.attribute == 'and': #then we evaluate the AND statements. 
-            #identify target cells to check. AND conjunctions can only be made in the following configs:
+def checkAnd(app, word, rules):
+    #identify target cells to check. AND conjunctions can only be made in the following configs:
             #          SUBJECT
             # SUBECT     IS     EFFECT AND SUBJECT / EFFECT
             #          EFFECT
@@ -61,14 +55,18 @@ def compileRules(app):
             #we need a rootSubject value for each subject and effect in an 'IS' statement.
             #Then, all 'AND' need does is read whether its subject is powered, 
             #and act like an 'IS' statement for the root subject of the subject. 
-            checkList = makeCheckCoordinates(app.levelDict[word])
+            checkList = makeCheckCoordinates(app.levelDict[word], 'and/not')
             for pair in checkList:
-                subjCell, effCell = pair
+                subjCell, effCell, eoCell = pair
                 appliedSubjWord = findClass(app, subjCell, 'subj')
+                applyingSubjWord = findClass(app, effCell, 'subj')
                 appliedEffWord = findClass(app, subjCell, 'effect')
                 applyingEffWord = findClass(app, effCell, 'effect')
-                applyingSubjWord = findClass(app, effCell, 'subj')
-                if ((applyingSubjWord and applyingSubjWord.powered)): #inserting the AND statement before an 'IS' statement. 
+                applyingNot = findClass(app, effCell, 'not')
+                applyingEO = findClass(app, eoCell, 'eq')
+                if (applyingSubjWord 
+                     and applyingSubjWord.rootOperator
+                     and applyingSubjWord.rootOperator.powered): #inserting the AND statement before an 'IS' statement. 
                     #e.g. KIMCHI AND BABA IS HOT: breaks down into KIMCHI IS HOT and BABA IS HOT
                     #e.g. KIMCHI AND BABA IS MELT AND SINK: KIMCHI IS MELT, KIMCHI IS SINK, same thing for BABA
                     #e.g. 
@@ -76,10 +74,13 @@ def compileRules(app):
                     if appliedSubjWord:
                         applyingSubjWord.rootSubj = appliedSubjWord
                         word.rootSubj = applyingSubjWord
-                        rules.append((word, (appliedSubjWord, applyingSubjWord.rootEffect)))
+                        rules.insert(-2,(word, (appliedSubjWord, applyingSubjWord.rootEffect)))
+                    elif applyingNot:
+                        word.rootSubj = applyingSubjWord
                     
-                elif ((appliedSubjWord and appliedSubjWord.rootSubj)
-                    or (appliedEffWord and appliedEffWord.rootSubj)): #inserting the AND statement after an 'IS' statement. 
+                elif ((appliedSubjWord and appliedSubjWord.rootSubj and appliedSubjWord.powered)
+                    or (appliedEffWord and appliedEffWord.rootSubj and appliedEffWord.powered)): 
+                    #inserting the AND statement after an 'IS' statement. 
                     #e.g. KIMCHI IS BABA AND HOT: breaks down into KIMCHI IS BABA and KIMCHI IS HOT
                     #e.g. KIMCHI IS BABA AND KEKE: breaks down into KIMCHI IS BABA and KIMCHI IS KEKE
                     #e.g. KIMCHI IS HOT AND BABA: breaks down into KIMCHI IS HOT and KIMCHI IS BABA
@@ -90,9 +91,9 @@ def compileRules(app):
                     
                     #must be applied LAST for the IS statements to properly establsih roots
                     if appliedEffect:
-                        rules.append((word, (subject, appliedEffect)))
+                        rules.insert(-2,(word, (subject, appliedEffect)))
                         if subject.rootSubj:
-                            rules.append((word, (subject.rootSubj, appliedEffect)))
+                            rules.insert(-2,(word, (subject.rootSubj, appliedEffect)))
                         if applyingEffWord:
                             applyingEffWord.rootSubj = subject
                         elif applyingSubjWord:
@@ -100,14 +101,115 @@ def compileRules(app):
                         word.rootSubj = subject
                 else:
                     pass
+
+def checkNot(app, word, rules):
+    chainNegated = False
+    singleNegated = False
+    operatorNegated = False
+    # KIMCHI NOT ON ROCK IS HOT (negate operator, really only works for the 'ON' operator.)
+    # KIMCHI AND NOT BABA IS HOT (negate AND operator)
+    checkList = makeCheckCoordinates(app.levelDict[word], 'and/not')
+    for tuple in checkList:
+        subjCell, effCell, eoCell = tuple
+        frontSubject = findClass(app, subjCell, 'subj')
+        frontOperator = findClass(app, subjCell, 'eq')
+        negatedSubject = findClass(app, effCell, 'subj')
+        negatedSubjectOperator = findClass(app, eoCell, 'eq')
+        negatedEffect = findClass(app, effCell, 'effect')
+        negatedOperator = (findClass(app, effCell, 'eq') 
+                           if findClass(app, effCell, 'eq')
+                           and findClass(app, effCell, 'eq').attribute == 'on'
+                           else None) #do this because we don't want NOT to start negating the IS operator. 
+        
+        if negatedSubject: # NOT KIMCHI IS HOT/ KIMCHI IS NOT BABA (negate subject)
+            if frontOperator and frontOperator.rootSubj: #KIMCHI IS NOT BABA
+                #in this case, the front operator isn't gonna be powered, so we check for root subject.
+                word.rootSubj = frontOperator.rootSubj
+                rules.insert(-2,(word, (frontOperator.rootSubj, negatedSubject))) 
+                chainNegated = True
+                
+            elif (negatedSubject.powered 
+                  and negatedSubjectOperator
+                  and negatedSubjectOperator.powered): #NOT KIMCHI IS HOT
+                if negatedSubjectOperator.attribute == 'equals':
+                    word.rootSubj = negatedSubject
+                    rules.append((word, (negatedSubject, negatedSubjectOperator.rootEffect)))
+                    for subjectWord in app.levelDict:
+                        if (isinstance(subjectWord, subj) 
+                            and subjectWord != negatedSubject):
+                            rules.insert(0,(negatedSubject.rootOperator, (subjectWord, negatedSubjectOperator.rootEffect)))
+                            singleNegated = True
+                    
+        elif negatedEffect: # KIMCHI IS NOT HOT (negate effect)
+            if frontOperator and frontOperator.rootSubj:
+                for subjectWord in app.levelDict:
+                    if (isinstance(subjectWord, subj) 
+                        and subjectWord != negatedEffect):
+                        rules.append((word, (frontOperator.rootSubj, negatedEffect)))
+                        #makeRules will read this and pop the rule if it's applied.
+                        operatorNegated = True
+                
+        
+                        
+    if chainNegated:
+        #append this tuple to tell checkPower to power up everything in the chain. 
+        rules.append(('power', (word, frontOperator)))
+        rules.append(('power', (frontOperator.rootSubj, negatedSubject)))
+    if singleNegated:
+        rules.append(('power', (word, word)))
+    if operatorNegated:
+        rules.append(('power', (frontOperator, word)))
+        rules.append(('power', (negatedSubject, negatedEffect)))
+        
+def makeCheckCoordinates(coord, type):
+    if type == 'is':
+        coordX, coordY = coord
+        horiSubjCoord = (coordX - 1, coordY)
+        vertiSubjCoord = (coordX, coordY-1)
+        horiEffCoord = (coordX + 1, coordY)
+        vertiEffCoord = (coordX, coordY+1)
+        return [(horiSubjCoord, horiEffCoord), (vertiSubjCoord, vertiEffCoord)]
+    elif type == 'and/not':
+        coordX, coordY = coord
+        horiSubjCoord = (coordX - 1, coordY)
+        vertiSubjCoord = (coordX, coordY-1)
+        horiEffCoord = (coordX + 1, coordY)
+        horiEOCoord = (coordX + 2, coordY) #EO for Effect Operator
+        vertiEffCoord = (coordX, coordY+1)
+        vertiEOCoord = (coordX, coordY+2)
+        return [(horiSubjCoord, horiEffCoord, horiEOCoord), (vertiSubjCoord, vertiEffCoord, vertiEOCoord)]
+def compileRules(app):
+    #initialize a rules tuple list to store rules in play, AS LISTED BY WORDS ON BOARD.
+    rules = []
+    
+    #get all equators and logical operators
+    equalsSet = getEquals(app)
+    for word in equalsSet: 
+        if word.attribute == 'equals': #evaluate the 'IS' statements first. 
+            checkEquals(app, word, rules)
+            
+        elif word.attribute == 'and': #then we evaluate the AND statements. 
+            checkAnd(app, word, rules)
+            
         elif word.attribute == 'not': #finally we work on negation.
-            pass #(to be done later)
-    return rules
+            checkNot(app, word, rules)
+    return rules #goes into app.levelRules
     
 def makeRules(app): #main function that calls helpers to apply new rules
     rulePairs = []
     for (word, (subjectWord, effectWord)) in app.levelRules:
-        rulePairs += [(subjectWord, effectWord)]
+        if word == 'power':
+            continue
+        elif (word.attribute == 'equals' 
+            or word.attribute == 'and'):
+            rulePairs += [(subjectWord, effectWord)] #add rules
+        elif word.attribute == 'not':
+            elimSubject, elimWord = (subjectWord, effectWord)
+            for (targetSubject, targetWord) in rulePairs:
+                if (targetSubject.attribute == elimSubject.attribute
+                    and targetWord.attribute == elimWord.attribute):
+                    print('removing rule', targetSubject, targetWord)
+                    rulePairs.remove((targetSubject, targetWord)) #remove rules negated by NOT
     
     for pair in rulePairs:
         subjectWord, effectWord = pair
@@ -118,13 +220,34 @@ def makeRules(app): #main function that calls helpers to apply new rules
             replaceObjs(app, subjectWord, effectWord)
 
 def addEffects(app, subjectWord, effectWord): #adds effect to subject
-    appendType = subjectWord.obj
-    for object in app.levelDict:
-        if (isinstance(object, obj) #item is an object 
-            and object.attribute == appendType #item matches type
-            and effectWord.attribute not in object.effectsList): #effect hasn't been appended alr
-                    #apply effects to objects
-                object.effectsList.append(effectWord.attribute) 
+    if subjectWord.attribute == 'textword':
+        for text in app.levelDict:
+            if (isinstance(text, subj) 
+                or isinstance(text, effect)
+                or isinstance(text, eq)):
+                    text.effectsList.append(effectWord.attribute)
+                    
+    if subjectWord.attribute == 'level':
+        if effectWord.attribute == 'win':
+            app.levelWin = True
+        elif effectWord.attribute == 'defeat' or effectWord.attribute == 'weak':
+            playRandomDefeatSound()
+            app.levelGone = True
+            if getFirstObject(app, 'you'):
+                deleteObject(app, getFirstObject(app, 'you'))
+        elif effectWord.attribute == 'hot':
+            for object in app.levelDict:
+                if 'melt' in object.effectsList:
+                    deleteObject(app, object)
+                    app.turnMoves.append((object, object.type, object.effectsList, object.attribute, object.pos))
+    else:
+        appendType = subjectWord.obj
+        for object in app.levelDict:
+            if (isinstance(object, obj) #item is an object 
+                and object.attribute == appendType #item matches type
+                and effectWord.attribute not in object.effectsList): #effect hasn't been appended alr
+                        #apply effects to objects
+                    object.effectsList.append(effectWord.attribute) 
 
 def checkPower(app):
     wordCheckList = ruleUnpacker(app.levelRules)
@@ -136,13 +259,13 @@ def checkPower(app):
                     if item.attribute == 'and':
                         if item.rootSubj and not item.rootSubj.powered:
                             item.powered = False
-                            continue
+                            continue 
                     item.powered = True
                 else:
                     item.powered = False
                     
-def delRules(app): #main function that deletes old rules no longer in play
-    checkList = [itemRuleTuple for (equals, itemRuleTuple) in app.levelRules]
+def delRules(app): #main function that deletes old rules no longer in play and kills negated rules
+    checkList = [itemRuleTuple for (equals, itemRuleTuple) in app.levelRules if equals != 'not on' and equals != 'power']
     for item in app.levelDict:
         if item.attribute != 'cursor':
             if isinstance(item, obj):
@@ -154,11 +277,26 @@ def delRules(app): #main function that deletes old rules no longer in play
                 
 #Replacement-related rules--------------------------------
 def replaceObjs(app, subjectWord, effectWord):
+    print('replacing', subjectWord.attribute, effectWord.attribute)
+    if subjectWord.attribute == 'level':
+        if app.levelNum == 21:
+            mapItem = obj(f'O-13',f'{effectWord.obj}')
+            mapItem.pos = (12,2)
+            map.level.dict[mapItem] = (12,2)
+        elif app.levelNum == 22 and effectWord.obj == 'flag':
+            mapItem = obj(f'O-14','flag')
+            mapItem.pos = (16,8)
+            map.level.dict[mapItem] = (16,8)
+        else:
+            mapItem = obj(f'O-14',f'{effectWord.obj}')
+            mapItem.pos = (2,5)
+            map.level.dict[mapItem] = (2,5)
+        app.metaMap = True
     appendType = subjectWord.obj
     replaceType = effectWord.obj
     objPairs = {(subjectWord.attribute, effectWord.attribute)
         for (word, (subjectWord, effectWord)) in app.levelRules 
-        if word.attribute == 'equals'}
+        if not isinstance(word, str) and word.attribute == 'equals'}
     if (subjectWord.attribute, subjectWord.attribute) in objPairs: #KIMCHI IS KIMCHI overrides any other replacement rules.
         return
     for object in app.levelDict:
@@ -175,7 +313,7 @@ def swapObjs(app):
     replaceObjPairs = []
     objPairs = [(subjectWord, effectWord)
         for (word, (subjectWord, effectWord)) in app.levelRules 
-        if word.attribute == 'equals']
+        if (not isinstance(word, str)) and word.attribute == 'equals']
     attributePairs = [(subjectWord.attribute, effectWord.attribute)
                       for (subjectWord, effectWord) in objPairs]
     for lIdx in range(len(attributePairs)):
@@ -194,25 +332,42 @@ def swapObjs(app):
             replaceObjs(app, pair[1], pair[0])
         app.replaceCount += 1
         
+def moreObjs(app):
+    moreCount = 0
+    moreList = [object for object in app.levelDict if 'more' in object.effectsList]
+    for object in moreList:
+        objX, objY = object.pos
+        moreSpaceList = [(objX+1,objY), (objX,objY+1), (objX-1,objY), (objX,objY-1)]
+        for space in moreSpaceList:
+            if len(getObjectsInCell(app,*(space))) < 1:
+                moreObject = obj(f'O-{moreCount}',f'{object.attribute}')
+                moreObject.pos = space
+                app.levelDict[moreObject] = space
+                moreCount +=1 
+                
 #Deletion-related rules--------------------------------
 def deleteBoard(app):
     sinkList = []
     defeatList = []
     meltList = []
     openList = []
+    weakList = []
     for object in app.levelDict:
         if 'sink' in object.effectsList:
             sinkList.append((object, object.pos))
-        elif 'defeat' in object.effectsList:
+        if 'defeat' in object.effectsList:
             defeatList.append((object, object.pos))
-        elif 'hot' in object.effectsList:
+        if 'hot' in object.effectsList:
             meltList.append((object, object.pos))
-        elif 'shut' in object.effectsList:
+        if 'shut' in object.effectsList:
             openList.append((object, object.pos))
+        if 'weak' in object.effectsList:
+            weakList.append((object, object.pos))
     sinkObjs(app, sinkList)
     defeatObjs(app, defeatList)
     meltObjs(app, meltList)
     openObjs(app, openList)
+    weakObjs(app, weakList)
             
 def deleteObject(app, object): #call this on sink, defeat, hot/melt, XX IS empty. 
     if object.preSink:
@@ -227,9 +382,14 @@ def sinkObjs(app, sinkList): #sink object remove function (kills everything not 
     for (sinkObject, cell) in sinkList:
         if cell and len(getObjectsInCell(app, *cell)) > 1: 
             #if theres more than one object in the cell, we delete everything in the cell
+            if len(getObjectsInCell(app, *cell)) == 2:
+                for object in getObjectsInCell(app, *cell):
+                    if 'float' in object.effectsList:
+                        return None
             for objectToSink in getObjectsInCell(app, *cell):
                 if ('float' not in objectToSink.effectsList
-                    or 'float' in sinkObject.effectsList): #FLOAT objects only check each other.
+                    or ('float' in sinkObject.effectsList and 'float' in objectToSink.effectsList)): 
+                    #FLOAT objects only check each other.
                     deleteObject(app, objectToSink)
                     sinkedObject = True
                     app.turnMoves.append((objectToSink, objectToSink.type, objectToSink.effectsList, objectToSink.attribute, cell))
@@ -278,38 +438,46 @@ def openObjs(app, openList): #open object remove function
                     break
     if openedObject:
         playRandomOpenSound()
+        
+def weakObjs(app, weakList): #weak object remove function
+    killedObject = False
+    for (weakObject, cell) in weakList:
+        if cell and len(getObjectsInCell(app, *cell)) > 1:
+            deleteObject(app, weakObject)
+            killedObject = True
+            app.turnMoves.append((weakObject, weakObject.type, weakObject.effectsList, weakObject.attribute, cell))
+    if killedObject:  
+        playRandomDefeatSound()
 
 #reset functions--------------------------------
 def resetLevel(app):
-    #create a list of items before iterating to avoid dictionary modification during iteration
     app.levelDict = copy.deepcopy(app.level.dict)
-    items = list(app.levelDict.keys()) #copy the original file
-    for item in items:
-        item.resetPos()
-        app.levelDict[item] = item.pos
-        item.attribute = item.initialState
+    
+    #define game states
+    app.noPlayer = False
+    app.levelWin = False
+    app.askReset = False
+    app.paused = False
+    
+    #initialize level
+    #make move history and turnMove sets, then get all rules from the board and define players
     app.moveHistory = []
     app.turnMoves = []
-    app.replaceCount = 0
-    refreshRules(app)
-    
-    # Just update rules without checking win state
     app.levelRules = compileRules(app)
-    delRules(app)
-    makeRules(app)
-    
-    # Update players
+    app.checkSoundList = []
+    app.objects = getAllObjects(app)
     app.players = getPlayer(app)
-    app.noPlayer = len(app.players) == 0
-
+    refresh(app)
+    
 #refresh function here for global access to everything
 def refresh(app):
     #rule refresh   
     refreshRules(app)
     swapObjs(app)
-    deleteBoard(app)
     autoMoveObjs(app)
+    deleteBoard(app)
     refreshRules(app)
+    moreObjs(app)
     
     #move logging
     if app.turnMoves: #don't want to store empty stacks
@@ -358,17 +526,26 @@ def refreshRules(app):
     delRules(app)
     makeRules(app)
     app.levelRules = compileRules(app)
+    
 def ruleUnpacker(list):
     returnList = []
     for tuple in list:
-        equals, (itemWord, effectWord) = tuple
-        if equals.attribute == 'and': #this ensures the 'AND' statement is looked at last
-            #so game can accurately grab powered state of the words around it. 
-            returnList.append(equals)
-        else:
-            returnList.insert(0, equals)
-        returnList.insert(0, itemWord)
-        returnList.insert(0, effectWord)
+        operator, ruleTuple = tuple
+        if operator == 'power':
+            for objectToPower in ruleTuple:
+                returnList.append(objectToPower)
+            continue
+        else: 
+            (itemWord, effectWord) = ruleTuple
+            if operator == 'is':
+                continue
+            elif operator.attribute == 'and': #this ensures the 'AND' statement is looked at last
+                #so game can accurately grab powered state of the words around it. 
+                returnList.insert(-2, operator)
+            else:
+                returnList.insert(0, operator)
+                returnList.insert(0, itemWord)
+                returnList.insert(0, effectWord)
     return returnList
 
 def undoMove(app):

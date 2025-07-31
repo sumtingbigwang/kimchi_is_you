@@ -28,8 +28,7 @@ objDict = {
         +wallHelper(25,1,27,1)
         +wallHelper(22,0,23,0)
         +wallHelper(22,2,23,2)
-        +wallHelper(22,2,22,3)
-        +[(21,3),(17,7),(2,3)]
+        +[(21,3),(17,7),(2,3),(22,3)]
         +wallHelper(0,3,0,6)
         +wallHelper(1,3,1,4)
         +wallHelper(3,0,3,3)

@@ -14,13 +14,44 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'kimchi':[(16,5)]}
+objDict = {
+ 'algae':(
+    wallHelper(11,0,11,17)
+    +wallHelper(12,0,12,17)
+ ),
+ 'wall':(
+     [(17,0),(19,5),(18,7),(22,7),(15,16),(22,14),(23,14),(22,15)]
+     +wallHelper(21,0,21,7)
+     +wallHelper(17,1,20,1)
+     +wallHelper(22,8,23,8)
+     +wallHelper(21,15,21,17)
+ ),
+ 'kimchi':[(3,3),(2,14),(6,11)],
+ 'keke':[(5,7)],
+ 'flag':[(18,12)]
+}
 
-eqDict = {'equals':[(16,3)]}
+eqDict = {
+    'equals':[(5,5),(8,8),(19,0),(20,3),(19,6),(18,14)],
+    'and':[(20,5)]
+    }
 
-effectDict = {'you': [(17,3)]}
+effectDict = {
+    'you':[(8,9)],
+    'win':[(19,14)],
+    'move':[(6,5)],
+    'push':[(5,9)],
+    'stop':[(20,0)],
+    'defeat':[(20,6)]
+              }
 
-subjDict = {'kimchiword':[(15,3)]}
+subjDict = {
+    'kimchiword':[(4,5),(20,2),(20,4)],
+    'flagword':[(17,14)],
+    'kekeword':[(8,7)],
+    'wallword':[(18,0)],
+    'algaeword':[(18,6)]
+        }
 
 adjDict = {} #no adjectives in this level. 
 
@@ -33,19 +64,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('testlevel load complete, result: ', levelDict)
-level = level(69,levelDict,
+print('level 20 load complete, result: ', levelDict, '\n\n')
+level = level(20,levelDict,
               #level size
-              (33,18), 
+              (24,18), 
               #background colors
-              rgb(21,24,31), 'black',
+              rgb(45,59,123), rgb(16,21,40),
               #top margin
               10, 
               #bgm
-              'sounds/music/baba.ogg',
+              'sounds/music/ruin.ogg',
               #levelname
-              'METAMETA(HOSTILE ENVIRONMENT)')#store the size of the level here.
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              'FURTHER FIELDS') 

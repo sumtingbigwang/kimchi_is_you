@@ -5,7 +5,8 @@ from view.drawgrid import *
 from model.lookup import *
 from model.rules import *
 from levels import *
-levelDict = {-1: map.level,
+levelDict = {69: testlevel.level,
+            -1: map.level,
              0: menu.level,
             1: level1.level,
              2: level2.level,
@@ -19,7 +20,26 @@ levelDict = {-1: map.level,
              10: level10.level,
              11: level11.level,
              12: level12.level,
+             13: level13.level,
+             14: level14.level,
+             15: level15.level,
+             16: level16.level,
+             17: level17.level,
+             18: level18.level,
+             19: level19.level,
+             20: level20.level,
+             21: level21.level,
+             22: level22.level,
              }
+
+def readFile(path):
+    with open(path, 'r') as file:
+        return int(file.read())
+    
+def writeFile(path, levelnum):
+    with open(path, 'wt') as file:
+        file.write(str(levelnum))
+    
     
 def loadLevel(app, levelnum):
     app.sound.pause()  #bgm pause
@@ -34,6 +54,10 @@ def loadLevel(app, levelnum):
     app.inMenu = app.level.inMenu
     app.sound = Sound(app.level.bgm)
     app.sound.play(loop = True)
+    
+    #save level num for 'continue' option
+    if app.levelNum != 0:
+        writeFile('levels/lastPlayed.txt', app.levelNum)
     
     #initialize animation and pointer metrics 
     app.animIndex = 0

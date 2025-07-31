@@ -128,6 +128,7 @@ objDrawDict = {
             'door': doorDraw,
             'key': keyDraw,
             'tree': treeDraw,
+            'leaf': leafDraw,
             
             #wall sprites
             'wall': wallDraw, 
@@ -139,9 +140,11 @@ objDrawDict = {
             'fence': fenceDraw,
             'brick': brickDraw,
             'line': lineDraw,
+            'pipe': pipeDraw,
             
             #words--------------------------------
             'equals': equalsDraw, 
+            'not': notDraw,
             
             #effects--------------------------------
             'has': hasDraw, 
@@ -149,6 +152,7 @@ objDrawDict = {
             'push': pushDraw,
             'stop': stopDraw, 
             'win': winDraw, 
+            
             
             #menu-related items--------------------------------
             'menu': menuDraw,
@@ -190,6 +194,9 @@ wordDrawDict = {
                 'doorword': doorWordDraw,
                 'keyword': keyWordDraw,
                 'treeword': treeWordDraw,
+                'leafword': leafWordDraw,
+                'pipeword': pipeWordDraw,
+                'textword': textWordDraw,
                 
                 #effect words--------------------------------
                 'you': youDraw,
@@ -213,6 +220,7 @@ wordDrawDict = {
                 'shift': shiftWordDraw,
                 'open': openWordDraw,
                 'shut': shutWordDraw,
+                'not': notDraw,
                 
                 #equal words--------------------------------
                 'equals': equalsDraw,
@@ -318,6 +326,7 @@ class subj:
         
         #rulemaking info
         self.obj = obj
+        self.rootOperator = None
         self.rootSubj = None
         self.rootEffect = None
         
@@ -375,9 +384,9 @@ class eq: #includes 'IS' and 'HAS'
         self.initialState = self.attribute
         
         #rulemaking info
-        self.subj= None
-        self.desc = None
         self.effectsList = ['push']
+        self.rootSubj = None
+        self.rootEffect = None
         
         #movement info
         self.pos = None
@@ -391,7 +400,6 @@ class eq: #includes 'IS' and 'HAS'
         
         #comparison info
         self.type = 'eq'
-        self.rootSubj = None
         
     
     def changeDir(self, direction): #for running into walls
@@ -420,13 +428,6 @@ class eq: #includes 'IS' and 'HAS'
                 self.pos = self.posHist[0]
                 self.direction = 'right'
                 self.posHist = []
-        
-    def makeSubject(self, other):
-        self.subj = other
-        
-    def makeDescribe(self, other):
-        if isinstance(other, effect):
-            self.desc = other.desc
         
     def __eq__(self,other):
         if isinstance(other, eq):

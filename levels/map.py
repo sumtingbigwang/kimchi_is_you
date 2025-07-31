@@ -22,16 +22,31 @@ objDict = {'cursor':[(7,13)],
                    (7,11),(8,11),(9,11),
                    
                    #the lake
-                   (12,12),(13,12),(14,12)
+                   (12,12),(13,12),(14,12),
+                   
+                   #forest of fall
+                   (19,12),(20,12),(21,12),
+                   
+                   #the factory
+                   (23,9), (24,9),
+                   
+                   #meta
+                   (15,2),(14,2),(13,2),(12,2),(2,5)
                    ],
-        'line':[(10,12),(11,12)]
+        'line':(
+                wallHelper(15,12,18,12)
+                +wallHelper(22,5,22,8)
+                +wallHelper(15,5,21,5)
+                +[(10,12),(11,12),(21,11),(21,10),(21,9),(22,9),(15,3),(15,4)])
         }
 subjDict = {'kimchiword': [(29,15)],
-            'flagword': [(29,17)]}
-eqDict = {'equals': [(30,15),(30,17)]}
+            'flagword': [(29,17)],
+            'tileword': [(0,0)]}
+eqDict = {'equals': [(30,15),(30,17),(1,0)]}
 
 effectDict = {'you': [(31,15)],
-              'win': [(31,17)]}
+              'win': [(31,17)],
+              'stop':[(2,0)]}
 
 #now we load the level into the levelDict. 
 #load function is in objects.py

@@ -1,3 +1,4 @@
+from asyncio import FastChildWatcher
 from re import S
 from controller.keycontrols import *
 from cmu_graphics import *
@@ -12,13 +13,19 @@ from view.loadimages import *
 from model.rules import *
 from model.movement import * 
 from sounds.sounds import *
-import copy, sys
+import copy, sys, time
          
 def onAppStart(app):
     loadSheets(app)
     startup(app)
     #misc settings
     app.replaceCount = 0
+    app.levelGone = False
+    app.metaMap = False
+    
+    #define key hold move timing
+    app.t0 = 0 
+    app.latency = 0.1
     
     #define window size--------
     app.initHeight = 975
@@ -34,7 +41,7 @@ def onAppStart(app):
     app.lastMoveTime = 0 # Track when the last move happened
     
     #define level
-    app.lastPlayedLevel = 12 #temporary, make a save file for this
+    app.lastPlayedLevel = readFile('levels/lastPlayed.txt') #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
@@ -115,11 +122,15 @@ def onKeyPress(app, key):
         gameControls(app, key)
     if key == 'g':
         app.debugMode = not app.debugMode
-        
+    app.t0 = time.time()
+    
 def onKeyHold(app, keys):
-    pass
-    # if not app.inMenu:
-    #     gameKeyHold(app, keys)
+    if not app.inMenu and not app.paused and not app.settings and not app.inMap:
+        t1 = time.time()
+        if t1 - app.t0 > app.latency:
+            for key in keys:
+                gameControls(app, key)
+            app.t0 = t1
         
 def onStep(app):
     #for extra timing; reset this counter to prevent excess memory consumption
@@ -131,6 +142,9 @@ def onStep(app):
     #check for app size changes
     if app.width != app.initWidth or app.height != app.initHeight:
         calculateGridDimensions(app) 
+    if app.metaMap:
+        app.metaMap = False
+        loadLevel(app, -1)
 
 def redrawAll(app):
     if app.level.inMap:
@@ -138,6 +152,9 @@ def redrawAll(app):
         drawMapScreen(app, app.level.background)
     drawGame(app)
     
+    if app.levelGone:
+        drawLevelExplosionScreen(app, 'black')
+        
     if app.level.inMap:
         drawLevelNumbers(app)
     if app.settings:
@@ -148,7 +165,10 @@ def redrawAll(app):
             drawResetScreen(app, 'black')
             
         if app.levelWin: #want to draw win screen on top
-            drawWinScreen(app, 'black') #black is a placeholder color. 
+            if app.inMap:
+                drawGameWinScreen(app)
+            else:
+                drawWinScreen(app, 'black') #black is a placeholder color. 
             #Store the level color in the level class, and refer to that later
         
         if app.noPlayer and not app.inMap and not app.settings and not app.inMenu:

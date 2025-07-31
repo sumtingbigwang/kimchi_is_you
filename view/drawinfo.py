@@ -29,6 +29,10 @@ class drawInfo:
 #           - State: legs in, standing, legs out 
 #                  -Frame: 0, 1, 2
 
+
+#DISCLAIMER: Cursor.AI was able to help me type out ~half of the dictionaries below, provided I found and revised the coordinates.
+#It took manually typing out about 25-30 of these for the bot to get the hang of generating dictionaries. 
+
 #menu-related sprites--------------------------------
 menuDraw = drawInfo('MENU', 'menu', 'white', 'black', None)
 
@@ -279,6 +283,15 @@ treeWordDict = {
 }
 treeWordDraw = drawInfo('TREEWORD', 'objectWord', 'saddleBrown', 'white', treeWordDict)
 
+leafDict = (601,376)
+leafDraw = drawInfo('LEAF', 'object', 'saddleBrown', 'white', leafDict)
+
+leafWordDict = {
+    'powered': [(576,376)],
+    'unpowered': [(551,376)]
+}
+leafWordDraw = drawInfo('LEAFWORD', 'objectWord', 'saddleBrown', 'white', leafWordDict)
+
 
 
 
@@ -348,12 +361,12 @@ fenceWordDict = {
 }
 fenceWordDraw = drawInfo('FENCEWORD', 'wallWord', 'saddleBrown', 'white', fenceWordDict)   
 
-brickDict = {i:(73+25*i+1,226) for i in range(16)}
+brickDict = {i:(73+25*i+1,151) for i in range(16)}
 brickDraw = drawInfo('BRICK', 'wall', 'saddleBrown', 'white', brickDict)
 
 brickWordDict = {
-    'powered': [(48,226)],
-    'unpowered': [(23,226)]
+    'powered': [(48,151)],
+    'unpowered': [(23,151)]
 }
 brickWordDraw = drawInfo('BRICKWORD', 'wallWord', 'saddleBrown', 'white', brickWordDict)   
 
@@ -365,6 +378,15 @@ lineWordDict = {
     'unpowered': [(23,976)]
 } 
 lineWordDraw = drawInfo('LINEWORD', 'wallWord', 'saddleBrown', 'white', lineWordDict)
+
+pipeDict = {i:(73+25*i+1,1051) for i in range(16)}
+pipeDraw = drawInfo('PIPE', 'wall', 'saddleBrown', 'white', pipeDict)
+
+pipeWordDict = {
+    'powered': [(48,1051)],
+    'unpowered': [(23,1051)]
+}
+pipeWordDraw = drawInfo('PIPEWORD', 'wallWord', 'saddleBrown', 'white', pipeWordDict)
 
 
 #object2(animated, *usually non player objects *)--------------------------------
@@ -465,10 +487,16 @@ equalsDict = {
 equalsDraw = drawInfo('IS', 'word', 'black', 'white', equalsDict)
 
 hasDict = {
-    'powered': [(26.5,151)],
-    'unpowered': [(1.5,151)]
+    'powered': [(51.5,151)],
+    'unpowered': [(26.5,151)]
 }
 hasDraw = drawInfo('HAS', 'word', 'black', 'white', hasDict)
+
+notDict = {
+    'powered': [(201.5,76)],
+    'unpowered': [(176.5,76)]
+}
+notDraw = drawInfo('NOT', 'word', 'saddleBrown', 'white', notDict)
 
 youDict = {
     'powered': [(276.5,226)],
@@ -610,8 +638,8 @@ moveWordDraw = {
 moveWordDraw = drawInfo('MOVEWORD', 'word', 'saddleBrown', 'white', moveWordDraw)
 
 moreWordDraw = {
-    'powered': [(251.5,1123)],
-    'unpowered': [(226.5,1123)]
+    'powered': [(351.5,1123)],
+    'unpowered': [(326.5,1123)]
 }
 moreWordDraw = drawInfo('MOREWORD', 'word', 'saddleBrown', 'white', moreWordDraw)
 

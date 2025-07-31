@@ -14,13 +14,40 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'kimchi':[(16,5)]}
+objDict = {
+'fence':(
+    wallHelper(6,3,17,3)
+    +wallHelper(6,4,6,14)
+    +wallHelper(17,4,17,14)
+    +wallHelper(7,14,16,14)
+),
+'baba':[(9,8)],
+'brick':(
+    wallHelper(14,6,16,6)
+    +wallHelper(13,7,15,7)
+    +wallHelper(13,8,15,8)
+    +wallHelper(14,9,15,9)
+    +wallHelper(7,11,8,11)
+),
+'tile':[(10,5),(12,5),(14,5)],
+'tree':[(1,16),(21,3),(3,6)]
+}
 
-eqDict = {'equals':[(16,3)]}
+eqDict = {
+'equals':[(13,8),(1,0),(1,1),(20,8)],
+'not':[(2,0),(14,5)]
+    }
 
-effectDict = {'you': [(17,3)]}
+effectDict = {
+    'you':[(3,0),(14,8)],
+    'stop':[(2,1),(10,5)],
+    'win':[(20,9)]
+              }
 
-subjDict = {'kimchiword':[(15,3)]}
+subjDict = {
+'babaword':[(12,8)],
+'fenceword':[(0,0),(0,1),(12,5)]
+        }
 
 adjDict = {} #no adjectives in this level. 
 
@@ -33,19 +60,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('testlevel load complete, result: ', levelDict)
-level = level(69,levelDict,
+print('level 14 load complete, result: ', levelDict, '\n\n')
+level = level(14,levelDict,
               #level size
-              (33,18), 
+              (24,18), 
               #background colors
-              rgb(21,24,31), 'black',
+              rgb(82,64,40), rgb(55,45,37),
               #top margin
               10, 
               #bgm
-              'sounds/music/baba.ogg',
+              'sounds/music/forest.ogg',
               #levelname
-              'METAMETA(HOSTILE ENVIRONMENT)')#store the size of the level here.
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              'NOT THERE') 

@@ -14,13 +14,23 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'kimchi':[(16,5)]}
+objDict = {'flag' : (12, 6),
+           'baba' : (4,6),
+           'leaf' : [(8,5),(8,6),(8,7)],
+           'tree' : [(i,4) for i in range(3,14)] + [(i,8) for i in range(3,14)]}
 
-eqDict = {'equals':[(16,3)]}
+eqDict = {'equals': [(4,1), (4,10),(12,1),(12,10),(1,0)]}
 
-effectDict = {'you': [(17,3)]}
+effectDict = {'push': [(13,1)],
+              'stop': [(13,10)],
+              'win': [(5,10)],
+              'you': [(5,1)],
+              'float':[(2,0)]}
 
-subjDict = {'kimchiword':[(15,3)]}
+subjDict = {'treeword': [(11,10)],
+               'leafword': [(11,1)],
+               'babaword': [(3,1),(0,0)],
+               'flagword': [(3,10)]}
 
 adjDict = {} #no adjectives in this level. 
 
@@ -33,19 +43,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('testlevel load complete, result: ', levelDict)
-level = level(69,levelDict,
+print('level 15 load complete, result: ', levelDict, '\n\n')
+level = level(15,levelDict,
               #level size
-              (33,18), 
+              (17,13), 
               #background colors
-              rgb(21,24,31), 'black',
+              rgb(82,64,40), rgb(55,45,37),
               #top margin
               10, 
               #bgm
-              'sounds/music/baba.ogg',
+              'sounds/music/forest.ogg',
               #levelname
-              'METAMETA(HOSTILE ENVIRONMENT)')#store the size of the level here.
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              'FLOAT') 

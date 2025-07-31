@@ -10,9 +10,11 @@ __all__ = ['testlevel','menu','map', #experimental levels
            'level4','level5','level6',
            'level7','level8','level9',
            #the lakes
-           'level10','level11','level12'
+           'level10','level11','level12',
            #forest is fall
-           
+           'level13', 'level14', 'level15',
            #cog is turn
-           #meta 
-           ]
+           'level16', 'level17',
+           #meta                   
+           'level18', 'level19', 'level20', 'level21', 'level22'
+           ]                                   

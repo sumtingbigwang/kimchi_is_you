@@ -14,13 +14,48 @@ from model.rules import *
 levelDict = {} #levelDict starts out by being just a size dictionary. 
 
 #then objects are introduced to be loaded. You edit the level here! 
-objDict = {'kimchi':[(16,5)]}
+objDict = {
+'hedge':(
+    wallHelper(8,0,8,3)
+    +wallHelper(9,3,20,3)
+    +wallHelper(20,4,20,16)
+    +wallHelper(12,16,19,16)
+    +wallHelper(12,11,12,13)
+    +wallHelper(10,10,16,10)
+    +wallHelper(0,9,10,9)
+    +wallHelper(12,15,12,17)
+    +[(16,9),(10,14)]
+),
+'baba':[(6,7)],
+'tree':(wallHelper(9,5,9,8)),
+'rock':[(18,7),(12,14)],
+'flag':[(7,15)],
+'leaf':(wallHelper(17,9,19,9)
+    +wallHelper(17,10,19,10)
+)
+}
 
-eqDict = {'equals':[(16,3)]}
+eqDict = {
+'equals':[(10,2),(7,13),(14,11),
+          (18,4),(13,6),(12,7)]
+    }
 
-effectDict = {'you': [(17,3)]}
+effectDict = {
+'stop':[(11,2)],
+'defeat':[(19,4)],
+'weak':[(12,8)],
+'you':[(14,6)],
+'push':[(15,11)],
+'win':[(9,12)]
+              }
 
-subjDict = {'kimchiword':[(15,3)]}
+subjDict = {
+'hedgeword':[(9,2)],
+'babaword':[(12,6)],
+'leafword':[(17,4)],
+'rockword':[(13,11)],
+'flagword':[(6,13)]
+        }
 
 adjDict = {} #no adjectives in this level. 
 
@@ -33,19 +68,15 @@ levelDict.update(loadEffects(effectDict))
 levelDict.update(loadAdjs(adjDict))
 
 loadPositions(levelDict)
-print('testlevel load complete, result: ', levelDict)
-level = level(69,levelDict,
+print('level 13 load complete, result: ', levelDict, '\n\n')
+level = level(13,levelDict,
               #level size
-              (33,18), 
+              (24,18), 
               #background colors
-              rgb(21,24,31), 'black',
+              rgb(82,64,40), rgb(55,45,37),
               #top margin
               10, 
               #bgm
-              'sounds/music/baba.ogg',
+              'sounds/music/forest.ogg',
               #levelname
-              'METAMETA(HOSTILE ENVIRONMENT)')#store the size of the level here.
-#i spent ~40 lines in total checking for the stupid 'str' entry in the level dictionary
-#before i figured i could just make a new class attribute.
-
-#bruh fts
+              'FRAGILITY') 

@@ -22,7 +22,17 @@ mapLevelNameDict = {
     (9,11):'HIRED HELP',
     (12,12):'ICY WATERS',
     (13,12):'CHANGELESS',
-    (14,12):'BURLGARY'
+    (14,12):'BURLGARY',
+    (19,12):'FRAGILITY',
+    (20,12):'NOT THERE',
+    (21,12):'FLOAT',
+    (23,9):'REMOTE CONNECTION',
+    (24,9): 'RESEARCH LAB',
+    (15,2): 'TINY ISLE',
+    (14,2): 'CATCH',
+    (13,2): 'FURTHER FIELDS',
+    (12,2): 'META',
+    (2,5): 'METAMETA'
 }
 def drawMapScreen(app,color):
     cellWidth, cellHeight = getCellSize(app)
@@ -60,7 +70,6 @@ def drawLevelNumbers(app):
     
 # draw win / 'lose' / reset level screens --------------------------------------  
 def drawWinScreen(app,color): 
-    #temporary. replace all of this
     drawRect(0,0,app.width,app.height,fill=color, opacity = 40)
     drawLabel(
         'CONGRATULATIONS!',
@@ -75,6 +84,30 @@ def drawWinScreen(app,color):
     #placeholder. the real win screen is temporary, and directs users back to the map screen after ~5 secs.
     drawLabel(
         "PRESS 'C'TO CONTINUE",
+        app.width/2,
+        app.height/2 + 0.25*app.height,
+        fill='white', #white is a placeholder color. 
+        size= 0.65* app.cellHeight,
+        bold= True,
+        align='center',
+        font= 'babafont'
+    )
+
+def drawGameWinScreen(app):
+    drawRect(0,0,app.width,app.height,fill='gold', opacity = 40)
+    drawLabel(
+        'CONGRATULATIONS, AND THANK YOU!',
+        app.width/2,
+        app.height/2,
+        fill='white', #white is a placeholder color. 
+        size=2 * app.cellHeight,
+        bold= True,
+        align='center',
+        font= 'babafont'
+    )
+    #placeholder. the real win screen is temporary, and directs users back to the map screen after ~5 secs.
+    drawLabel(
+        "YOU'VE COMPLETED THE GAME! IF YOU WANT, PRESS 'C' TO KEEP PLAYING. *",
         app.width/2,
         app.height/2 + 0.25*app.height,
         fill='white', #white is a placeholder color. 
@@ -140,22 +173,28 @@ def drawNoPlayerScreen(app,color):
         align='center',
         font= 'babafont'
     )
-
+def drawLevelExplosionScreen(app,color):
+    drawRect(0,0,app.width,app.height,fill='black')
+    
 def printRules(rulesList):
     ruleString = ''
     effectString = ''
     for tuple in rulesList:
-        if ruleString != '':
-            ruleString += ', '
-        equalsObject, ruletuple = tuple
-        subject, effect = ruletuple
-        if effect.type == 'subj':
-            effectString = effect.obj
+        operator, ruletuple = tuple
+        if operator == 'power':
+            continue
         else:
-            effectString = effect.attribute
-        if len(ruleString) > 4: 
-            ruleString += '\n'
-        ruleString += f'{subject.obj.upper()} IS {effectString.upper()}'
+            if ruleString != '':
+                ruleString += ', '
+            subject, effect = ruletuple
+            if subject and effect:
+                if effect.type == 'subj':
+                    effectString = effect.obj
+                else:
+                    effectString = effect.attribute
+                if len(ruleString) > 4: 
+                    ruleString += '\n'
+                ruleString += f'{subject.obj.upper()} IS {effectString.upper()}'
     return ruleString
 
 def drawPauseScreen(app,color):
@@ -218,11 +257,11 @@ def drawSettingsScreen(app):
               size = 0.6*cellHeight, 
               fill = 'white', bold = True, font = 'babafont', align = 'center')
     
-    drawLabel(f'CURRENT FPS: {pythonRound(app.stepsPerSecond,3)}', 
+    drawLabel(f'CURRENT MOVES PER SECOND: {pythonRound(0.6/app.latency,1)}', 
               app.width//2, 6*cellHeight,
               size = 0.6*cellHeight, 
               fill = 'white', bold = True, font = 'babafont', align = 'center')
-    drawLabel('(UP/DOWN ARROWS TO CHANGE, DEFAULT 5.5)', 
+    drawLabel('(UP/DOWN ARROWS TO CHANGE, DEFAULT 6)', 
               app.width//2, 7*cellHeight,
               size = 0.4*cellHeight, 
               fill = 'white', bold = True, font = 'babafont', align = 'center')

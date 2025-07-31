@@ -1,18 +1,16 @@
 (!!)- highest priority, usually bug fixes
 ** - low priority / extra feature
 ----------------------------------------------------------------------------------------
+(!!) H for Hint settings 
+
 1. Level Design
 - Levels
     - 3 Forest of Fall
     - 3 The Factory 
 - Levels unlock on a save file
 - Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
-- 12 Levels, S-shaped unlock pattern
-- Levels unlock on a save file
-- Final level has 'LEVEL': either solve the puzzle, or make LEVEL IS KIMCHI and solve the map level
 
 2. More effects 
-    - WEAK
     - SHIFT 
     - LEVEL (purely for putting a BABA on the menu screen)
     - MORE  (** with backtracking / recursive fill similar to the MSPaint example)
@@ -21,6 +19,7 @@
     - ON (basic overlap feature.)
     - NOT (heard it's horrid to implement.) 
     - HAS (behaves like Is, also in the eq class-- BABA HAS FLAG drops flag on death)
+    - FLOAT(makes a second 'layer' for the level.)
     - HIDE (doesn't draw the word, and also cuts collisions, but still makes a valid rule)
     ** MORE
     ** FACING (either 1 or all blocks in BABA's direction applicable.)

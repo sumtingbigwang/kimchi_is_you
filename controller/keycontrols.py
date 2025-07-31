@@ -69,6 +69,16 @@ def mapControls(app, key):
     (12,12):10,
     (13,12):11,
     (14,12):12,
+    (19,12):13,
+    (20,12):14,
+    (21,12):15,
+    (23,9):16,
+    (24,9):17,
+    (15,2):18,
+    (14,2):19,
+    (13,2):20,
+    (12,2):21,
+    (2,5):22
 }   
     cursor = getFirstObject(app, 'cursor')
     cursorPosition = cursor.pos
@@ -95,6 +105,20 @@ def mapControls(app, key):
         undoMove(app)
     elif key == 'r': #reset function
         app.askReset = True
+    if app.askReset:
+        if key == 'y':
+            if getFirstObject(app, 'kimchi') in map.level.dict:
+                map.level.dict[getFirstObject(app, 'kimchi')] = (12,2)
+            if getFirstObject(app, 'flag') in map.level.dict:
+                map.level.dict[getFirstObject(app, 'flag')] = (16,8)
+            app.askReset = False
+            app.wasPaused = False
+        elif key == 'n':
+            if app.wasPaused:
+                app.paused = True
+            else:
+                app.paused = False
+            app.askReset = False
     playRandomMoveSound()
         
 
@@ -107,9 +131,9 @@ def settingsControls(app, key):
             app.inMenu = True
             app.settings = False
     elif key == 'up':
-        app.stepsPerSecond += 0.1
+        app.latency -= 0.005
     elif key == 'down':
-        app.stepsPerSecond -= 0.1
+        app.latency += 0.005
     elif key == 'w' or key == 'W':
         app.width = 1512
         app.height = 975
@@ -221,11 +245,16 @@ def gameControls(app, key):
                 app.sound.play(restart = False, loop = True)
             else:
                 app.sound.play(restart = False, loop = True)
+            if app.levelGone:
+                app.levelGone = False
             undoMove(app)
             playRandomUndoSound()
 
         if key == 'r': #reset function
             app.askReset = True
+            
+        if key == 'c':
+            print(app.levelRules)
             
         if app.debugMode:
             print('\n')

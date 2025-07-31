@@ -30,6 +30,19 @@ def moveObj(app, moveObj, move):
     dx, dy = moveDict[move]
     tgtCell = (x + dx, y + dy)
     
+    if moveObj.attribute == 'cursor':
+        if not findObjInCell(app, moveObj.pos, 'kimchi') and not getObjectsInCell(app, *tgtCell):
+            return None
+        else:
+            if moveObj in app.levelDict:
+                del app.levelDict[moveObj] #clear the original position before writing 
+            app.turnMoves.append((moveObj, move))
+            moveObj.MoveObject(move)
+            app.levelDict[moveObj] = moveObj.pos
+            if app.debugMode:
+                print(moveObj.name,'moved', moveObj.pos)
+            return True
+        
     #legality check
     if not isLegal(app, tgtCell, moveObj):
         if app.debugMode:
@@ -43,12 +56,24 @@ def moveObj(app, moveObj, move):
     #get tgt objs
     tgtObjs = getObjectsInCell(app, *tgtCell)
     #target cell is nonempty
-    if tgtObjs and 'float' not in moveObj.effectsList and moveObj.attribute != 'cursor':
+    if tgtObjs and moveObj.attribute != 'cursor':
         #test each object in target cell for collision
         for tgtObject in tgtObjs:
             if app.debugMode:
                 print(tgtObject.effectsList)
                 print(moveObj.effectsList)
+            if 'shut' in tgtObject.effectsList and 'open' in moveObj.effectsList:
+                continue
+            if 'open' in tgtObject.effectsList and'shut' in moveObj.effectsList:
+                continue
+            if 'weak' in tgtObject.effectsList:
+                continue
+            if ('float' in moveObj.effectsList 
+                and 'float' not in tgtObject.effectsList
+                and tgtObject.type != 'subj'
+                and tgtObject.type != 'eq'
+                and tgtObject.type != 'effect'):
+                continue
             if 'you' in tgtObject.effectsList:
                 #this is another instance of you, which we only need check for movement space. 
                 if pushableObj(app, tgtObject, move) is None:
@@ -67,16 +92,6 @@ def moveObj(app, moveObj, move):
                         print(moveObj.name,'cannot push')
                     moveObj.changeDir(move)
                     return None #if object doesn't push, then we just break and don't move
-            elif 'shut' in tgtObject.effectsList:
-                if 'open' in moveObj.effectsList:
-                    continue
-                else:
-                    return None
-            elif 'open' in tgtObject.effectsList:
-                if 'shut' in moveObj.effectsList:
-                    continue
-                else:
-                    return None
             
     #if we get here, the pushable object is moved, and we're happy. 
     #however, we now need to check whether our player is 'SINK' or 'DEFEAT' or 'MELT' on a HOT object for deletion. 
@@ -117,11 +132,15 @@ def pushObj(app, moveObj, move):
     #push objects in the target cell first
     if tgtObjs:
         for tgtObject in tgtObjs:
+            if 'float' in moveObj.effectsList and 'float' not in tgtObject.effectsList:
+                continue
             if 'shut' in tgtObject.effectsList and 'stop' in tgtObject.effectsList:
                 if 'open' in moveObj.effectsList:
                     continue
                 else:
                     return None
+            elif 'weak' in tgtObject.effectsList:
+                continue
             if 'push' in tgtObject.effectsList:
                 #check for word object for the rule sounds
                 if isinstance(tgtObject, effect) or isinstance(tgtObject, subj) or isinstance(tgtObject, eq):
@@ -136,6 +155,7 @@ def pushObj(app, moveObj, move):
                 #I THINK if we get here the object being pushed isn't a player 
                 #so we dont need to check for DEFEAT.
             elif ('sink' in tgtObject.effectsList
+                  or 'weak' in tgtObject.effectsList
                   or ('hot' in tgtObject.effectsList and 'melt' in moveObj.effectsList)
                   or ('shut' in tgtObject.effectsList and 'open' in moveObj.effectsList)):
                 moveObj.preSink = (x,y)
@@ -176,6 +196,8 @@ def pushableObj(app, obj, move):
                     continue
                 elif 'shut' in tgtObj.effectsList and 'open' in obj.effectsList:
                     continue
+                elif 'weak' in obj.effectsList:
+                    continue
                 else:
                     return None
     return True
@@ -187,14 +209,16 @@ def inBounds(x,y):
         
 def isLegal(app, tgtCell, obj):
     tgtObjs = getObjectsInCell(app,*tgtCell)
-    if 'float' not in obj.effectsList: #'FLOAT' effect allows clipping
+    if ('float' not in obj.effectsList
+        and 'weak' not in obj.effectsList): #'FLOAT' effect allows clipping
         if tgtObjs != None:
             for object in tgtObjs:
                 if ('stop' in object.effectsList 
                     and 'push' not in object.effectsList
                     and 'you' not in object.effectsList
                     and 'shut' not in object.effectsList
-                    and 'open' not in object.effectsList):
+                    and 'open' not in object.effectsList
+                    and 'weak' not in object.effectsList):
                     return False
 
     tgtX, tgtY = tgtCell
