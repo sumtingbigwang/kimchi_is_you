@@ -181,8 +181,6 @@ def select(app, key, sIdx):
     if sIdx < 0 or sIdx > 4:
         sIdx = sIdx % 4
     app.levelDict[getFirstObject(app, 'baba')] = (4,(6+2*sIdx))
-    print(app.levelDict)
-    print(sIdx)
     return sIdx
 
 def selectMenu(app, key):

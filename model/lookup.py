@@ -41,7 +41,6 @@ def findClass(app, tgtCell, classtype):
             
 def getEquals(app):
     equals = []
-    print(app.levelDict)
     for item in app.levelDict:
         if item.type == 'eq':
             if item.attribute == 'equals':

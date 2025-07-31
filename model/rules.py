@@ -31,7 +31,10 @@ def checkEquals(app, word, rules):
                     word.rootSubj = subjWord
                     subjWord.rootOperator = word
                     if effWord:
-                        rules.insert(0,(word, (subjWord, effWord)))
+                        if subjWord.attribute == 'level':
+                            rules.insert(3,(word, (subjWord, effWord)))
+                        else:
+                            rules.insert(0,(word, (subjWord, effWord)))
                         effWord.rootSubj = subjWord
                         subjWord.rootEffect = effWord
                         subjWord.rootOperator = word
@@ -213,7 +216,7 @@ def makeRules(app): #main function that calls helpers to apply new rules
     
     for pair in rulePairs:
         subjectWord, effectWord = pair
-        if isinstance(subjectWord, subj) and isinstance(effectWord, effect):
+        if (isinstance(subjectWord, subj) or subjectWord.attribute == 'level') and isinstance(effectWord, effect):
             addEffects(app, subjectWord, effectWord)
         #SUBJ IS SUBJ replaces objects
         elif isinstance(subjectWord, subj) and isinstance(effectWord, subj):
@@ -236,10 +239,10 @@ def addEffects(app, subjectWord, effectWord): #adds effect to subject
             if getFirstObject(app, 'you'):
                 deleteObject(app, getFirstObject(app, 'you'))
         elif effectWord.attribute == 'hot':
-            for object in app.levelDict:
-                if 'melt' in object.effectsList:
-                    deleteObject(app, object)
-                    app.turnMoves.append((object, object.type, object.effectsList, object.attribute, object.pos))
+            app.appendList = [item for item in app.levelDict if 'melt' in item.effectsList]
+            app.levelDict = {item:item.pos for item in app.levelDict if 'melt' not in item.effectsList}
+            for item in app.appendList:
+                app.turnMoves.append((item, item.type, item.effectsList, item.attribute, item.pos))
     else:
         appendType = subjectWord.obj
         for object in app.levelDict:
@@ -277,7 +280,6 @@ def delRules(app): #main function that deletes old rules no longer in play and k
                 
 #Replacement-related rules--------------------------------
 def replaceObjs(app, subjectWord, effectWord):
-    print('replacing', subjectWord.attribute, effectWord.attribute)
     if subjectWord.attribute == 'level':
         if app.levelNum == 21:
             mapItem = obj(f'O-13',f'{effectWord.obj}')
@@ -414,6 +416,12 @@ def defeatObjs(app, defeatList): #defeat object remove function
 def meltObjs(app, meltList): #melt object remove function (kills everything not FLOAT in its cell)
     meltedObject = False
     for (hotObject, cell) in meltList:
+        print(hotObject.attribute)
+        if hotObject.attribute == 'level':
+            for object in app.levelDict:
+                if 'melt' in object.effectsList:
+                    deleteObject(app, object)
+                    app.turnMoves.append((object, object.type, object.effectsList, object.attribute, object.pos))
         meltObject = findObj(app, cell, 'melt')
         if meltObject:
             if ('float' not in meltObject.effectsList
