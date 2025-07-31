@@ -42,6 +42,9 @@ def writeFile(path, levelnum):
     
     
 def loadLevel(app, levelnum):
+    if app.noPlayer and not app.inMenu:
+        app.deadSound.pause()
+        app.noPlayer = False
     app.sound.pause()  #bgm pause
     app.level = levelDict[levelnum]
     app.levelNum = app.level.num

@@ -232,15 +232,25 @@ def addEffects(app, subjectWord, effectWord): #adds effect to subject
                     
     if subjectWord.attribute == 'level':
         if effectWord.attribute == 'win':
+            Sound('sounds/win.mp3').play()
+            app.deadSound.pause()
+            app.noPlayer = False
             app.levelWin = True
-        elif effectWord.attribute == 'defeat' or effectWord.attribute == 'weak':
+        elif effectWord.attribute == 'weak':
             playRandomDefeatSound()
             app.levelGone = True
             if getFirstObject(app, 'you'):
                 deleteObject(app, getFirstObject(app, 'you'))
         elif effectWord.attribute == 'hot':
+            playRandomMeltSound()
             app.appendList = [item for item in app.levelDict if 'melt' in item.effectsList]
             app.levelDict = {item:item.pos for item in app.levelDict if 'melt' not in item.effectsList}
+            for item in app.appendList:
+                app.turnMoves.append((item, item.type, item.effectsList, item.attribute, item.pos))
+        elif effectWord.attribute == 'defeat':
+            playRandomDefeatSound()
+            app.appendList = [item for item in app.levelDict if 'you' in item.effectsList]
+            app.levelDict = {item:item.pos for item in app.levelDict if 'you' not in item.effectsList}
             for item in app.appendList:
                 app.turnMoves.append((item, item.type, item.effectsList, item.attribute, item.pos))
     else:
@@ -485,7 +495,6 @@ def refresh(app):
     autoMoveObjs(app)
     deleteBoard(app)
     refreshRules(app)
-    moreObjs(app)
     
     #move logging
     if app.turnMoves: #don't want to store empty stacks

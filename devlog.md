@@ -245,6 +245,15 @@ Jul 28
         - Made 3 new tutorial levels. 
         - Added map and pause menu level title feature. 
 
+Jul 29
+    ATP I think the game is pretty finished. I don't plan to add any more major changes other than adding tutorial/hint information. What we did today: 
+    - Added ELEVEN NEW LEVELS. Oh my lord. TS was so tedious you have no goddamn clue. 
+    - Added a cool lil meta feature and a game "100%" completion screen. 
+    - Implemented NOT, LEVEL, WEAK, and FLOAT words.
+    - Fixed a s**tload of bugs pertaining to those words. 
+    - Fixed rule latency bugs where rules would not apply / compile until one turn after the words were made (resolved by just slapping the refreshRule function on every step, my mac didn't explode so idc it works)
+    - Added arrow/WASD key hold move functionality, and steps per second adjustment. Find it in the settings! 
+    - Fixed a bug where level 22 was unbeatable. NOTE: a walkthrough of the level will probably be found in the hint section. This level has been modified (simplified, but hopefully still sufficiently challenging!) and is not from the BABA IS YOU original game. 
 
     
 ACCREDITATIONS / DISCLAIMERS (15-112 Requirement):
@@ -252,5 +261,6 @@ ACCREDITATIONS / DISCLAIMERS (15-112 Requirement):
     - calculateGridDimensions (implemented feature to adjust grid sizing according to window size changes)
     - drawGame (added module to draw players on top of objects)
     - updatePointer for menu/pause menu view
+    - ~40% of drawInfo dictionaries (they were the same dictionaries typed over and over again, with different coordinate positions and crop values which were manually adjusted)
 
     **moveObj and pushObj were on this list. They were taken off because I had to rewrite much of the entire function while doing the data transfer from hard-coded objects to mutable object classes. Claude was no help at all debugging at that stage! Don't know if that says something about my code or what...

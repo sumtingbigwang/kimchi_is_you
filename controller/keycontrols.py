@@ -119,6 +119,18 @@ def mapControls(app, key):
             else:
                 app.paused = False
             app.askReset = False
+            
+    if app.gameWin:
+        if key == 'c':
+            app.levelDict[getFirstObject(app, 'kimchi')] = (12,2)
+            app.levelDict[getFirstObject(app, 'flag')] = (16,8)
+            loadLevel(app, -1)
+            app.gameWin = False
+        
+    if getFirstObject(app, 'kimchi') and getFirstObject(app, 'flag'):
+        if getFirstObject(app, 'kimchi').pos == getFirstObject(app, 'flag').pos:
+            app.gameWin = True
+            Sound('sounds/gamewon.ogg').play()
     playRandomMoveSound()
         
 
@@ -200,6 +212,8 @@ def gameControls(app, key):
                     app.sound.play(restart = False, loop = True)
             Sound('sounds/levelselect.mp3').play()
             resetLevel(app)
+            if app.levelGone:
+                app.levelGone = False
             app.askReset = False
             app.wasPaused = False
         elif key == 'n':
@@ -210,6 +224,9 @@ def gameControls(app, key):
             app.askReset = False
 
     if app.levelWin:
+        if app.noPlayer:
+            app.deadSound.pause()
+            app.noPlayer = False
         if key == 'c':
             resetLevel(app)
             app.levelWin = False
@@ -268,8 +285,7 @@ def gameControls(app, key):
         if app.checkSoundList:
             for word in app.checkSoundList: #check for rule sound
                 checkRuleSound(word)
-            app.checkSoundList = []
-            
+            app.checkSoundList = [] 
     if app.noPlayer:
         app.sound.pause()
         app.deadSound.play(loop = True, restart = False)

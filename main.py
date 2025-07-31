@@ -22,6 +22,8 @@ def onAppStart(app):
     app.replaceCount = 0
     app.levelGone = False
     app.metaMap = False
+    app.gameWin = False
+    app.wasDead = False
     
     #define key hold move timing
     app.t0 = 0 
@@ -145,20 +147,34 @@ def onStep(app):
     if app.metaMap:
         app.metaMap = False
         loadLevel(app, -1)
+    if app.wasDead and not app.noPlayer:
+        app.deadSound.pause()
+        app.sound.play(restart = False, loop = True)
+        app.wasDead = False
+    if not app.inMenu and not app.paused and not app.settings and not app.inMap:
+        refreshRules(app)
+        checkWin(app, app.levelDict)
 
 def redrawAll(app):
+    #draw map
     if app.level.inMap:
         drawRect(0,0,app.width,app.height,fill=rgb(21,24,31))
         drawMapScreen(app, app.level.background)
     drawGame(app)
     
+    
+    #in game screens 
     if app.levelGone:
         drawLevelExplosionScreen(app, 'black')
         
     if app.level.inMap:
         drawLevelNumbers(app)
+        
     if app.settings:
         drawSettingsScreen(app)
+        
+    if app.gameWin:
+        drawGameWinScreen(app)
         
     if not app.inMenu:
         if app.askReset:
@@ -177,11 +193,11 @@ def redrawAll(app):
         if app.paused:
             drawPauseScreen(app, 'black')
     
-            
     if app.debugMode:
         drawBoard(app)
         drawBoardBorder(app)
         
+    #drawing tutorial labels
     if app.debugMode:
         drawLabel('DEBUG MODE ON',app.width//2,25,size = app.cellHeight*0.4, fill = 'white', font = 'babafont', bold = True)
         drawLabel(f'CURRENT RULES: {printRules(app.levelRules)}',app.width//2,40,
