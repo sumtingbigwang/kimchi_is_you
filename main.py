@@ -43,7 +43,7 @@ def onAppStart(app):
     app.lastMoveTime = 0 # Track when the last move happened
     
     #define level
-    app.lastPlayedLevel = readFile('levels/lastPlayed.txt') #temporary, make a save file for this
+    app.lastPlayedLevel = 69#readFile('levels/lastPlayed.txt') #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
@@ -106,10 +106,12 @@ def onKeyPress(app, key):
         if app.debugMode:
             print('in menu')
         menuControls(app, key)
+        playRandomMoveSound()
     elif app.paused:
         if app.debugMode:
             print('paused')
         pauseControls(app, key)
+        playRandomMoveSound()
     elif app.settings:
         if app.debugMode:
             print('settings')
@@ -210,6 +212,10 @@ def redrawAll(app):
                       font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
         elif app.levelNum == 2:
             drawLabel('(ESC) TO PAUSE',*getCellLeftTop(app, 2,2), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+            drawLabel('(Z) TO UNDO',*getCellLeftTop(app, 3,2), fill = 'white', 
+                      font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
+            drawLabel('(R) TO RESET',*getCellLeftTop(app, 4,2), fill = 'white', 
                       font = 'babafont', bold = True, size = 0.5*app.cellHeight, align = 'center')
         elif app.levelNum == 9:
             drawLabel('(SPACE) TO WAIT',*getCellLeftTop(app, 1,16), fill = 'white', 

@@ -79,6 +79,7 @@ def loadLevel(app, levelnum):
     app.wasDead = False
     app.levelDefeat = False
     app.levelHot = False
+    app.wasMap = False
     
     
     #initialize level

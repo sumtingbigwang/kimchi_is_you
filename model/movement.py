@@ -23,8 +23,6 @@ def moveLoop(app, move):
 #had to redo much of this myself later anyway.
 
 def moveObj(app, moveObj, move):
-    pushWord = False
-    wordObj = None
     #get target cell coords
     x, y = moveObj.pos
     dx, dy = moveDict[move]

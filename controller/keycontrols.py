@@ -39,10 +39,14 @@ def pauseControls(app, key):
             app.paused = False
             app.wasPaused = True
             app.askReset = True
+            app.levelGone = False
+            app.levelDefeat = False
         elif app.pointerIdx == 2:
             app.settings = True #settings screen
             app.paused = False
             app.wasPaused = True
+            app.levelGone = False
+            app.levelDefeat = False
         elif app.pointerIdx == 3: #return to map
             if app.noPlayer:
                 app.deadSound.pause()
