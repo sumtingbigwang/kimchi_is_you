@@ -3,6 +3,8 @@ KIMCHI IS YOU is a python remake of an existing puzzle game, BABA IS YOU.
 
 The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Michael Taylor's pink pet axolotl, whose name is actually Kimchee. To fit Kimchee's name text within the 6-character game limit, liberties were taken to shorten the name of the protagonist-- who is also a pink axolotl-- to Kimchi. Sorry Mike! Players move around a pixellated world shaped by words around them, forming ingenious solutions for seemingly impossible puzzles by changing the rules of the game.
 
+(SPOILER WARNING) Check out the game trailer and TP review on [Youtube](https://youtu.be/4L8OUlESBfM)! 
+
 ## The Game
 In case you missed the tutorial levels:
 - W/A/S/D and Arrow keys allow you to move the player-- If there is one! 
