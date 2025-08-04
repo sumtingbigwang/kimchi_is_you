@@ -43,4 +43,5 @@ This project is created for educational purposes only, and is not intended for c
 A sincere thank you to goes out to: 
 - Prof. Michael Taylor and Prof. David Kosbie for an amazing 15-112 experience
 - TAs Nathan Xie, Alex Chen, and Yudh Shukla for being fantastic educators and dealing with my BS in recitation
--  Seunghyeok, Tyler, Arshia, Josie, and Adam for their support during the development process and just dealing with my BS in general! 
+- Seunghyeok, Tyler, Arshia, Josie, and Adam for their support during the development process and just dealing with my BS in general!
+- Arvi Teikari for making an amazing puzzle game. 
