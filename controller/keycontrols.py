@@ -6,7 +6,7 @@ from model.objects import *
 from levels import *
 from levels.loadlevels import *
 from sounds.sounds import *
-import sys, math, time, random
+import sys, os, math, time, random
 #much of this doc is adjusting for the menu controls. 
 
 def updatePointerPosition(app):

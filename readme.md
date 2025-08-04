@@ -1,8 +1,4 @@
-# IMPORTANT!
-
-In the game code, there are several sys.path.insert import commands that are key to making sure functions can access functions in other directories. Before you run the game, please change these commands to the respective file paths on YOUR computer so that the game can load properly. Thank you!
-
-### Introduction
+## Introduction
 KIMCHI IS YOU is a python remake of an existing puzzle game, BABA IS YOU. 
 
 The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Michael Taylor's pink pet axolotl, whose name is actually Kimchee. To fit Kimchee's name text within the 6-character game limit, liberties were taken to shorten the name of the protagonist-- who is also a pink axolotl-- to Kimchi. Sorry Mike! Players move around a pixellated world shaped by words around them, forming ingenious solutions for seemingly impossible puzzles by changing the rules of the game.
@@ -17,7 +13,7 @@ The game consists of 22 levels, with 9 tutorial levels and 4 worlds of 2-4 level
 
 At first, level 22 may seem unreachable. I recommend you play around a bit more with level 21 after beating it to see what new META mechanics you might be able to use! Although a fraction of what Hempuli's original had to offer, I hope this short project was fun for you to play! 
 
-### Background
+## Background
 Baba Is You is a puzzle video game created by Arvi 'Hempuli' Teikari, a Finnish independent developer. Inspired by the Japanese box-pushing puzzle game Sokoban (lit. 'warehouse manager'), the game centers around the manipulation of "rules"—represented in the play area by movable tiles with words written on them—in order to allow the player character to reach a specified goal. Rules later in the game get increasingly complex, and the game gets mind-numbingly hard-- but also incredibly rewarding -- to push through as more and more rules must be rearranged to reach the solution. If you haven't yet, [I strongly recommend you check out the original game here.](https://store.steampowered.com/app/736260/Baba_Is_You/)
 
 As part of a game jam, Hempuli coded the preliminary version of the game with PUSH/STOP/DEFEAT/HOT/MELT and UNDO functionality in 72 hours on multimedia fusion 2. I wanted to challenge myself by seeing if I could do that and possibly a bit more with a week of time and a new knowledge of Python code! 
@@ -26,11 +22,25 @@ As a 15-112 student, I was given ~1 week to code a term project that demonstrate
 
 **The hope is that, by the end of this project, I will have created a memorable, complete, and intellectually stimulating experience for my players that goes beyond the average 15-112 term project. Something you would actually install in your free time as a game!**
 
-### Technicals
-This project was coded in Python 3.12. The project runs through the file 'main.py'. Cmu_graphics is the graphics engine, and has been provided with the project. Pillow (pip install pillow) is also required to crop sprites for animations. 
-Aside from the aformentioned two libraries, no additional libraries need to be installed provided that 'main.py' is run in the same folder as the accompanied cmu_graphics folder.
+## Technicals
+**Aformentioned sys.info.path code has been patched. Game should be ready on install for any device with python 3.12 installed.** 
 
-### Credits
-cmu_graphics developed by Carnegie Mellon University. 
+This project was coded in Python 3.12. The project runs through the file 'main.py'.
+
+Cmu_graphics is the graphics engine, and has been provided with the project. Pillow (pip install pillow) is also required to crop sprites for animations. 
+
+Please also install "babafont.ttf", provided with main.py, for the best in-game experience. 
+
+Aside from pillow, no additional libraries need to be installed provided that 'main.py' is run in the same folder as the accompanied cmu_graphics folder.
+
+## Credits
 Music, art, sprites and level designs by Arvi "Hempuli" Teikari. 
+
+cmu_graphics developed by Carnegie Mellon University. 
+
 This project is created for educational purposes only, and is not intended for commercialization or monetization.
+
+A sincere thank you to goes out to: 
+- Prof. Michael Taylor and Prof. David Kosbie for an amazing 15-112 experience
+- TAs Nathan Xie, Alex Chen, and Yudh Shukla for being fantastic educators and dealing with my BS in recitation
+-  Seunghyeok, Tyler, Arshia, Josie, and Adam for their support during the development process and just dealing with my BS in general! 

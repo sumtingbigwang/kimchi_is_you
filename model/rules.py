@@ -1,7 +1,7 @@
 from math import atan
 import re
-import sys
-sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'model'))
 from cmu_graphics.shape_logic import checkNonNegative
 from model.objects import *
 from model.lookup import *
@@ -226,7 +226,6 @@ def makeRules(app): #main function that calls helpers to apply new rules
             for (targetSubject, targetWord) in rulePairs:
                 if (targetSubject.attribute == elimSubject.attribute
                     and targetWord.attribute == elimWord.attribute):
-                    print('removing rule', targetSubject, targetWord)
                     rulePairs.remove((targetSubject, targetWord)) #remove rules negated by NOT
     
     for pair in rulePairs:

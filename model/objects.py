@@ -1,5 +1,5 @@
-import sys
-sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/view')
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'view'))
 from view.drawinfo import *
 import copy 
 

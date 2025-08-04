@@ -1,6 +1,6 @@
 from numpy import * 
-import sys
-sys.path.insert(0, '/Users/wangcomputer/Developer/School/15112/kimchi_is_you/code/model')
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'model'))
 from model.objects import * 
 from model.lookup import *
 from model.movement import *
@@ -15,22 +15,22 @@ levelDict = {} #levelDict starts out by being just a size dictionary.
 
 #then objects are introduced to be loaded. You edit the level here! 
 objDict = {
-    'kimchi':[(16,5)],
-    'rock':[(16,10)],
+    'kimchi':[(6,4)],
+    'rock':[(6,9)],
     }
 
 eqDict = {
-    'equals':[(16,3),(16,12)],
+    'equals':[(6,2),(6,11)],
 }
 
 effectDict = {
-    'you':[(17,3)],
-    'push':[(17,12)],
+    'you':[(7,2)],
+    'push':[(7,11)],
 }
 
 subjDict = {
-    'kimchiword':[(15,3)],
-    'rockword':[(15,12)],
+    'kimchiword':[(5,2)],
+    'rockword':[(5,11)],
 }
 
 adjDict = {} #no adjectives in this level. 
@@ -47,7 +47,7 @@ loadPositions(levelDict)
 print('testlevel load complete, result: ', levelDict)
 level = level(69,levelDict,
               #level size
-              (33,18), 
+              (13,13), 
               #background colors
               rgb(21,24,31), 'black',
               #top margin

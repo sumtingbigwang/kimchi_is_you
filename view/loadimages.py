@@ -1,10 +1,10 @@
 from ast import Index
 from cmu_graphics import *
 from cmu_graphics.shape_logic import t
-from drawinfo import *
+from view.drawinfo import *
 from model.rules import *
 from model.objects import *
-from drawobj import *
+from view.drawobj import *
 from urllib.request import urlopen
 from PIL import Image
 
