@@ -64,7 +64,7 @@ def drawMapScreen(app,color):
     cellWidth, cellHeight = getCellSize(app)
     width = 11*cellWidth
     height = cellHeight
-    drawImage(CMUImage(Image.open(f'view/menusprites/newmap.png')), *getCellLeftTop(app, 0, 0), 
+    drawImage(CMUImage(Image.open(f'code/view/menusprites/newmap.png')), *getCellLeftTop(app, 0, 0), 
               width=app.cellWidth * app.cols, height=app.cellHeight * app.rows)
     cursor = getFirstObject(app, 'cursor')
     cursorPosition = cursor.pos
@@ -241,33 +241,33 @@ def drawPauseScreen(app,color):
     
     #(2, 1): resume
     resumeCoords = getCellLeftTop(app, 1, buttonRow+0.5)
-    resumeImage = CMUImage(Image.open('view/pausesprites/resume.png'))
+    resumeImage = CMUImage(Image.open('code/view/pausesprites/resume.png'))
     drawImage(resumeImage, *resumeCoords, width=width*cellWidth, height=height*cellHeight)
     
     
     #(2, 2): restart
     restartCoords = getCellLeftTop(app, 2, buttonRow+0.5)
-    restartImage = CMUImage(Image.open('view/pausesprites/restart.png'))
+    restartImage = CMUImage(Image.open('code/view/pausesprites/restart.png'))
     drawImage(restartImage, *restartCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 3): settings
     settingsCoords = getCellLeftTop(app, 3, buttonRow+0.5)
-    settingsImage = CMUImage(Image.open('view/pausesprites/settings.png'))
+    settingsImage = CMUImage(Image.open('code/view/pausesprites/settings.png'))
     drawImage(settingsImage, *settingsCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 4): return to map
     mapCoords = getCellLeftTop(app, 4, buttonRow+0.5)
-    mapImage = CMUImage(Image.open('view/pausesprites/map.png'))
+    mapImage = CMUImage(Image.open('code/view/pausesprites/map.png'))
     drawImage(mapImage, *mapCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2, 5): return to menu
     menuCoords = getCellLeftTop(app, 5, buttonRow+0.5)
-    menuImage = CMUImage(Image.open('view/pausesprites/menu.png'))
+    menuImage = CMUImage(Image.open('code/view/pausesprites/menu.png'))
     drawImage(menuImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
     
     #(2,6): hint
     menuCoords = getCellLeftTop(app, 6, buttonRow+0.5)
-    hintImage = CMUImage(Image.open('view/pausesprites/hintP.png'))
+    hintImage = CMUImage(Image.open('code/view/pausesprites/hintP.png'))
     drawImage(hintImage, *menuCoords, width=width*cellWidth, height=height*cellHeight)
     
     #draw pointer 

@@ -43,7 +43,7 @@ def onAppStart(app):
     app.lastMoveTime = 0 # Track when the last move happened
     
     #define level
-    app.lastPlayedLevel = readFile('levels/lastPlayed.txt') #temporary, make a save file for this
+    app.lastPlayedLevel = readFile('code/levels/lastPlayed.txt') #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num

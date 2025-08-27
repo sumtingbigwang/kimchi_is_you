@@ -24,11 +24,11 @@ from PIL import Image
 #load spritesheet for cropping
 
 def loadSheets(app):
-    app.spriteSheet = Image.open('view/spritesheets/spritesheet.png')
-    app.objectSheet = Image.open('view/spritesheets/objectsheet.png')
-    app.wordSheet = Image.open('view/spritesheets/wordsheet.png')
-    app.wallSheet = Image.open('view/spritesheets/wallsheet.png')
-    app.objectSheet2 = Image.open('view/spritesheets/objectsheet2.png')
+    app.spriteSheet = Image.open('code/view/spritesheets/spritesheet.png')
+    app.objectSheet = Image.open('code/view/spritesheets/objectsheet.png')
+    app.wordSheet = Image.open('code/view/spritesheets/wordsheet.png')
+    app.wallSheet = Image.open('code/view/spritesheets/wallsheet.png')
+    app.objectSheet2 = Image.open('code/view/spritesheets/objectsheet2.png')
     
 
 def loadSprites(app):
@@ -107,8 +107,8 @@ def loadButtonImages(app):
                     'settings':[],
                     'exit':[]}
     for button in buttonImages:
-        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}.png'))]
-        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}P.png'))]
+        buttonImages[button] += [CMUImage(Image.open(f'code/view/menusprites/{button}.png'))]
+        buttonImages[button] += [CMUImage(Image.open(f'code/view/menusprites/{button}P.png'))]
     return buttonImages
 
 def cropCompile(topx, topy, sheet, stack): #cuz it crops and compiles. get it? fml
