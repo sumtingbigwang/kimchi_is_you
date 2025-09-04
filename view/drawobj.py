@@ -139,7 +139,7 @@ def drawSprite(app, obj, cellLeft, cellTop, cellWidth):
     state = obj.stateCount
     animIndex = app.animIndex
     if obj.attribute == 'kosbie':
-        drawImage(CMUImage(Image.open('code/view/spritesheets/kosbie.png')), 
+        drawImage(CMUImage(Image.open('view/spritesheets/kosbie.png')), 
                   cellLeft, cellTop, width=cellWidth, height=cellWidth)
     elif obj.drawInfo.type == 'object2':
         sprite = app.spriteDict[obj.attribute][dir][0][animIndex]

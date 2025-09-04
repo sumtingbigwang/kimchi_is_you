@@ -119,7 +119,7 @@ def pushObj(app, moveObj, move):
         moveObj.changeDir(move)
         return None
         
-    #get the nsext cell's objects and push them first
+    #get the next cell's objects and push them first
     x, y = moveObj.pos
     moveObj.preSink = (x,y)
     dx, dy = moveDict[move]

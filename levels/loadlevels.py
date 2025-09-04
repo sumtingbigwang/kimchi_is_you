@@ -60,7 +60,7 @@ def loadLevel(app, levelnum):
     
     #save level num for 'continue' option
     if app.levelNum != 0:
-        writeFile('code/levels/lastPlayed.txt', app.levelNum)
+        writeFile('levels/lastPlayed.txt', app.levelNum)
     
     #initialize animation and pointer metrics 
     app.animIndex = 0
