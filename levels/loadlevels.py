@@ -5,6 +5,8 @@ from view.drawgrid import *
 from model.lookup import *
 from model.rules import *
 from levels import *
+
+script_dir = os.path.dirname(__file__)
 levelDict = {69: testlevel.level,
             -1: map.level,
              0: menu.level,
@@ -60,8 +62,7 @@ def loadLevel(app, levelnum):
     
     #save level num for 'continue' option
     if app.levelNum != 0:
-        writeFile('levels/lastPlayed.txt', app.levelNum)
-    
+        writeFile(os.path.join(script_dir, "lastPlayed.txt"), app.levelNum)
     #initialize animation and pointer metrics 
     app.animIndex = 0
     app.pointerIdx = 0

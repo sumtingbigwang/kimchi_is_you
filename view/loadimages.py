@@ -1,3 +1,4 @@
+import os
 from ast import Index
 from cmu_graphics import *
 from cmu_graphics.shape_logic import t
@@ -7,6 +8,8 @@ from model.objects import *
 from view.drawobj import *
 from urllib.request import urlopen
 from PIL import Image
+
+script_dir = os.path.dirname(__file__)
 
 #crop radius: 24x24
 #barrier: 1 pixel 
@@ -24,11 +27,11 @@ from PIL import Image
 #load spritesheet for cropping
 
 def loadSheets(app):
-    app.spriteSheet = Image.open('view/spritesheets/spritesheet.png')
-    app.objectSheet = Image.open('view/spritesheets/objectsheet.png')
-    app.wordSheet = Image.open('view/spritesheets/wordsheet.png')
-    app.wallSheet = Image.open('view/spritesheets/wallsheet.png')
-    app.objectSheet2 = Image.open('view/spritesheets/objectsheet2.png')
+    app.spriteSheet = Image.open(os.path.join(script_dir, "spritesheets", "spritesheet.png"))
+    app.objectSheet = Image.open(os.path.join(script_dir, "spritesheets", "objectsheet.png"))
+    app.wordSheet = Image.open(os.path.join(script_dir, "spritesheets", "wordsheet.png"))
+    app.wallSheet = Image.open(os.path.join(script_dir, "spritesheets", "wallsheet.png"))
+    app.objectSheet2 = Image.open(os.path.join(script_dir, "spritesheets", "objectsheet2.png"))
     
 
 def loadSprites(app):
@@ -98,7 +101,7 @@ def loadSprites(app):
 def loadTitle(app):
     titleImages = []
     for i in range(3):
-        titleImages.append(CMUImage(Image.open(f'view/menusprites/title{i+1}.png')))
+        titleImages.append(CMUImage(Image.open(os.path.join(script_dir, "menusprites", f'title{i+1}.png'))))
     return titleImages
 
 def loadButtonImages(app):
@@ -107,8 +110,8 @@ def loadButtonImages(app):
                     'settings':[],
                     'exit':[]}
     for button in buttonImages:
-        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}.png'))]
-        buttonImages[button] += [CMUImage(Image.open(f'view/menusprites/{button}P.png'))]
+        buttonImages[button] += [CMUImage(Image.open(os.path.join(script_dir, "menusprites", f'{button}.png')))]
+        buttonImages[button] += [CMUImage(Image.open(os.path.join(script_dir, "menusprites", f'{button}P.png')))]
     return buttonImages
 
 def cropCompile(topx, topy, sheet, stack): #cuz it crops and compiles. get it? fml

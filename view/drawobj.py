@@ -5,6 +5,8 @@ from model.objects import *
 from view.drawinfo import *
 from model.lookup import *
 
+script_dir = os.path.dirname(__file__)
+
 def getCellLeftTop(app, row, col):
     if isinstance(row, str): #shitty fix. 
         #getCellLeftTop keeps reading row, col as the move history tuple for some reason.
@@ -139,7 +141,7 @@ def drawSprite(app, obj, cellLeft, cellTop, cellWidth):
     state = obj.stateCount
     animIndex = app.animIndex
     if obj.attribute == 'kosbie':
-        drawImage(CMUImage(Image.open('view/spritesheets/kosbie.png')), 
+        drawImage(CMUImage(Image.open(os.path.join(script_dir, "spritesheets","kosbie.png"))), 
                   cellLeft, cellTop, width=cellWidth, height=cellWidth)
     elif obj.drawInfo.type == 'object2':
         sprite = app.spriteDict[obj.attribute][dir][0][animIndex]

@@ -12,6 +12,8 @@ from model.rules import *
 from model.movement import * 
 from sounds.sounds import *
 import copy, time
+
+script_dir = os.path.dirname(__file__)
          
 def onAppStart(app):
     loadSheets(app)
@@ -43,7 +45,9 @@ def onAppStart(app):
     app.lastMoveTime = 0 # Track when the last move happened
     
     #define level
-    app.lastPlayedLevel = readFile('levels/lastPlayed.txt') #temporary, make a save file for this
+    app.lastPlayedLevel = readFile(os.path.join(script_dir, "levels", "lastPlayed.txt")) 
+    
+    #temporary, make a save file for this
     app.level = menu.level
     app.levelDict = copy.deepcopy((app.level).dict)
     app.levelNum = app.level.num
