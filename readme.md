@@ -3,7 +3,7 @@ KIMCHI IS YOU is a python remake of an existing puzzle game, BABA IS YOU.
 
 The origin of the name 'Kimchi' originates from Carnegie Mellon 15-112 Prof. Michael Taylor's pink pet axolotl, whose name is actually Kimchee. To fit Kimchee's name text within the 6-character game limit, liberties were taken to shorten the name of the protagonist-- who is also a pink axolotl-- to Kimchi. Sorry Mike! Players move around a pixellated world shaped by words around them, forming ingenious solutions for seemingly impossible puzzles by changing the rules of the game.
 
-(SPOILER WARNING) Check out the game trailer and TP review on [Youtube](https://youtu.be/4L8OUlESBfM)! 
+(SPOILER WARNING) Check out the game trailer and overview on [Youtube](https://youtu.be/4L8OUlESBfM)! 
 
 ## The Game
 In case you missed the tutorial levels:
@@ -22,7 +22,7 @@ As part of a game jam, Hempuli coded the preliminary version of the game with PU
 
 As a 15-112 student, I was given ~1 week to code a term project that demonstrated computational complexity while also being "boldly creative." Despite having last played BABA IS YOU nearly 6 years ago, I could think of no better term project to deliver. Just like how this seemingly simple block-pushing game can turn shockingly complex, the coding process for this game has also quickly evolved from a simple-looking task into a challenging, tedious, but rewarding matter. KIMCHI IS YOU turned out to be a deceptively complex game that was both a challenge and a labor of love to code up, and I'm incredibly proud to present it in a finished state.
 
-**The hope is that, by the end of this project, I will have created a memorable, complete, and intellectually stimulating experience for my players that goes beyond the average 15-112 term project. Something you would actually install in your free time as a game!**
+**The hope is that, by the end of this project, I will have created a memorable, complete, and intellectually stimulating experience for my players beyond what is expected; Something you would actually install in your free time as a game!**
 
 ## Technicals
 **Aformentioned sys.info.path code has been patched. Game should be ready on install for any device with python 3.12 installed.** 
@@ -43,7 +43,7 @@ cmu_graphics developed by Carnegie Mellon University.
 This project is created for educational purposes only, and is not intended for commercialization or monetization.
 
 A sincere thank you to goes out to: 
-- Prof. Michael Taylor and Prof. David Kosbie for an amazing 15-112 experience
+- Prof. Michael Taylor and Prof. David Kosbie for teaching & technical guidance
 - TAs Nathan Xie, Alex Chen, and Yudh Shukla for being fantastic educators and dealing with my BS in recitation
 - Seunghyeok, Tyler, Arshia, Josie, and Adam for their support during the development process and just dealing with my BS in general!
 - Arvi Teikari for making an amazing puzzle game. 
